@@ -179,7 +179,7 @@ export default function MockExam({ subjectTitle, mcqQuestions, writtenQuestions,
           </button>
         </div>
       <header style={styles.card}>
-        <p>STUDYMATE EXAMINATION CENTRE</p>
+        <p>PERIAK EXAMINATION CENTRE</p>
         <h1>{subjectTitle}</h1>
         <h2>Mock Examination — 100 Marks</h2>
         <p>Section A: 20 MCQs × 2 marks = 40 marks</p>

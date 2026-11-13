@@ -5611,7 +5611,7 @@ lessonContent["Perioperative nursing"] = {
 };
 
 
-// STUDYMATE_EXTRA_MCQ_BANK_V1
+// PERIAK_EXTRA_MCQ_BANK_V1
 // Additional BScN-level questions appended to existing lesson banks.
 
 lessonContent['Introduction to human anatomy and physiology'].questions.push(
@@ -6002,7 +6002,7 @@ function App() {
         <footer>
           <a className="brand footer-brand" href="#" onClick={goHome}><span className="brand-icon">✚</span> Study<span className="brand-green">Mate</span></a>
           <p>Supporting nursing education in Kenya.</p>
-          <span>© 2026 StudyMate. Learning made easier.</span>
+          <span>© 2026 PERIAK. Learning made easier.</span>
         </footer>
       </div>
     )
@@ -6057,7 +6057,7 @@ function App() {
         <footer>
           <a className="brand footer-brand" href="#" onClick={goHome}><span className="brand-icon">✚</span> Study<span className="brand-green">Mate</span></a>
           <p>Supporting nursing education in Kenya.</p>
-          <span>© 2026 StudyMate. Learning made easier.</span>
+          <span>© 2026 PERIAK. Learning made easier.</span>
         </footer>
       </div>
     )
@@ -6164,7 +6164,7 @@ function App() {
           <div>
             <div className="eyebrow">YOUR FUTURE IN NURSING STARTS HERE</div>
             <h2>Learn with purpose.<br />Care with confidence.</h2>
-            <p>StudyMate is being built to support the next generation of nursing professionals in Kenya.</p>
+            <p>PERIAK is being built to support the next generation of nursing professionals in Kenya.</p>
           </div>
           <a href="#courses" className="primary-button">Start exploring →</a>
         </section>
@@ -6173,7 +6173,7 @@ function App() {
       <footer>
         <a className="brand footer-brand" href="#"><span className="brand-icon">✚</span> Study<span className="brand-green">Mate</span></a>
         <p>Supporting nursing education in Kenya.</p>
-        <span>© 2026 StudyMate. Learning made easier.</span>
+        <span>© 2026 PERIAK. Learning made easier.</span>
       </footer>
     </div>
   )

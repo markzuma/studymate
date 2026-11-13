@@ -1260,7 +1260,7 @@ export default function ExamCentre({ onHome }) {
       </button>
 
       <header className="exam-header">
-        <p className="exam-label">STUDYMATE LEARNING</p>
+        <p className="exam-label">PERIAK LEARNING</p>
         <h1>Examination Centre</h1>
         <p>Choose a nursing subject and test your knowledge.</p>
       </header>
