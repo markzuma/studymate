@@ -2,7 +2,8 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import './AuthGate.css'
-import AdminDashboard from './AdminDashboard'
+import ControlCentre from './ControlCentre'
+import PremiumPage from './PremiumPage'
 
 export default function AuthGate({ children }) {
   const [session, setSession] = useState(null)
@@ -16,7 +17,8 @@ export default function AuthGate({ children }) {
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
   const [profile, setProfile] = useState(null)
-  const [showAdminDashboard, setShowAdminDashboard] = useState(false)
+  const [showControlCentre, setShowControlCentre] = useState(false)
+  const [showPremium, setShowPremium] = useState(false)
 
   useEffect(() => {
     let mounted = true
@@ -145,16 +147,27 @@ export default function AuthGate({ children }) {
           </span>
 
           {profile?.role === 'admin' && (
-            <button onClick={() => setShowAdminDashboard(!showAdminDashboard)}>
-              {showAdminDashboard ? 'Back to Learning' : 'Admin Dashboard'}
+            <button onClick={() => setShowControlCentre(!showControlCentre)}>
+              {showControlCentre ? 'Back to Learning' : 'Control Centre'}
+            </button>
+          )}
+
+          {profile?.role === 'student' && (
+            <button onClick={() => setShowPremium(!showPremium)}>
+              {showPremium ? 'Back to Learning' : 'Premium'}
             </button>
           )}
 
           <button onClick={handleLogout}>Log out</button>
         </div>
 
-        {profile?.role === 'admin' && showAdminDashboard ? (
-          <AdminDashboard onClose={() => setShowAdminDashboard(false)} />
+        {profile?.role === 'admin' && showControlCentre ? (
+          <ControlCentre onClose={() => setShowControlCentre(false)} />
+        ) : profile?.role === 'student' && showPremium ? (
+          <PremiumPage
+            user={session.user}
+            onBack={() => setShowPremium(false)}
+          />
         ) : (
           children
         )}

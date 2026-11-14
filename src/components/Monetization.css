@@ -1,0 +1,91 @@
+.monetization {
+  width: 100%;
+}
+
+.mon-panel {
+  margin-bottom: 22px;
+  overflow: hidden;
+}
+
+.mon-panel h3 {
+  margin-top: 0;
+  color: #172033;
+}
+
+.mon-panel > p {
+  color: #64748b;
+  font-size: 14px;
+}
+
+.mon-message {
+  padding: 12px 15px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  border-radius: 8px;
+  margin: 15px 0;
+  overflow-wrap: anywhere;
+}
+
+.mon-active {
+  color: #15803d;
+  font-weight: 700;
+}
+
+.mon-inactive {
+  color: #b91c1c;
+  font-weight: 700;
+}
+
+.mon-action {
+  padding: 8px 12px;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  color: #1e40af;
+  border-radius: 7px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.mon-action:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.mon-notice {
+  margin-top: 20px;
+  padding: 16px;
+  background: #fff7ed;
+  color: #9a3412;
+  border: 1px solid #fed7aa;
+  border-radius: 10px;
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+.monetization .cc-section-heading {
+  margin-bottom: 22px;
+}
+
+.monetization .cc-section-heading button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  background: #1d4ed8;
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+@media (max-width: 600px) {
+  .mon-panel {
+    padding: 14px;
+  }
+
+  .mon-panel .cc-table {
+    min-width: 650px;
+  }
+
+  .mon-action {
+    font-size: 12px;
+  }
+}
