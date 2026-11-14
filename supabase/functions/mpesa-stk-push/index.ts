@@ -130,9 +130,11 @@ export default {
       );
 
       if (!authResponse.ok) {
+        console.error("Daraja OAuth failed", {
+          httpStatus: authResponse.status,
+        });
         throw new Error("Daraja authentication failed");
       }
-
       const authData = await authResponse.json();
 
       if (!authData.access_token) {
@@ -143,6 +145,22 @@ export default {
       const password = btoa(`${shortcode}${passkey}${timestamp}`);
       const callbackUrl =
         `${Deno.env.get("SUPABASE_URL")}/functions/v1/mpesa-callback`;
+
+      // Set the 60-second deadline before submitting STK Push.
+      const expiresAt = new Date(Date.now() + 60_000).toISOString();
+
+      const { data: expiryRow, error: expiryError } = await ctx.supabaseAdmin
+        .from("payments")
+        .update({ expires_at: expiresAt })
+        .eq("id", payment.id)
+        .eq("status", "pending")
+        .select("id")
+        .maybeSingle();
+
+      if (expiryError || !expiryRow) {
+        console.error("Could not confirm payment expiry", expiryError);
+        throw new Error("Could not confirm payment expiry");
+      }
 
       stkRequestStarted = true;
       const stkResponse = await fetch(
@@ -170,6 +188,15 @@ export default {
       );
 
       const stkData = await stkResponse.json();
+
+      console.info("Daraja STK response", {
+        httpStatus: stkResponse.status,
+        responseCode: stkData.ResponseCode ?? null,
+        responseDescription: stkData.ResponseDescription ?? null,
+        customerMessage: stkData.CustomerMessage ?? null,
+        checkoutRequestIdPresent: Boolean(stkData.CheckoutRequestID),
+        merchantRequestIdPresent: Boolean(stkData.MerchantRequestID),
+      });
 
       // Only a definite Daraja rejection should fail the payment.
       if (

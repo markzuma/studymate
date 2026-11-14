@@ -57,7 +57,7 @@ export default {
         await ctx.supabaseAdmin
           .from("payments")
           .select(
-            "id,status,provider,payment_method,amount_kes,phone_number,merchant_request_id,checkout_request_id",
+            "id,status,result_code,subscription_id,expires_at,provider,payment_method,amount_kes,phone_number,merchant_request_id,checkout_request_id",
           )
           .eq("checkout_request_id", checkoutId)
           .maybeSingle();
@@ -71,12 +71,44 @@ export default {
         return ack("Payment already processed");
       }
 
+      const deadlinePassed =
+        payment.status === "pending" &&
+        payment.expires_at &&
+        Date.parse(payment.expires_at) <= Date.now();
+
+      const isLateTimeout =
+        (payment.status === "failed" && payment.result_code === "LOCAL_TIMEOUT") ||
+        Boolean(deadlinePassed);
+
+      if (deadlinePassed) {
+        const { error: timeoutError } = await ctx.supabaseAdmin
+          .from("payments")
+          .update({
+            status: "failed",
+            result_code: "LOCAL_TIMEOUT",
+            result_description:
+              "Payment attempt expired after 60 seconds without verification.",
+          })
+          .eq("id", payment.id)
+          .eq("status", "pending");
+
+        if (timeoutError) throw timeoutError;
+
+        const { error: subscriptionError } = await ctx.supabaseAdmin
+          .from("subscriptions")
+          .update({ status: "cancelled" })
+          .eq("id", payment.subscription_id)
+          .eq("status", "pending");
+
+        if (subscriptionError) throw subscriptionError;
+      }
+
       if (
-        payment.status !== "pending" ||
+        (payment.status !== "pending" && !isLateTimeout) ||
         payment.provider !== "daraja" ||
         payment.payment_method !== "mpesa"
       ) {
-        return ack("Payment is not pending");
+        return ack("Payment is not eligible for processing");
       }
 
       if (
@@ -200,6 +232,33 @@ export default {
       ) {
         console.error("Payment details did not match", checkoutId);
         return ack("Payment details require manual review");
+      }
+
+      // Record verified late success without activating the cancelled subscription.
+      if (isLateTimeout) {
+        const { data: latePayment, error: latePaymentError } =
+          await ctx.supabaseAdmin
+            .from("payments")
+            .update({
+              result_code: "0",
+              result_description:
+                "Late M-Pesa success verified after PERIAK timeout. Refund/reconciliation required.",
+              mpesa_receipt_number: receipt,
+              transaction_date: mpesaDate(getItem("TransactionDate")),
+            })
+            .eq("id", payment.id)
+            .eq("status", "failed")
+            .eq("result_code", "LOCAL_TIMEOUT")
+            .select("id")
+            .maybeSingle();
+
+        if (latePaymentError) throw latePaymentError;
+        if (!latePayment) {
+          return ack("Late payment already handled or status changed");
+        }
+
+        console.warn("Late M-Pesa success requires refund review", checkoutId, receipt);
+        return ack("Late payment recorded for refund review");
       }
 
       const { data: completion, error: completionError } =
