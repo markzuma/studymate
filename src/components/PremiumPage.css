@@ -196,3 +196,48 @@
     margin-bottom: 30px;
   }
 }
+
+/* M-Pesa checkout additions */
+.premium-phone-field {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 20px 0;
+}
+
+.premium-phone-field label {
+  font-weight: 600;
+}
+
+.premium-phone-field input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 13px;
+  border: 1px solid #d5dce8;
+  border-radius: 8px;
+  font: inherit;
+}
+
+.premium-phone-field small {
+  color: #64748b;
+}
+
+.premium-methods label.unavailable {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.premium-success,
+.premium-pending {
+  padding: 14px;
+  margin-top: 16px;
+  border-radius: 8px;
+  background: #eaf7ef;
+  color: #176b39;
+  line-height: 1.6;
+}
+
+.premium-pending {
+  background: #fff7e6;
+  color: #805b12;
+}

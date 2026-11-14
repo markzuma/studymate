@@ -3,9 +3,9 @@ import { supabase } from '../lib/supabase'
 import './PremiumPage.css'
 
 const PAYMENT_METHODS = [
-  { id: 'mpesa', name: 'M-Pesa', description: 'Pay using M-Pesa' },
-  { id: 'airtel_money', name: 'Airtel Money', description: 'Pay using Airtel Money' },
-  { id: 'card', name: 'Visa / Mastercard', description: 'Pay using a bank card' }
+  { id: 'mpesa', name: 'M-Pesa', description: 'Pay using M-Pesa', available: true },
+  { id: 'airtel_money', name: 'Airtel Money', description: 'Coming soon', available: false },
+  { id: 'card', name: 'Visa / Mastercard', description: 'Coming soon', available: false }
 ]
 
 export default function PremiumPage({ user, onBack }) {
@@ -13,8 +13,12 @@ export default function PremiumPage({ user, onBack }) {
   const [subscription, setSubscription] = useState(null)
   const [selectedPlan, setSelectedPlan] = useState(null)
   const [paymentMethod, setPaymentMethod] = useState('mpesa')
+  const [phoneNumber, setPhoneNumber] = useState('')
   const [loading, setLoading] = useState(true)
+  const [paying, setPaying] = useState(false)
+  const [paymentInitiated, setPaymentInitiated] = useState(false)
   const [error, setError] = useState('')
+  const [paymentMessage, setPaymentMessage] = useState('')
 
   useEffect(() => {
     let active = true
@@ -60,6 +64,70 @@ export default function PremiumPage({ user, onBack }) {
     subscription?.status === 'active' &&
     (!subscription.ends_at || new Date(subscription.ends_at) > new Date())
 
+  const pendingSubscription = subscription?.status === 'pending'
+
+  async function handlePayment() {
+    if (paying || paymentInitiated || pendingSubscription) return
+
+    if (!selectedPlan) {
+      setError('Please select a Premium plan.')
+      return
+    }
+
+    if (paymentMethod !== 'mpesa') {
+      setError('This payment method is not available yet.')
+      return
+    }
+
+    if (!phoneNumber.trim()) {
+      setError('Enter the M-Pesa phone number you want to pay with.')
+      return
+    }
+
+    setPaying(true)
+    setError('')
+    setPaymentMessage('Connecting securely to M-Pesa...')
+
+    try {
+      const { data, error: functionError } =
+        await supabase.functions.invoke('mpesa-stk-push', {
+          body: {
+            planId: selectedPlan.id,
+            phoneNumber: phoneNumber.trim()
+          }
+        })
+
+      if (functionError) {
+        let message = functionError.message
+
+        try {
+          const details = await functionError.context?.json()
+          if (details?.error) message = details.error
+        } catch {
+          // Keep the original function error message.
+        }
+
+        throw new Error(message)
+      }
+
+      if (!data?.success) {
+        throw new Error(data?.error || 'Unable to initiate M-Pesa payment.')
+      }
+
+      setPaymentInitiated(true)
+      setPaymentMessage(
+        data.pending
+          ? (data.message || 'Payment status is uncertain. Do not retry; contact PERIAK support before attempting another payment.')
+          : 'M-Pesa prompt sent. Check your phone and enter your M-Pesa PIN. Premium access will activate after Safaricom confirms your payment.'
+      )
+    } catch (err) {
+      setPaymentMessage('')
+      setError(err.message || 'Payment could not be initiated. Please try again.')
+    } finally {
+      setPaying(false)
+    }
+  }
+
   if (loading) {
     return <div className="premium-page">Loading Premium plans...</div>
   }
@@ -79,7 +147,9 @@ export default function PremiumPage({ user, onBack }) {
         </p>
       </section>
 
-      {error && <p className="premium-error">{error}</p>}
+      {error && (
+        <p className="premium-error" role="alert">{error}</p>
+      )}
 
       {activeSubscription && (
         <section className="premium-status">
@@ -88,6 +158,17 @@ export default function PremiumPage({ user, onBack }) {
             Expiry date: {subscription.ends_at
               ? new Date(subscription.ends_at).toLocaleDateString()
               : 'Not specified'}
+          </p>
+        </section>
+      )}
+
+      {pendingSubscription && !activeSubscription && (
+        <section className="premium-pending" role="status">
+          <h2>Payment verification pending</h2>
+          <p>
+            Your latest subscription is awaiting payment verification.
+            Do not start another payment for the same subscription.
+            Refresh this page later to check your membership status.
           </p>
         </section>
       )}
@@ -112,7 +193,7 @@ export default function PremiumPage({ user, onBack }) {
 
               <button
                 onClick={() => setSelectedPlan(plan)}
-                disabled={activeSubscription}
+                disabled={activeSubscription || pendingSubscription || paymentInitiated}
               >
                 {selectedPlan?.id === plan.id
                   ? 'Selected'
@@ -123,7 +204,7 @@ export default function PremiumPage({ user, onBack }) {
         </div>
       </section>
 
-      {selectedPlan && !activeSubscription && (
+      {selectedPlan && !activeSubscription && !pendingSubscription && (
         <section className="premium-checkout">
           <h2>Payment method</h2>
           <p>
@@ -135,13 +216,16 @@ export default function PremiumPage({ user, onBack }) {
             {PAYMENT_METHODS.map(method => (
               <label
                 key={method.id}
-                className={paymentMethod === method.id ? 'chosen' : ''}
+                className={`${paymentMethod === method.id ? 'chosen' : ''} ${
+                  !method.available ? 'unavailable' : ''
+                }`}
               >
                 <input
                   type="radio"
                   name="payment-method"
                   value={method.id}
                   checked={paymentMethod === method.id}
+                  disabled={!method.available || paying || paymentInitiated}
                   onChange={() => setPaymentMethod(method.id)}
                 />
                 <span>
@@ -152,13 +236,48 @@ export default function PremiumPage({ user, onBack }) {
             ))}
           </div>
 
-          <button className="premium-pay" disabled>
-            Payments coming soon
+          {paymentMethod === 'mpesa' && (
+            <div className="premium-phone-field">
+              <label htmlFor="premium-phone">
+                M-Pesa phone number
+              </label>
+              <input
+                id="premium-phone"
+                type="tel"
+                inputMode="tel"
+                autoComplete="tel"
+                placeholder="e.g. 0712345678"
+                value={phoneNumber}
+                disabled={paying || paymentInitiated}
+                onChange={event => setPhoneNumber(event.target.value)}
+              />
+              <small>
+                Enter the Safaricom number that should receive the payment prompt.
+              </small>
+            </div>
+          )}
+
+          <button
+            className="premium-pay"
+            onClick={handlePayment}
+            disabled={paying || paymentInitiated || paymentMethod !== 'mpesa'}
+          >
+            {paying
+              ? 'Connecting to M-Pesa...'
+              : paymentInitiated
+                ? 'Payment prompt sent'
+                : 'Pay with M-Pesa'}
           </button>
 
+          {paymentMessage && (
+            <p className="premium-success" role="status">
+              {paymentMessage}
+            </p>
+          )}
+
           <p className="premium-note">
-            Secure checkout will be enabled after PERIAK completes its
-            payment provider integration. You will not be charged here.
+            Your subscription activates only after the payment is independently
+            verified by Safaricom. Never share your M-Pesa PIN or OTP.
           </p>
         </section>
       )}
