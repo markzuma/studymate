@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import './AuthGate.css'
+import AdminDashboard from './AdminDashboard'
 
 export default function AuthGate({ children }) {
   const [session, setSession] = useState(null)
@@ -15,6 +16,7 @@ export default function AuthGate({ children }) {
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
   const [profile, setProfile] = useState(null)
+  const [showAdminDashboard, setShowAdminDashboard] = useState(false)
 
   useEffect(() => {
     let mounted = true
@@ -141,9 +143,21 @@ export default function AuthGate({ children }) {
             {' · '}
             <strong>{profile?.role === 'admin' ? 'Administrator' : 'Student'}</strong>
           </span>
+
+          {profile?.role === 'admin' && (
+            <button onClick={() => setShowAdminDashboard(!showAdminDashboard)}>
+              {showAdminDashboard ? 'Back to Learning' : 'Admin Dashboard'}
+            </button>
+          )}
+
           <button onClick={handleLogout}>Log out</button>
         </div>
-        {children}
+
+        {profile?.role === 'admin' && showAdminDashboard ? (
+          <AdminDashboard onClose={() => setShowAdminDashboard(false)} />
+        ) : (
+          children
+        )}
       </>
     )
   }
