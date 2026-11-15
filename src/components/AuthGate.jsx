@@ -148,11 +148,30 @@ export default function AuthGate({ children }) {
           setPassword('')
         }
       } else if (mode === 'login') {
-        const { error } = await supabase.auth.signInWithPassword({
-          email: email.trim(),
-          password
-        })
-        if (error) throw error
+        const identifier = email.trim()
+
+        if (identifier.includes('@')) {
+          const { error } = await supabase.auth.signInWithPassword({
+            email: identifier,
+            password
+          })
+          if (error) throw error
+        } else {
+          const { data, error } = await supabase.functions.invoke('username-login', {
+            body: { username: identifier, password }
+          })
+
+          if (error || !data?.access_token || !data?.refresh_token) {
+            throw new Error('Invalid username or password.')
+          }
+
+          const { error: sessionError } = await supabase.auth.setSession({
+            access_token: data.access_token,
+            refresh_token: data.refresh_token
+          })
+
+          if (sessionError) throw sessionError
+        }
       } else {
         const { error } = await supabase.auth.resetPasswordForEmail(
           email.trim(),
@@ -293,12 +312,13 @@ export default function AuthGate({ children }) {
           )}
 
           <label>
-            Email address
+            {mode === 'login' ? 'Email address or username' : 'Email address'}
             <input
-              type="email"
+              type={mode === 'login' ? 'text' : 'email'}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="Enter your email"
+              placeholder={mode === 'login' ? 'Enter email or username' : 'Enter your email'}
+              autoComplete={mode === 'login' ? 'username' : 'email'}
               required
             />
           </label>
