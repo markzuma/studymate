@@ -3,6 +3,7 @@ import { useBackHandler } from './context/NavigationProvider'
 import { supabase } from './lib/supabase'
 import './App.css'
 import ExamCentre from './components/ExamCentre'
+import StudyPlanner from './components/StudyPlanner'
 import { pharmacologyLessons } from './pharmacologyLessons'
 import { midwiferyLessons } from './midwiferyLessons'
 import { communityLessons } from './communityLessons'
@@ -6405,6 +6406,8 @@ function App() {
               Open examination centre →
             </button>
           </div>
+
+          <StudyPlanner />
 
           <div className="dashboard-stats">
             <article className="dashboard-stat">
