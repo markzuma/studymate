@@ -1,7 +1,32 @@
 import { additionalWrittenBanks } from './additionalWrittenBanks'
 import { useState, useEffect } from 'react'
+import { supabase } from '../lib/supabase'
 import './ExamCentre.css'
 import MockExam from './MockExam'
+import ExamHistory from './ExamHistory'
+
+function createAttemptKey() {
+  if (globalThis.crypto?.randomUUID) {
+    return globalThis.crypto.randomUUID()
+  }
+
+  const bytes = new Uint8Array(16)
+
+  if (globalThis.crypto?.getRandomValues) {
+    globalThis.crypto.getRandomValues(bytes)
+  } else {
+    for (let i = 0; i < bytes.length; i++) {
+      bytes[i] = Math.floor(Math.random() * 256)
+    }
+  }
+
+  bytes[6] = (bytes[6] & 0x0f) | 0x40
+  bytes[8] = (bytes[8] & 0x3f) | 0x80
+
+  const hex = Array.from(bytes, value => value.toString(16).padStart(2, '0')).join('')
+
+  return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`
+}
 
 const CAT_DURATION = 300
 
@@ -1102,6 +1127,7 @@ function shuffleQuestions(questions) {
 }
 
 export default function ExamCentre({ onHome }) {
+  const [showHistory, setShowHistory] = useState(false)
   const sessionKey = 'periak_exam_centre_session_v1'
 
   const [savedSession] = useState(() => {
@@ -1161,6 +1187,16 @@ export default function ExamCentre({ onHome }) {
   const [examQuestions, setExamQuestions] = useState(
     validSession ? savedSession.examQuestions : null
   )
+  const [attemptKey, setAttemptKey] = useState(() =>
+    validSession
+      ? (savedSession.attemptKey || createAttemptKey())
+      : null
+  )
+  const [examStartedAt, setExamStartedAt] = useState(() =>
+    validSession
+      ? (savedSession.examStartedAt || Date.now())
+      : null
+  )
 
   // Restore an active attempt after a browser refresh.
   useEffect(() => {
@@ -1182,14 +1218,17 @@ export default function ExamCentre({ onHome }) {
         secondsLeft,
         catDeadline,
         responses,
-        examQuestions
+        examQuestions,
+        attemptKey,
+        examStartedAt
       }))
     } catch (error) {
       console.error('Could not save examination session:', error)
     }
   }, [
     selectedSubject, mode, catDuration, started, index, selected,
-    answered, finished, secondsLeft, catDeadline, responses, examQuestions
+    answered, finished, secondsLeft, catDeadline, responses, examQuestions,
+    attemptKey, examStartedAt
   ])
 
   const currentQuestions = examQuestions || questionBanks[selectedSubject]
@@ -1208,6 +1247,68 @@ export default function ExamCentre({ onHome }) {
   const unansweredCount = responses.filter(
     response => response === null
   ).length
+
+  // Save a completed CAT once. The database unique constraint protects
+  // against duplicate saves after refresh or React Strict Mode.
+  useEffect(() => {
+    if (!started || mode !== 'cat' || !finished || !attemptKey || !examStartedAt) return
+
+    let cancelled = false
+
+    async function saveCatHistory() {
+      try {
+        const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+        if (authError) throw authError
+        if (!user) throw new Error('No authenticated student session was found.')
+
+        const { error } = await supabase
+          .from('student_exam_history')
+          .insert({
+            student_id: user.id,
+            attempt_key: attemptKey,
+            subject_id: selectedSubject,
+            subject_title: subjects.find(item => item.id === selectedSubject)?.title || selectedSubject,
+            exam_mode: 'cat',
+            started_at: new Date(examStartedAt).toISOString(),
+            submitted_at: new Date().toISOString(),
+            duration_seconds: Math.max(0, Math.floor((Date.now() - examStartedAt) / 1000)),
+            score: correctCount,
+            max_score: currentQuestions.length,
+            correct_count: correctCount,
+            incorrect_count: incorrectCount,
+            unanswered_count: unansweredCount,
+            questions_snapshot: currentQuestions.map(item => ({
+              question: item.question,
+              options: item.options,
+              correct_answer: item.answer,
+              explanation: item.explanation
+            })),
+            responses_snapshot: currentQuestions.map((item, index) => ({
+              selected_index: responses[index],
+              selected_answer: responses[index] === null
+                ? null
+                : item.options[responses[index]]
+            })),
+            written_snapshot: []
+          })
+
+        if (error && error.code !== '23505') throw error
+        if (!cancelled) console.info('CAT exam history saved.')
+      } catch (error) {
+        if (!cancelled) console.error('Could not save CAT exam history:', error)
+      }
+    }
+
+    saveCatHistory()
+
+    return () => {
+      cancelled = true
+    }
+  }, [
+    started, mode, finished, attemptKey, examStartedAt, selectedSubject,
+    correctCount, incorrectCount, unansweredCount, currentQuestions, responses
+  ])
 
   useEffect(() => {
     if (!started || mode !== 'cat' || finished || !catDeadline) return
@@ -1237,7 +1338,11 @@ export default function ExamCentre({ onHome }) {
 
   function startExam() {
     const shuffledQuestions = shuffleQuestions(questionBanks[selectedSubject])
+    const newAttemptKey = createAttemptKey()
+    const newStartedAt = Date.now()
 
+    setAttemptKey(newAttemptKey)
+    setExamStartedAt(newStartedAt)
     setExamQuestions(shuffledQuestions)
     setIndex(0)
     setSelected(null)
@@ -1316,18 +1421,27 @@ export default function ExamCentre({ onHome }) {
     setSecondsLeft(catDuration)
     setCatDeadline(null)
     setResponses(questionBanks[selectedSubject].map(() => null))
+    setAttemptKey(null)
+    setExamStartedAt(null)
   }
 
   if (mode === 'mock' && started) {
     return (
       <MockExam
+        subjectId={selectedSubject}
         subjectTitle={subjects.find(item => item.id === selectedSubject).title}
+        attemptKey={attemptKey}
+        examStartedAt={examStartedAt}
         mcqQuestions={currentQuestions}
         writtenQuestions={writtenQuestionBanks[selectedSubject]}
         onExit={restart}
         onHome={() => { clearSavedSession(); onHome() }}
       />
     )
+  }
+
+  if (showHistory) {
+    return <ExamHistory onBack={() => setShowHistory(false)} />
   }
 
   return (
@@ -1366,6 +1480,24 @@ export default function ExamCentre({ onHome }) {
 
       {!started ? (
         <section className="exam-card">
+          <button
+            type="button"
+            onClick={() => setShowHistory(true)}
+            style={{
+              width: '100%',
+              padding: '13px',
+              marginBottom: '22px',
+              borderRadius: '10px',
+              border: '1px solid #2878d0',
+              background: '#eaf3ff',
+              color: '#1556a0',
+              cursor: 'pointer',
+              fontWeight: '700'
+            }}
+          >
+            📚 View My Exam History
+          </button>
+
           <h2>1. Choose your nursing subject</h2>
 
           <div style={{ display: 'grid', gap: '12px', marginBottom: '30px' }}>

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
+import { supabase } from '../lib/supabase'
 
-export default function MockExam({ subjectTitle, mcqQuestions, writtenQuestions, onExit, onHome }) {
+export default function MockExam({ subjectId, subjectTitle, attemptKey, examStartedAt, mcqQuestions, writtenQuestions, onExit, onHome }) {
   const draftKey = `periak_mock_exam_v1_${subjectTitle}`
   const writtenCount = writtenQuestions.shortAnswer.length + writtenQuestions.clinical.length
 
@@ -145,14 +146,98 @@ export default function MockExam({ subjectTitle, mcqQuestions, writtenQuestions,
     }
   }
 
-  function leaveToExamCentre() {
+  async function saveMockHistory() {
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+
+    if (authError) throw authError
+    if (!user) throw new Error('No authenticated student session was found.')
+    if (!attemptKey || !examStartedAt) {
+      throw new Error('The examination attempt details are missing. Your draft has been preserved.')
+    }
+
+    const correctCount = answers.filter(
+      (answer, index) => answer === mcqQuestions[index].answer
+    ).length
+
+    const incorrectCount = answers.filter(
+      (answer, index) => answer !== null && answer !== mcqQuestions[index].answer
+    ).length
+
+    const unansweredCount = answers.filter(answer => answer === null).length
+
+    const { error } = await supabase
+      .from('student_exam_history')
+      .insert({
+        student_id: user.id,
+        attempt_key: attemptKey,
+        subject_id: subjectId,
+        subject_title: subjectTitle,
+        exam_mode: 'mock',
+        started_at: new Date(examStartedAt).toISOString(),
+        submitted_at: new Date().toISOString(),
+        duration_seconds: Math.max(0, Math.floor((Date.now() - examStartedAt) / 1000)),
+        score: finalScore,
+        max_score: 100,
+        correct_count: correctCount,
+        incorrect_count: incorrectCount,
+        unanswered_count: unansweredCount,
+        questions_snapshot: mcqQuestions.map(item => ({
+          question: item.question,
+          options: item.options,
+          correct_answer: item.answer,
+          explanation: item.explanation,
+          marks: 2
+        })),
+        responses_snapshot: mcqQuestions.map((item, index) => ({
+          selected_index: answers[index],
+          selected_answer: answers[index] === null
+            ? null
+            : item.options[answers[index]]
+        })),
+        written_snapshot: allWritten.map((item, index) => ({
+          question: item.question,
+          marks_available: item.marks,
+          student_answer: writtenAnswers[index],
+          awarded_marks: Number(marks[index] || 0),
+          model_answer: item.modelAnswer,
+          marking_guide: item.markingGuide
+        }))
+      })
+
+    // A duplicate means this same attempt was already saved successfully.
+    if (error && error.code !== '23505') throw error
+  }
+
+  async function leaveToExamCentre() {
     if (!submitted && !window.confirm('Leave this mock exam? Your saved draft will be cleared.')) return
+
+    if (submitted) {
+      try {
+        await saveMockHistory()
+      } catch (error) {
+        console.error('Could not save Mock Exam history:', error)
+        window.alert(`Your result could not be saved. Your examination draft has been preserved. Please try again.\n\n${error.message}`)
+        return
+      }
+    }
+
     clearDraft()
     onExit()
   }
 
-  function leaveToHome() {
+  async function leaveToHome() {
     if (!submitted && !window.confirm('Return home? Your saved mock examination draft will be cleared.')) return
+
+    if (submitted) {
+      try {
+        await saveMockHistory()
+      } catch (error) {
+        console.error('Could not save Mock Exam history:', error)
+        window.alert(`Your result could not be saved. Your examination draft has been preserved. Please try again.\n\n${error.message}`)
+        return
+      }
+    }
+
     clearDraft()
     onHome()
   }
