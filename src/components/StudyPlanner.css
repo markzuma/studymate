@@ -405,3 +405,168 @@
   .sp-task { gap: 9px; padding: 12px; }
   .sp-task-actions { flex-direction: column; }
 }
+
+/* Theme-aware Study Planner */
+.sp-planner {
+  color: var(--text-primary);
+}
+
+.sp-stat,
+.sp-content,
+.sp-task {
+  background: var(--surface);
+  border-color: var(--border);
+  color: var(--text-primary);
+}
+
+.sp-stat-icon {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.sp-stat strong,
+.sp-section-heading h3,
+.sp-list-heading h4,
+.sp-task h4 {
+  color: var(--text-primary);
+}
+
+.sp-stat small,
+.sp-section-heading p,
+.sp-task p,
+.sp-task-meta {
+  color: var(--text-muted);
+}
+
+.sp-form {
+  background: var(--surface-secondary);
+  border-color: var(--border);
+}
+
+.sp-form-heading {
+  border-color: var(--border);
+}
+
+.sp-field {
+  color: var(--text-primary);
+}
+
+.sp-field input,
+.sp-field select,
+.sp-field textarea {
+  background: var(--surface);
+  border-color: var(--border);
+  color: var(--text-primary);
+}
+
+.sp-filters {
+  background: var(--surface-secondary);
+}
+
+.sp-filters button {
+  color: var(--text-muted);
+}
+
+.sp-filters button.active {
+  background: var(--surface);
+  color: var(--accent);
+}
+
+.sp-check {
+  border-color: var(--border);
+  background: var(--surface);
+}
+
+.sp-task-actions button {
+  background: var(--surface-secondary);
+  color: var(--text-primary);
+}
+
+.sp-empty {
+  background: var(--surface-secondary);
+  border-color: var(--border);
+  color: var(--text-primary);
+}
+
+.sp-empty p {
+  color: var(--text-muted);
+}
+
+.sp-message.error {
+  background: #fff0ed;
+  color: #a43c31;
+}
+
+.sp-message.success {
+  background: #eaf7f0;
+  color: #176b4d;
+}
+
+:root[data-theme="dark"] .sp-welcome {
+  background: linear-gradient(120deg, #172f35 0%, #194b4b 65%, #17605b 100%);
+}
+
+:root[data-theme="dark"] .sp-stat,
+:root[data-theme="dark"] .sp-content,
+:root[data-theme="dark"] .sp-task {
+  background: var(--surface);
+  border-color: var(--border);
+}
+
+:root[data-theme="dark"] .sp-stat-icon,
+:root[data-theme="dark"] .sp-category {
+  background: rgba(var(--accent-rgb), .18);
+  color: #9de0d2;
+}
+
+:root[data-theme="dark"] .sp-form,
+:root[data-theme="dark"] .sp-empty,
+:root[data-theme="dark"] .sp-filters,
+:root[data-theme="dark"] .sp-task-actions button {
+  background: var(--surface-secondary);
+  border-color: var(--border);
+  color: var(--text-primary);
+}
+
+:root[data-theme="dark"] .sp-field input,
+:root[data-theme="dark"] .sp-field select,
+:root[data-theme="dark"] .sp-field textarea,
+:root[data-theme="dark"] .sp-check {
+  background: var(--page-bg);
+  border-color: var(--border);
+  color: var(--text-primary);
+}
+
+:root[data-theme="dark"] .sp-form-heading {
+  border-color: var(--border);
+}
+
+:root[data-theme="dark"] .sp-priority.high {
+  background: #48252b;
+  color: #ffc1c7;
+}
+
+:root[data-theme="dark"] .sp-priority.medium {
+  background: #49391e;
+  color: #f6d58b;
+}
+
+:root[data-theme="dark"] .sp-priority.low {
+  background: #29384b;
+  color: #b9d3f0;
+}
+
+:root[data-theme="dark"] .sp-task.is-completed .sp-task-main h4 {
+  color: var(--text-muted);
+}
+
+:root[data-theme="dark"] .sp-message.error {
+  background: #48252b;
+  color: #ffc1c7;
+}
+
+:root[data-theme="dark"] .sp-message.success {
+  background: #173d2c;
+  color: #a7f3c2;
+}
+

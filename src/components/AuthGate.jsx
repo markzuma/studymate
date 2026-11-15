@@ -241,7 +241,9 @@ export default function AuthGate({ children }) {
             onBack={() => setShowPremium(false)}
           />
         ) : (
-          children
+          <div className="authenticated-app-shell">
+            {children}
+          </div>
         )}
       </>
     )

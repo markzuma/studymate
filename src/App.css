@@ -805,3 +805,317 @@ footer,
   .continue-content { align-items: flex-start; flex-wrap: wrap; }
   .continue-content > div { min-width: 150px; }
 }
+
+/* =========================================================
+   PERIAK 2026 dashboard and responsive interface refresh
+   ========================================================= */
+
+/* Signed-in users enter directly into their study space.
+   The public landing page remains available when logged out. */
+.authenticated-app-shell .hero,
+.authenticated-app-shell .trust-strip {
+  display: none !important;
+}
+
+.authenticated-app-shell .student-dashboard {
+  padding-top: 30px;
+}
+
+.authenticated-app-shell .navbar {
+  margin-bottom: 0;
+}
+
+/* Fluid page sections */
+.app {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
+.student-dashboard,
+.courses-section,
+.features-section,
+.cta-section {
+  width: 100%;
+  max-width: 1180px;
+  box-sizing: border-box;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.student-dashboard {
+  padding: 38px clamp(16px, 3vw, 32px) 28px;
+}
+
+.dashboard-heading {
+  align-items: flex-start;
+  margin-bottom: 22px;
+}
+
+.dashboard-heading h2 {
+  font-size: clamp(24px, 3vw, 32px);
+  font-weight: 750;
+  letter-spacing: -.8px;
+}
+
+.dashboard-heading p {
+  margin-top: 6px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text-muted);
+}
+
+.dashboard-exam-button,
+.continue-content button {
+  min-height: 42px;
+  background: var(--accent);
+  border-radius: 10px;
+}
+
+.dashboard-stat,
+.dashboard-panel,
+.dashboard-progress {
+  background: var(--surface);
+  border-color: var(--border);
+  box-shadow: var(--shadow);
+}
+
+.dashboard-stat {
+  min-width: 0;
+  border-radius: var(--card-radius);
+}
+
+.dashboard-stat strong {
+  color: var(--accent);
+}
+
+.dashboard-stat small,
+.subject-progress small,
+.continue-content small,
+.recent-lesson small {
+  color: var(--text-muted);
+}
+
+.dashboard-panel-heading h3 {
+  color: var(--text-primary);
+  font-weight: 700;
+}
+
+.dashboard-kicker {
+  color: var(--accent);
+}
+
+.recent-lesson {
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+
+.subject-progress-track {
+  background: var(--surface-secondary);
+}
+
+.subject-progress-title strong,
+.course-card-progress strong {
+  color: var(--accent);
+}
+
+/* Course cards and learning surfaces */
+.course-card,
+.feature,
+.lesson-panel,
+.exam-card {
+  background: var(--surface);
+  color: var(--text-primary);
+  border-color: var(--border);
+  border-radius: var(--card-radius);
+}
+
+.course-card h3,
+.feature h3 {
+  color: var(--text-primary);
+}
+
+.course-card p,
+.feature p {
+  color: var(--text-muted);
+}
+
+.course-open-button,
+.primary-button {
+  background: var(--accent);
+  color: white;
+}
+
+.eyebrow {
+  color: var(--accent);
+}
+
+.text-link,
+.dashboard-panel-heading a {
+  color: var(--accent);
+}
+
+/* Dark theme: dashboard and learning content */
+:root[data-theme="dark"] .student-dashboard,
+:root[data-theme="dark"] .courses-section,
+:root[data-theme="dark"] .features-section,
+:root[data-theme="dark"] .cta-section {
+  color: var(--text-primary);
+}
+
+:root[data-theme="dark"] .dashboard-stat,
+:root[data-theme="dark"] .dashboard-panel,
+:root[data-theme="dark"] .dashboard-progress,
+:root[data-theme="dark"] .course-card,
+:root[data-theme="dark"] .feature,
+:root[data-theme="dark"] .lesson-panel,
+:root[data-theme="dark"] .exam-card {
+  background: var(--surface);
+  color: var(--text-primary);
+  border-color: var(--border);
+  box-shadow: var(--shadow);
+}
+
+:root[data-theme="dark"] .dashboard-heading h2,
+:root[data-theme="dark"] .dashboard-panel-heading h3,
+:root[data-theme="dark"] .dashboard-stat strong,
+:root[data-theme="dark"] .course-card h3,
+:root[data-theme="dark"] .feature h3 {
+  color: var(--text-primary);
+}
+
+:root[data-theme="dark"] .dashboard-heading p,
+:root[data-theme="dark"] .dashboard-stat small,
+:root[data-theme="dark"] .dashboard-muted,
+:root[data-theme="dark"] .subject-progress small,
+:root[data-theme="dark"] .course-card p,
+:root[data-theme="dark"] .feature p {
+  color: var(--text-muted);
+}
+
+:root[data-theme="dark"] .recent-lesson {
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+
+:root[data-theme="dark"] .subject-progress-track {
+  background: var(--surface-secondary);
+}
+
+:root[data-theme="dark"] .course-detail-hero,
+:root[data-theme="dark"] .coming-soon {
+  background: var(--surface);
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+
+/* Mobile dashboard */
+@media (max-width: 700px) {
+  .authenticated-app-shell .student-dashboard {
+    padding-top: 22px;
+  }
+
+  .student-dashboard {
+    padding: 25px 14px 20px;
+  }
+
+  .dashboard-heading {
+    gap: 13px;
+    margin-bottom: 17px;
+  }
+
+  .dashboard-heading h2 {
+    font-size: 24px;
+  }
+
+  .dashboard-heading p {
+    font-size: 13px;
+  }
+
+  .dashboard-exam-button {
+    width: 100%;
+  }
+
+  .dashboard-stats {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .dashboard-stat {
+    padding: 13px 9px;
+    gap: 4px;
+  }
+
+  .dashboard-stat span {
+    font-size: 19px;
+  }
+
+  .dashboard-stat strong {
+    font-size: 21px;
+  }
+
+  .dashboard-stat small {
+    font-size: 10px;
+    line-height: 1.35;
+  }
+
+  .dashboard-panels,
+  .subject-progress-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .dashboard-panel,
+  .dashboard-progress {
+    padding: 16px;
+  }
+
+  .continue-content {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .continue-content > div {
+    min-width: 0;
+  }
+
+  .courses-section,
+  .features-section,
+  .cta-section {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+}
+
+@media (max-width: 380px) {
+  .dashboard-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .dashboard-stat {
+    grid-template-columns: 30px 1fr;
+    align-items: center;
+  }
+
+  .dashboard-stat span {
+    grid-row: 1 / 3;
+  }
+}
+
+
+/* Authenticated students: remove public promotional content */
+.authenticated-app-shell .features-section,
+.authenticated-app-shell .cta-section,
+.authenticated-app-shell footer {
+  display: none !important;
+}
+
+/* Keep the course catalogue as part of the student workspace */
+.authenticated-app-shell .courses-section {
+  margin-top: 12px;
+  padding-top: 28px;
+}
+
+/* Make the transition from dashboard to courses clearer */
+.authenticated-app-shell .courses-section > .section-heading {
+  margin-bottom: 20px;
+}
