@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase'
 import './AuthGate.css'
 import ControlCentre from './ControlCentre'
 import PremiumPage from './PremiumPage'
+import ThemeSettings from './ThemeSettings'
 
 export default function AuthGate({ children }) {
   const [session, setSession] = useState(null)
@@ -19,6 +20,7 @@ export default function AuthGate({ children }) {
   const [profile, setProfile] = useState(null)
   const [showControlCentre, setShowControlCentre] = useState(false)
   const [showPremium, setShowPremium] = useState(false)
+  const [showAppearance, setShowAppearance] = useState(false)
 
   useEffect(() => {
     let mounted = true
@@ -158,8 +160,11 @@ export default function AuthGate({ children }) {
             </button>
           )}
 
+          <button onClick={() => setShowAppearance(true)}>Appearance</button>
           <button onClick={handleLogout}>Log out</button>
         </div>
+
+        {showAppearance && <ThemeSettings onClose={() => setShowAppearance(false)} />}
 
         {profile?.role === 'admin' && showControlCentre ? (
           <ControlCentre onClose={() => setShowControlCentre(false)} />

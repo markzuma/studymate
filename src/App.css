@@ -1,9 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap');
 
 :root {
-  font-family: 'DM Sans', sans-serif;
-  color: #172b36;
-  background: #fff;
+  --sans: 'DM Sans', sans-serif;
+  --heading: 'Manrope', sans-serif;
+  font-family: var(--sans);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
 }
@@ -450,4 +450,192 @@ footer p, footer > span { color: #87938f; font-size: 11px; }
 
 .practice-question details p {
   margin-bottom: 5px;
+}
+
+/* PERIAK global appearance integration */
+.app, .course-detail, .lesson-page {
+  background: var(--page-bg);
+  color: var(--text-primary);
+}
+.app { color: var(--text-primary); }
+.brand-green, .eyebrow, .text-link, .course-level,
+.back-link, .unit-arrow { color: var(--accent); }
+.brand-icon, .nav-button, .primary-button {
+  background: var(--accent);
+}
+.course-card, .feature, .main-card, .floating-card,
+.course-detail-hero, .unit-card, .lesson-panel,
+.practice-question {
+  background: var(--surface);
+  color: var(--text-primary);
+  border-color: var(--border);
+  border-radius: var(--card-radius);
+}
+.trust-strip, .features-section, .unit-list,
+.lesson-page {
+  background-color: var(--page-bg);
+}
+.course-detail-hero, .lesson-panel {
+  background: var(--surface);
+  border-color: var(--border);
+}
+.course-detail-hero h1, .unit-section h2,
+.lesson-heading h1, .lesson-panel h2,
+.note-topic h3, .course-card h3,
+.feature h3, .main-card h3 {
+  color: var(--text-primary);
+}
+.course-detail-hero p, .unit-intro, .unit-info p,
+.lesson-heading p, .lesson-panel p,
+.course-card p, .feature p {
+  color: var(--text-muted);
+}
+.unit-count, .course-icon, .visual-symbol {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.secondary-button {
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+.navbar nav { color: var(--text-muted); }
+footer { border-color: var(--border); }
+
+
+/* PERIAK complete learning-page appearance */
+.navbar,
+.navbar nav,
+footer,
+.section-heading,
+.lesson-heading,
+.course-detail,
+.lesson-page {
+  color: var(--text-primary);
+}
+
+.navbar nav a:hover,
+.text-link:hover,
+.course-open-button:hover {
+  color: var(--accent);
+}
+
+.nav-button,
+.primary-button,
+.course-open-button {
+  border-color: var(--accent);
+}
+
+.hero,
+.courses-section,
+.features-section,
+.cta-section,
+.trust-strip {
+  color: var(--text-primary);
+}
+
+.hero h1,
+.section-heading h2,
+.features-section h2,
+.cta-section h2,
+.course-card h3,
+.feature h3,
+.unit-info h3,
+.practice-question h3 {
+  color: var(--text-primary);
+}
+
+.hero-text,
+.eyebrow,
+.trust-strip,
+.course-card p,
+.feature p,
+.unit-info p,
+.lesson-panel li,
+.note-topic p {
+  color: var(--text-muted);
+}
+
+.cta-section,
+.main-card,
+.floating-card,
+.course-card,
+.feature,
+.unit-card,
+.lesson-panel,
+.practice-question,
+.practice-question details,
+.question-option {
+  background: var(--surface);
+  color: var(--text-primary);
+  border-color: var(--border);
+  border-radius: var(--card-radius);
+}
+
+.unit-number,
+.unit-count,
+.course-icon,
+.visual-symbol,
+.coming-soon {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.brand-icon,
+.nav-button,
+.primary-button,
+.auth-submit,
+.exam-submit,
+.cc-header button,
+.cc-footer button,
+.admin-close,
+.admin-panel-heading button,
+.premium-pay {
+  background: var(--accent);
+}
+
+.back-link,
+.course-open-button,
+.note-topic h3,
+.practice-question summary,
+.unit-arrow,
+.brand-green {
+  color: var(--accent);
+}
+
+.unit-card:hover,
+.unit-clickable:hover {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+
+.question-option {
+  border: 1px solid var(--border);
+}
+
+:root[data-theme="dark"] .course-detail-hero,
+:root[data-theme="dark"] .course-detail-hero h1,
+:root[data-theme="dark"] .unit-section h2,
+:root[data-theme="dark"] .lesson-heading h1,
+:root[data-theme="dark"] .lesson-panel h2,
+:root[data-theme="dark"] .unit-info h3,
+:root[data-theme="dark"] .practice-question h3 {
+  color: var(--text-primary);
+}
+
+:root[data-theme="dark"] .unit-clickable:hover,
+:root[data-theme="dark"] .question-option,
+:root[data-theme="dark"] .practice-question details {
+  background: var(--surface-secondary);
+  color: var(--text-primary);
+}
+
+:root[data-theme="dark"] .course-detail-hero,
+:root[data-theme="dark"] .coming-soon {
+  background: var(--surface);
+  border-color: var(--border);
+}
+
+:root[data-theme="dark"] footer {
+  color: var(--text-muted);
+  border-color: var(--border);
 }

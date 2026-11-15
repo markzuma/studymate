@@ -179,3 +179,47 @@
     flex-direction: column;
   }
 }
+
+/* PERIAK appearance integration */
+.admin-dashboard { background: var(--page-bg); color: var(--text-primary); }
+.admin-stat, .admin-panel {
+  background: var(--surface);
+  color: var(--text-primary);
+  border-color: var(--border);
+  border-radius: var(--card-radius);
+}
+.admin-header h1, .admin-panel-heading h2 { color: var(--text-primary); }
+.admin-header p, .admin-panel-heading p,
+.admin-stat span { color: var(--text-muted); }
+.admin-stat strong { color: var(--accent); }
+.admin-close, .admin-panel-heading button { background: var(--accent); }
+
+
+.admin-table {
+  color: var(--text-primary);
+}
+
+.admin-table th {
+  background: var(--surface-secondary);
+  color: var(--text-muted);
+}
+
+.admin-table th,
+.admin-table td {
+  border-color: var(--border);
+}
+
+:root[data-theme="dark"] .admin-role.admin {
+  background: #1e3a5f;
+  color: #bfdbfe;
+}
+
+:root[data-theme="dark"] .admin-role.student {
+  background: #173d2c;
+  color: #a7f3c2;
+}
+
+:root[data-theme="dark"] .admin-error {
+  background: #48252b;
+  color: #ffc1c7;
+}

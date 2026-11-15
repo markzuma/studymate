@@ -176,3 +176,56 @@
   background: #fff1f0;
   color: #9d3030;
 }
+
+/* PERIAK appearance integration */
+.exam-centre {
+  background: var(--page-bg);
+  color: var(--text-primary);
+}
+.exam-card {
+  background: var(--surface);
+  color: var(--text-primary);
+  border-color: var(--border);
+  border-radius: var(--card-radius);
+}
+.exam-card h2 { color: var(--text-primary); }
+.exam-option {
+  background: var(--surface-secondary);
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+.exam-option:hover, .exam-option.selected {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.exam-submit { background: var(--accent); }
+.exam-progress, .exam-label { color: var(--accent); }
+
+
+/* Dark-mode exam feedback retains clear success/error meaning */
+.exam-progress-track {
+  background: var(--surface-secondary);
+}
+
+.exam-progress-track div {
+  background: var(--accent);
+}
+
+.exam-result strong {
+  color: var(--accent);
+}
+
+:root[data-theme="dark"] .feedback-correct,
+:root[data-theme="dark"] .exam-option.correct {
+  background: #173d2c;
+  color: #a7f3c2;
+  border-color: #329b62;
+}
+
+:root[data-theme="dark"] .feedback-incorrect,
+:root[data-theme="dark"] .exam-option.incorrect {
+  background: #48252b;
+  color: #ffc1c7;
+  border-color: #d65b68;
+}

@@ -241,3 +241,19 @@
   background: #fff7e6;
   color: #805b12;
 }
+
+/* PERIAK appearance integration */
+.premium-page { background: var(--page-bg); color: var(--text-primary); }
+.premium-card {
+  background: var(--surface);
+  color: var(--text-primary);
+  border-color: var(--border);
+  border-radius: var(--card-radius);
+}
+.premium-hero h1, .premium-plans h2,
+.premium-checkout h2, .premium-card h3 { color: var(--text-primary); }
+.premium-hero p, .premium-plans > p,
+.premium-checkout > p { color: var(--text-muted); }
+.premium-price, .premium-eyebrow,
+.premium-header span { color: var(--accent); }
+.premium-card.selected { border-color: var(--accent); }

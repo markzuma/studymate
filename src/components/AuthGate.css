@@ -153,3 +153,65 @@
   background: #087f5b;
   color: white;
 }
+
+/* PERIAK global account and authentication appearance */
+.auth-page {
+  background: var(--page-bg);
+  color: var(--text-primary);
+}
+.auth-card {
+  background: var(--surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+.auth-card h1 { color: var(--text-primary); }
+.auth-card label { color: var(--text-primary); }
+.auth-card input {
+  background: var(--page-bg);
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+.auth-brand, .auth-submit, .auth-userbar button {
+  color: white;
+}
+.auth-brand { color: var(--accent); }
+.auth-submit, .auth-userbar button { background: var(--accent); }
+.auth-userbar {
+  background: var(--surface-secondary);
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.auth-loading { background: var(--page-bg); color: var(--accent); }
+
+
+.auth-tagline,
+.auth-subtitle,
+.auth-switch,
+.auth-text-button {
+  color: var(--text-muted);
+}
+
+.auth-switch button,
+.auth-text-button {
+  color: var(--accent);
+}
+
+.auth-password button {
+  background: var(--surface-secondary);
+  color: var(--text-primary);
+}
+
+:root[data-theme="dark"] .auth-error {
+  background: #48252b;
+  color: #ffc1c7;
+}
+
+:root[data-theme="dark"] .auth-message {
+  background: #173d2c;
+  color: #a7f3c2;
+}
+
+.auth-userbar button {
+  border-radius: var(--card-radius);
+}
