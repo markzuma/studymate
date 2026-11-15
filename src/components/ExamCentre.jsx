@@ -1102,17 +1102,95 @@ function shuffleQuestions(questions) {
 }
 
 export default function ExamCentre({ onHome }) {
-  const [selectedSubject, setSelectedSubject] = useState('anatomy')
-  const [mode, setMode] = useState('practice')
-  const [catDuration, setCatDuration] = useState(CAT_DURATION)
-  const [started, setStarted] = useState(false)
-  const [index, setIndex] = useState(0)
-  const [selected, setSelected] = useState(null)
-  const [answered, setAnswered] = useState(false)
-  const [finished, setFinished] = useState(false)
-  const [secondsLeft, setSecondsLeft] = useState(CAT_DURATION)
-  const [responses, setResponses] = useState([null, null, null])
-  const [examQuestions, setExamQuestions] = useState(null)
+  const sessionKey = 'periak_exam_centre_session_v1'
+
+  const [savedSession] = useState(() => {
+    try {
+      const raw = localStorage.getItem(sessionKey)
+      return raw ? JSON.parse(raw) : null
+    } catch {
+      return null
+    }
+  })
+
+  const validSession = savedSession &&
+    subjects.some(item => item.id === savedSession.selectedSubject) &&
+    modes.some(item => item.id === savedSession.mode) &&
+    typeof savedSession.started === 'boolean' &&
+    Array.isArray(savedSession.examQuestions) &&
+    savedSession.examQuestions.length > 0 &&
+    Array.isArray(savedSession.responses) &&
+    savedSession.responses.length === savedSession.examQuestions.length &&
+    Number.isInteger(savedSession.index) &&
+    savedSession.index >= 0 &&
+    savedSession.index < savedSession.examQuestions.length
+
+  const [selectedSubject, setSelectedSubject] = useState(
+    validSession ? savedSession.selectedSubject : 'anatomy'
+  )
+  const [mode, setMode] = useState(validSession ? savedSession.mode : 'practice')
+  const [catDuration, setCatDuration] = useState(
+    validSession ? savedSession.catDuration : CAT_DURATION
+  )
+  const [started, setStarted] = useState(
+    validSession ? savedSession.started : false
+  )
+  const [index, setIndex] = useState(validSession ? savedSession.index : 0)
+  const [selected, setSelected] = useState(
+    validSession ? savedSession.selected : null
+  )
+  const [answered, setAnswered] = useState(
+    validSession ? savedSession.answered : false
+  )
+  const [finished, setFinished] = useState(
+    validSession ? savedSession.finished : false
+  )
+  const [secondsLeft, setSecondsLeft] = useState(
+    validSession ? savedSession.secondsLeft : CAT_DURATION
+  )
+  const [catDeadline, setCatDeadline] = useState(() =>
+    validSession
+      ? (Number.isFinite(savedSession.catDeadline)
+          ? savedSession.catDeadline
+          : Date.now() + savedSession.secondsLeft * 1000)
+      : null
+  )
+  const [responses, setResponses] = useState(
+    validSession ? savedSession.responses : [null, null, null]
+  )
+  const [examQuestions, setExamQuestions] = useState(
+    validSession ? savedSession.examQuestions : null
+  )
+
+  // Restore an active attempt after a browser refresh.
+  useEffect(() => {
+    try {
+      if (!started) {
+        localStorage.removeItem(sessionKey)
+        return
+      }
+
+      localStorage.setItem(sessionKey, JSON.stringify({
+        selectedSubject,
+        mode,
+        catDuration,
+        started,
+        index,
+        selected,
+        answered,
+        finished,
+        secondsLeft,
+        catDeadline,
+        responses,
+        examQuestions
+      }))
+    } catch (error) {
+      console.error('Could not save examination session:', error)
+    }
+  }, [
+    selectedSubject, mode, catDuration, started, index, selected,
+    answered, finished, secondsLeft, catDeadline, responses, examQuestions
+  ])
 
   const currentQuestions = examQuestions || questionBanks[selectedSubject]
   const question = currentQuestions[index]
@@ -1132,19 +1210,26 @@ export default function ExamCentre({ onHome }) {
   ).length
 
   useEffect(() => {
-    if (!started || mode !== 'cat' || finished) return
+    if (!started || mode !== 'cat' || finished || !catDeadline) return
 
-    if (secondsLeft <= 0) {
-      setFinished(true)
-      return
+    function updateCountdown() {
+      const remaining = Math.max(
+        0,
+        Math.ceil((catDeadline - Date.now()) / 1000)
+      )
+
+      setSecondsLeft(remaining)
+
+      if (remaining === 0) {
+        setFinished(true)
+      }
     }
 
-    const timer = setInterval(() => {
-      setSecondsLeft(previous => Math.max(0, previous - 1))
-    }, 1000)
+    updateCountdown()
+    const timer = setInterval(updateCountdown, 1000)
 
     return () => clearInterval(timer)
-  }, [started, mode, finished, secondsLeft])
+  }, [started, mode, finished, catDeadline])
 
   const formattedTime = `${Math.floor(secondsLeft / 60)
     .toString().padStart(2, '0')}:${(secondsLeft % 60)
@@ -1159,6 +1244,9 @@ export default function ExamCentre({ onHome }) {
     setAnswered(false)
     setFinished(false)
     setSecondsLeft(catDuration)
+    setCatDeadline(
+      mode === 'cat' ? Date.now() + catDuration * 1000 : null
+    )
     setResponses(shuffledQuestions.map(() => null))
     setStarted(true)
   }
@@ -1209,7 +1297,16 @@ export default function ExamCentre({ onHome }) {
     goToQuestion(index - 1)
   }
 
+  function clearSavedSession() {
+    try {
+      localStorage.removeItem(sessionKey)
+    } catch (error) {
+      console.error('Could not clear examination session:', error)
+    }
+  }
+
   function restart() {
+    clearSavedSession()
     setStarted(false)
     setExamQuestions(null)
     setIndex(0)
@@ -1217,6 +1314,7 @@ export default function ExamCentre({ onHome }) {
     setAnswered(false)
     setFinished(false)
     setSecondsLeft(catDuration)
+    setCatDeadline(null)
     setResponses(questionBanks[selectedSubject].map(() => null))
   }
 
@@ -1227,7 +1325,7 @@ export default function ExamCentre({ onHome }) {
         mcqQuestions={currentQuestions}
         writtenQuestions={writtenQuestionBanks[selectedSubject]}
         onExit={restart}
-        onHome={onHome}
+        onHome={() => { clearSavedSession(); onHome() }}
       />
     )
   }
@@ -1243,6 +1341,7 @@ export default function ExamCentre({ onHome }) {
             )
             if (!leave) return
           }
+          clearSavedSession()
           onHome()
         }}
         style={{

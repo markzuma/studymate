@@ -1,14 +1,85 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 export default function MockExam({ subjectTitle, mcqQuestions, writtenQuestions, onExit, onHome }) {
-  const [answers, setAnswers] = useState(mcqQuestions.map(() => null))
-  const [writtenAnswers, setWrittenAnswers] = useState(
-    [...writtenQuestions.shortAnswer, ...writtenQuestions.clinical].map(() => '')
+  const draftKey = `periak_mock_exam_v1_${subjectTitle}`
+  const writtenCount = writtenQuestions.shortAnswer.length + writtenQuestions.clinical.length
+
+  const [savedDraft] = useState(() => {
+    try {
+      const raw = localStorage.getItem(draftKey)
+      return raw ? JSON.parse(raw) : null
+    } catch {
+      return null
+    }
+  })
+
+  const validDraft = savedDraft &&
+    Array.isArray(savedDraft.answers) &&
+    savedDraft.answers.length === mcqQuestions.length &&
+    Array.isArray(savedDraft.writtenAnswers) &&
+    savedDraft.writtenAnswers.length === writtenCount &&
+    Array.isArray(savedDraft.marks) &&
+    savedDraft.marks.length === writtenCount &&
+    Number.isFinite(savedDraft.deadline)
+
+  const [answers, setAnswers] = useState(() =>
+    validDraft ? savedDraft.answers : mcqQuestions.map(() => null)
   )
-  const [submitted, setSubmitted] = useState(false)
-  const [marks, setMarks] = useState(
-    [...writtenQuestions.shortAnswer, ...writtenQuestions.clinical].map(() => 0)
+  const [writtenAnswers, setWrittenAnswers] = useState(() =>
+    validDraft ? savedDraft.writtenAnswers : Array(writtenCount).fill('')
   )
+  const [submitted, setSubmitted] = useState(() =>
+    validDraft ? Boolean(savedDraft.submitted) : false
+  )
+  const [marks, setMarks] = useState(() =>
+    validDraft ? savedDraft.marks : Array(writtenCount).fill(0)
+  )
+
+  // Preserve the original two-hour deadline across browser refreshes.
+  const deadlineRef = useRef(
+    validDraft ? savedDraft.deadline : Date.now() + 120 * 60 * 1000
+  )
+  const [secondsLeft, setSecondsLeft] = useState(() =>
+    Math.max(0, Math.ceil((deadlineRef.current - Date.now()) / 1000))
+  )
+
+  useEffect(() => {
+    function updateCountdown() {
+      const remaining = Math.max(
+        0,
+        Math.ceil((deadlineRef.current - Date.now()) / 1000)
+      )
+
+      setSecondsLeft(remaining)
+
+      if (remaining === 0) {
+        setSubmitted(true)
+      }
+    }
+
+    updateCountdown()
+    const timer = setInterval(updateCountdown, 1000)
+    return () => clearInterval(timer)
+  }, [])
+
+  // Save answers and marking progress automatically.
+  useEffect(() => {
+    try {
+      localStorage.setItem(draftKey, JSON.stringify({
+        answers,
+        writtenAnswers,
+        marks,
+        submitted,
+        deadline: deadlineRef.current
+      }))
+    } catch (error) {
+      console.error('Could not save Mock Exam draft:', error)
+    }
+  }, [draftKey, answers, writtenAnswers, marks, submitted])
+
+  const formattedTime = `${Math.floor(secondsLeft / 60)
+    .toString().padStart(2, '0')}:${(secondsLeft % 60)
+    .toString().padStart(2, '0')}`
 
   const shortQuestions = writtenQuestions.shortAnswer
   const clinicalQuestions = writtenQuestions.clinical
@@ -66,13 +137,23 @@ export default function MockExam({ subjectTitle, mcqQuestions, writtenQuestions,
     )
   }
 
+  function clearDraft() {
+    try {
+      localStorage.removeItem(draftKey)
+    } catch (error) {
+      console.error('Could not clear Mock Exam draft:', error)
+    }
+  }
+
   function leaveToExamCentre() {
-    if (!submitted && !window.confirm('Leave this mock exam? Your answers will be lost.')) return
+    if (!submitted && !window.confirm('Leave this mock exam? Your saved draft will be cleared.')) return
+    clearDraft()
     onExit()
   }
 
   function leaveToHome() {
-    if (!submitted && !window.confirm('Return home? Your current mock examination will be lost.')) return
+    if (!submitted && !window.confirm('Return home? Your saved mock examination draft will be cleared.')) return
+    clearDraft()
     onHome()
   }
 
@@ -93,6 +174,62 @@ export default function MockExam({ subjectTitle, mcqQuestions, writtenQuestions,
 
           <h2>Section A: Multiple-choice questions</h2>
           <h3>{mcqScore} / 40 marks</h3>
+          <p>
+            Correct: {answers.filter((answer, index) =>
+              answer === mcqQuestions[index].answer
+            ).length} / {mcqQuestions.length}
+            {' | '}Incorrect: {answers.filter((answer, index) =>
+              answer !== null && answer !== mcqQuestions[index].answer
+            ).length}
+            {' | '}Unanswered: {answers.filter(answer => answer === null).length}
+          </p>
+
+          {mcqQuestions.map((item, index) => {
+            const selected = answers[index]
+            const correct = selected === item.answer
+
+            return (
+              <div key={index} style={{
+                padding: '18px 0',
+                borderBottom: '1px solid #e0e7f0'
+              }}>
+                <h3>Question {index + 1} — 2 marks</h3>
+                <p><strong>{item.question}</strong></p>
+
+                {item.options.map((option, optionIndex) => {
+                  const isCorrect = optionIndex === item.answer
+                  const isSelected = optionIndex === selected
+
+                  return (
+                    <p key={optionIndex} style={{
+                      padding: '9px 12px',
+                      borderRadius: '7px',
+                      background: isCorrect ? '#dcfce7' :
+                        isSelected ? '#fee2e2' : '#f8fafc',
+                      border: isCorrect ? '1px solid #16a34a' :
+                        isSelected ? '1px solid #dc2626' :
+                        '1px solid #e2e8f0'
+                    }}>
+                      <strong>{String.fromCharCode(65 + optionIndex)}.</strong> {option}
+                      {isCorrect ? ' — Correct answer' : ''}
+                      {isSelected && !isCorrect ? ' — Your answer' : ''}
+                      {isSelected && isCorrect ? ' — Your answer' : ''}
+                    </p>
+                  )
+                })}
+
+                <p>
+                  <strong>Result:</strong>{' '}
+                  {selected === null ? 'Unanswered — 0 marks' :
+                    correct ? 'Correct — 2 marks' : 'Incorrect — 0 marks'}
+                </p>
+
+                <p>
+                  <strong>Explanation:</strong> {item.explanation}
+                </p>
+              </div>
+            )
+          })}
 
           <h2>Written examination assessment</h2>
           <p>
@@ -160,7 +297,7 @@ export default function MockExam({ subjectTitle, mcqQuestions, writtenQuestions,
             </small>
           </div>
 
-          <button style={styles.button} onClick={onExit}>
+          <button style={styles.button} onClick={leaveToExamCentre}>
             Exit examination
           </button>
         </div>
@@ -186,6 +323,28 @@ export default function MockExam({ subjectTitle, mcqQuestions, writtenQuestions,
         <p>Section B: 6 short-answer questions × 5 marks = 30 marks</p>
         <p>Section C: 2 clinical questions × 15 marks = 30 marks</p>
         <p><strong>Answer all questions.</strong></p>
+
+        <div
+          role="timer"
+          aria-live="off"
+          style={{
+            padding: '15px',
+            marginTop: '15px',
+            borderRadius: '10px',
+            background: secondsLeft <= 300 ? '#fee2e2' : '#eaf3ff',
+            color: secondsLeft <= 300 ? '#b91c1c' : '#1e40af',
+            textAlign: 'center',
+            fontWeight: '700'
+          }}
+        >
+          <div>TIME REMAINING</div>
+          <div style={{ fontSize: '32px', marginTop: '5px' }}>
+            {formattedTime}
+          </div>
+          <small>
+            You may submit your examination before time expires.
+          </small>
+        </div>
       </header>
 
       <section style={styles.card}>
@@ -290,7 +449,7 @@ export default function MockExam({ subjectTitle, mcqQuestions, writtenQuestions,
       </button>
 
       <button
-        onClick={onExit}
+        onClick={leaveToExamCentre}
         style={{
           display: 'block',
           margin: 'auto',
