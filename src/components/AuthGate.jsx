@@ -5,6 +5,7 @@ import './AuthGate.css'
 import ControlCentre from './ControlCentre'
 import PremiumPage from './PremiumPage'
 import ThemeSettings from './ThemeSettings'
+import ProfileSettings from './ProfileSettings'
 import { useBackHandler } from '../context/NavigationProvider'
 
 export default function AuthGate({ children }) {
@@ -24,8 +25,14 @@ export default function AuthGate({ children }) {
   const [showControlCentre, setShowControlCentre] = useState(false)
   const [showPremium, setShowPremium] = useState(false)
   const [showAppearance, setShowAppearance] = useState(false)
+  const [showProfile, setShowProfile] = useState(false)
 
   const handleAccountBack = () => {
+    if (showProfile) {
+      setShowProfile(false)
+      return true
+    }
+
     if (showAppearance) {
       setShowAppearance(false)
       return true
@@ -39,7 +46,7 @@ export default function AuthGate({ children }) {
     return false
   }
 
-  useBackHandler(handleAccountBack, showAppearance || showPremium, 100)
+  useBackHandler(handleAccountBack, showProfile || showAppearance || showPremium, 100)
 
   useBackHandler(
     () => {
@@ -218,11 +225,13 @@ export default function AuthGate({ children }) {
             </button>
           )}
 
+          <button onClick={() => setShowProfile(true)}>Profile &amp; Security</button>
           <button onClick={() => setShowAppearance(true)}>Appearance</button>
           <button onClick={handleLogout}>Log out</button>
         </div>
 
         {showAppearance && <ThemeSettings onClose={() => setShowAppearance(false)} />}
+        {showProfile && <ProfileSettings user={session.user} onClose={() => setShowProfile(false)} />}
 
         {profile?.role === 'admin' && showControlCentre ? (
           <ControlCentre onClose={() => setShowControlCentre(false)} />
