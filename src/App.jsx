@@ -5817,11 +5817,70 @@ Object.assign(lessonContent, midwiferyLessons)
 Object.assign(lessonContent, communityLessons)
 Object.assign(lessonContent, mentalHealthLessons)
 
+function readLearningData() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('periak_learning_progress_v1') || '{}')
+    return {
+      completed: Array.isArray(saved.completed) ? saved.completed : [],
+      recent: Array.isArray(saved.recent) ? saved.recent : []
+    }
+  } catch {
+    return { completed: [], recent: [] }
+  }
+}
+
 function App() {
+  const [learningData, setLearningData] = useState(readLearningData)
   const [showExams, setShowExams] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [selectedCourse, setSelectedCourse] = useState(null)
   const [selectedUnit, setSelectedUnit] = useState(null)
+
+  const saveLearningData = (next) => {
+    setLearningData(next)
+    try {
+      localStorage.setItem('periak_learning_progress_v1', JSON.stringify(next))
+    } catch (error) {
+      console.warn('Learning progress could not be saved:', error)
+    }
+  }
+
+  const lessonKey = (courseTitle, unit) => `${courseTitle}::${unit}`
+
+  const openUnit = (course, unit) => {
+    const entry = { courseTitle: course.title, unit, studiedAt: Date.now() }
+    const recent = [
+      entry,
+      ...learningData.recent.filter(item =>
+        !(item.courseTitle === entry.courseTitle && item.unit === entry.unit)
+      )
+    ].slice(0, 6)
+
+    saveLearningData({ ...learningData, recent })
+    setSelectedCourse(course)
+    setSelectedUnit(unit)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
+  const toggleLessonComplete = () => {
+    const key = lessonKey(selectedCourse.title, selectedUnit)
+    const completed = learningData.completed.includes(key)
+      ? learningData.completed.filter(item => item !== key)
+      : [...learningData.completed, key]
+    saveLearningData({ ...learningData, completed })
+  }
+
+  const courseProgress = (course) => {
+    const courseUnits = units[course.title] || []
+    const done = courseUnits.filter(unit =>
+      learningData.completed.includes(lessonKey(course.title, unit))
+    ).length
+    return {
+      done,
+      total: courseUnits.length,
+      percent: courseUnits.length ? Math.round(done / courseUnits.length * 100) : 0
+    }
+  }
 
   const openCourse = (course) => {
     setSelectedCourse(course)
@@ -5903,6 +5962,18 @@ function App() {
             <div className="eyebrow">{selectedCourse.title}</div>
             <h1>{selectedUnit}</h1>
             <p>Learn systematically, understand the concepts and prepare for your nursing examinations.</p>
+            <div className="learning-completion">
+              <button
+                type="button"
+                className={learningData.completed.includes(lessonKey(selectedCourse.title, selectedUnit)) ? 'learning-complete-button is-complete' : 'learning-complete-button'}
+                onClick={toggleLessonComplete}
+              >
+                {learningData.completed.includes(lessonKey(selectedCourse.title, selectedUnit))
+                  ? '✓ Completed — mark as unfinished'
+                  : '✓ Mark this lesson as complete'}
+              </button>
+              <span>{courseProgress(selectedCourse).done} of {courseProgress(selectedCourse).total} units completed</span>
+            </div>
           </div>
 
           {lessonContent[selectedUnit] ? (
@@ -6064,9 +6135,13 @@ function App() {
                 <button
                   className="unit-card unit-clickable"
                   key={unit}
-                  onClick={() => setSelectedUnit(unit)}
+                  onClick={() => openUnit(selectedCourse, unit)}
                 >
-                  <div className="unit-number">{String(index + 1).padStart(2, '0')}</div>
+                  <div className="unit-number">
+                    {learningData.completed.includes(lessonKey(selectedCourse.title, unit))
+                      ? '✓'
+                      : String(index + 1).padStart(2, '0')}
+                  </div>
                   <div className="unit-info">
                     <h3>{unit}</h3>
                     <p>{lessonContent[unit] ? 'Study notes, clinical applications and practice questions available.' : 'Study notes and revision materials coming soon.'}</p>
@@ -6150,6 +6225,125 @@ function App() {
           <div><strong>03</strong><span>Grow clinically</span></div>
         </section>
 
+        <section className="student-dashboard">
+          <div className="dashboard-heading">
+            <div>
+              <div className="eyebrow">YOUR PERSONAL STUDY SPACE</div>
+              <h2>Your learning dashboard</h2>
+              <p>Pick up where you left off and keep track of your progress.</p>
+            </div>
+            <button className="dashboard-exam-button" onClick={() => setShowExams(true)}>
+              Open examination centre →
+            </button>
+          </div>
+
+          <div className="dashboard-stats">
+            <article className="dashboard-stat">
+              <span>📚</span>
+              <strong>{learningData.completed.length}</strong>
+              <small>Lessons completed</small>
+            </article>
+            <article className="dashboard-stat">
+              <span>📖</span>
+              <strong>{learningData.recent.length}</strong>
+              <small>Recently studied</small>
+            </article>
+            <article className="dashboard-stat">
+              <span>🎓</span>
+              <strong>{courses.filter(course => courseProgress(course).percent === 100).length}</strong>
+              <small>Subjects completed</small>
+            </article>
+          </div>
+
+          <div className="dashboard-panels">
+            <section className="dashboard-panel continue-panel">
+              <div className="dashboard-panel-heading">
+                <div>
+                  <span className="dashboard-kicker">PICK UP WHERE YOU LEFT OFF</span>
+                  <h3>Continue learning</h3>
+                </div>
+                <span>↗</span>
+              </div>
+              {learningData.recent.length ? (
+                (() => {
+                  const latest = learningData.recent[0]
+                  const course = courses.find(item => item.title === latest.courseTitle)
+                  return course ? (
+                    <div className="continue-content">
+                      <span className="continue-icon">{course.icon}</span>
+                      <div>
+                        <strong>{latest.unit}</strong>
+                        <small>{latest.courseTitle}</small>
+                      </div>
+                      <button onClick={() => openUnit(course, latest.unit)}>Resume →</button>
+                    </div>
+                  ) : <p>Explore a subject to begin your learning journey.</p>
+                })()
+              ) : (
+                <div className="dashboard-empty">
+                  <span>🚀</span>
+                  <p>Your next learning session starts here. Open a subject and select a unit.</p>
+                  <a href="#courses">Explore courses →</a>
+                </div>
+              )}
+            </section>
+
+            <section className="dashboard-panel recent-panel">
+              <div className="dashboard-panel-heading">
+                <div>
+                  <span className="dashboard-kicker">YOUR STUDY ACTIVITY</span>
+                  <h3>Recently studied</h3>
+                </div>
+                <span>◷</span>
+              </div>
+              {learningData.recent.length ? (
+                <div className="recent-lesson-list">
+                  {learningData.recent.slice(0, 4).map((item, index) => {
+                    const course = courses.find(entry => entry.title === item.courseTitle)
+                    return course ? (
+                      <button className="recent-lesson" key={`${item.courseTitle}-${item.unit}-${index}`}
+                        onClick={() => openUnit(course, item.unit)}>
+                        <span>{course.icon}</span>
+                        <span><strong>{item.unit}</strong><small>{item.courseTitle}</small></span>
+                        <b>→</b>
+                      </button>
+                    ) : null
+                  })}
+                </div>
+              ) : (
+                <p className="dashboard-muted">Lessons you open will appear here for quick access.</p>
+              )}
+            </section>
+          </div>
+
+          <section className="dashboard-progress">
+            <div className="dashboard-panel-heading">
+              <div>
+                <span className="dashboard-kicker">MEASURE YOUR GROWTH</span>
+                <h3>Subject progress</h3>
+              </div>
+              <a href="#courses">View all subjects ↓</a>
+            </div>
+            <div className="subject-progress-grid">
+              {courses.map(course => {
+                const progress = courseProgress(course)
+                return (
+                  <div className="subject-progress" key={course.title}>
+                    <div className="subject-progress-title">
+                      <span>{course.icon} {course.title}</span>
+                      <strong>{progress.percent}%</strong>
+                    </div>
+                    <div className="subject-progress-track">
+                      <div style={{ width: `${progress.percent}%` }} />
+                    </div>
+                    <small>{progress.done} of {progress.total} units completed</small>
+                  </div>
+                )
+              })}
+            </div>
+          </section>
+        </section>
+
         <section className="courses-section" id="courses">
           <div className="section-heading">
             <div>
@@ -6166,6 +6360,13 @@ function App() {
                 <div className="course-level">{course.level}</div>
                 <h3>{course.title}</h3>
                 <p>{course.desc}</p>
+                <div className="course-card-progress">
+                  <div><span>Course progress</span><strong>{courseProgress(course).percent}%</strong></div>
+                  <div className="subject-progress-track">
+                    <div style={{ width: `${courseProgress(course).percent}%` }} />
+                  </div>
+                  <small>{courseProgress(course).done}/{courseProgress(course).total} units completed</small>
+                </div>
                 <button className="course-open-button" onClick={() => openCourse(course)}>
                   Explore subject <span>→</span>
                 </button>
