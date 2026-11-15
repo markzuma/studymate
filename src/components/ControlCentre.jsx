@@ -57,7 +57,7 @@ export default function ControlCentre({ onClose }) {
 
     const results = await Promise.all([
       supabase.from('profiles')
-        .select('id, full_name, role, created_at')
+        .select('id, full_name, username, email, phone_number, role, created_at')
         .order('created_at', { ascending: false }),
       supabase.from('courses')
         .select('id, title, code, status')
@@ -136,8 +136,14 @@ export default function ControlCentre({ onClose }) {
   const admins = profiles.filter(user => user.role === 'admin')
 
   const filteredUsers = profiles.filter(user => {
-    const name = (user.full_name || '').toLowerCase()
-    const matchesSearch = name.includes(userSearch.toLowerCase())
+    const search = userSearch.trim().toLowerCase()
+    const searchable = [
+      user.full_name,
+      user.username,
+      user.email,
+      user.phone_number
+    ].filter(Boolean).join(' ').toLowerCase()
+    const matchesSearch = searchable.includes(search)
     const matchesRole = userFilter === 'all' || user.role === userFilter
     return matchesSearch && matchesRole
   })
@@ -197,7 +203,7 @@ export default function ControlCentre({ onClose }) {
               <div className="cc-user-tools">
                 <input
                   type="search"
-                  placeholder="Search users by name..."
+                  placeholder="Search name, username, email or phone..."
                   value={userSearch}
                   onChange={event => setUserSearch(event.target.value)}
                 />
@@ -214,12 +220,22 @@ export default function ControlCentre({ onClose }) {
               <div className="cc-table-wrap">
                 <table className="cc-table">
                   <thead>
-                    <tr><th>Full Name</th><th>Role</th><th>Date Registered</th></tr>
+                    <tr>
+                      <th>Full Name</th>
+                      <th>Username</th>
+                      <th>Email</th>
+                      <th>Phone</th>
+                      <th>Role</th>
+                      <th>Date Registered</th>
+                    </tr>
                   </thead>
                   <tbody>
                     {filteredUsers.map(user => (
                       <tr key={user.id}>
                         <td>{user.full_name || 'Name not provided'}</td>
+                        <td>{user.username ? `@${user.username}` : '—'}</td>
+                        <td>{user.email || 'Not available'}</td>
+                        <td>{user.phone_number || 'Not provided'}</td>
                         <td>{user.role}</td>
                         <td>{user.created_at
                           ? new Date(user.created_at).toLocaleDateString()
@@ -227,7 +243,7 @@ export default function ControlCentre({ onClose }) {
                       </tr>
                     ))}
                     {filteredUsers.length === 0 && (
-                      <tr><td colSpan="3">No matching users found.</td></tr>
+                      <tr><td colSpan="6">No matching users found.</td></tr>
                     )}
                   </tbody>
                 </table>

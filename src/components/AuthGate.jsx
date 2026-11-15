@@ -12,6 +12,8 @@ export default function AuthGate({ children }) {
   const [loading, setLoading] = useState(true)
   const [mode, setMode] = useState('login')
   const [fullName, setFullName] = useState('')
+  const [username, setUsername] = useState('')
+  const [phoneNumber, setPhoneNumber] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -117,11 +119,21 @@ export default function AuthGate({ children }) {
           throw new Error('Your password must contain at least 8 characters.')
         }
 
+        const cleanUsername = username.trim().toLowerCase()
+
+        if (!/^[a-z0-9._]{3,24}$/.test(cleanUsername)) {
+          throw new Error('Username must be 3–24 characters and contain only letters, numbers, dots or underscores.')
+        }
+
         const { data, error } = await supabase.auth.signUp({
           email: email.trim(),
           password,
           options: {
-            data: { full_name: fullName.trim() },
+            data: {
+              full_name: fullName.trim(),
+              username: cleanUsername,
+              phone_number: phoneNumber.trim() || null
+            },
             emailRedirectTo: window.location.origin
           }
         })
@@ -238,16 +250,46 @@ export default function AuthGate({ children }) {
 
         <form onSubmit={handleSubmit}>
           {mode === 'register' && (
-            <label>
-              Full name
-              <input
-                type="text"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                placeholder="Enter your full name"
-                required
-              />
-            </label>
+            <>
+              <label>
+                Full name
+                <input
+                  type="text"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
+                  placeholder="Enter your full name"
+                  autoComplete="name"
+                  required
+                />
+              </label>
+
+              <label>
+                Username
+                <input
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder="Choose a username"
+                  autoComplete="username"
+                  minLength={3}
+                  maxLength={24}
+                  pattern="[A-Za-z0-9._]{3,24}"
+                  title="3–24 characters: letters, numbers, dots or underscores."
+                  required
+                />
+              </label>
+
+              <label>
+                Phone number <span className="auth-optional">(optional)</span>
+                <input
+                  type="tel"
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  placeholder="e.g. 07XX XXX XXX"
+                  autoComplete="tel"
+                />
+              </label>
+            </>
           )}
 
           <label>

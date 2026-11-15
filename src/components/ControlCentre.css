@@ -217,3 +217,80 @@
   background: #48252b;
   color: #ffc1c7;
 }
+
+/* Student directory */
+.cc-user-tools {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.cc-user-tools input,
+.cc-user-tools select {
+  min-width: 0;
+  padding: 11px 13px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  background: var(--card-bg, #fff);
+  color: var(--text-primary, #172033);
+  font: inherit;
+}
+
+.cc-user-tools input {
+  flex: 1 1 280px;
+}
+
+.cc-user-tools select {
+  flex: 0 1 170px;
+}
+
+.cc-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  background: var(--card-bg, #fff);
+  -webkit-overflow-scrolling: touch;
+}
+
+.cc-table {
+  width: 100%;
+  min-width: 850px;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.cc-table th,
+.cc-table td {
+  padding: 13px 15px;
+  border-bottom: 1px solid #e2e8f0;
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+.cc-table th {
+  background: #f1f5f9;
+  color: #334155;
+  font-weight: 750;
+}
+
+.cc-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.cc-table tbody tr:hover {
+  background: rgba(148, 163, 184, 0.08);
+}
+
+@media (max-width: 600px) {
+  .cc-user-tools {
+    flex-direction: column;
+  }
+
+  .cc-user-tools input,
+  .cc-user-tools select {
+    width: 100%;
+    flex: 1 1 auto;
+  }
+}
