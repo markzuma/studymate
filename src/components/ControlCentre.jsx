@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useBackHandler } from '../context/NavigationProvider'
 import { supabase } from '../lib/supabase'
 import './ControlCentre.css'
 import Monetization from './Monetization'
@@ -16,6 +17,7 @@ const SECTIONS = [
 
 export default function ControlCentre({ onClose }) {
   const [section, setSection] = useState('overview')
+  const [sectionHistory, setSectionHistory] = useState([])
   const [profiles, setProfiles] = useState([])
   const [courses, setCourses] = useState([])
   const [announcements, setAnnouncements] = useState([])
@@ -32,6 +34,22 @@ export default function ControlCentre({ onClose }) {
   const [courseMessage, setCourseMessage] = useState('')
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+
+  function navigateSection(nextSection) {
+    if (nextSection === section) return
+    setSectionHistory(previous => [...previous, section])
+    setSection(nextSection)
+  }
+
+  function handleSectionBack() {
+    if (sectionHistory.length === 0) return false
+    const previousSection = sectionHistory[sectionHistory.length - 1]
+    setSectionHistory(previous => previous.slice(0, -1))
+    setSection(previousSection)
+    return true
+  }
+
+  useBackHandler(handleSectionBack, sectionHistory.length > 0, 30)
 
   async function loadDashboard() {
     setLoading(true)
@@ -140,7 +158,7 @@ export default function ControlCentre({ onClose }) {
           <button
             key={item.id}
             className={section === item.id ? 'active' : ''}
-            onClick={() => setSection(item.id)}
+            onClick={() => navigateSection(item.id)}
           >
             {item.label}
           </button>

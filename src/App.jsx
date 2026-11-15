@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useBackHandler } from './context/NavigationProvider'
 import './App.css'
 import ExamCentre from './components/ExamCentre'
 import { pharmacologyLessons } from './pharmacologyLessons'
@@ -5832,6 +5833,29 @@ function App() {
     setSelectedCourse(null)
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
+
+  const handleAppBack = () => {
+    if (showExams) {
+      setShowExams(false)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      return true
+    }
+
+    if (selectedUnit) {
+      setSelectedUnit(null)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      return true
+    }
+
+    if (selectedCourse) {
+      goHome()
+      return true
+    }
+
+    return false
+  }
+
+  useBackHandler(handleAppBack, showExams || Boolean(selectedCourse), 20)
 
   if (showExams) {
     return (

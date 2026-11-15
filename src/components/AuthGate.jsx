@@ -5,6 +5,7 @@ import './AuthGate.css'
 import ControlCentre from './ControlCentre'
 import PremiumPage from './PremiumPage'
 import ThemeSettings from './ThemeSettings'
+import { useBackHandler } from '../context/NavigationProvider'
 
 export default function AuthGate({ children }) {
   const [session, setSession] = useState(null)
@@ -21,6 +22,32 @@ export default function AuthGate({ children }) {
   const [showControlCentre, setShowControlCentre] = useState(false)
   const [showPremium, setShowPremium] = useState(false)
   const [showAppearance, setShowAppearance] = useState(false)
+
+  const handleAccountBack = () => {
+    if (showAppearance) {
+      setShowAppearance(false)
+      return true
+    }
+
+    if (showPremium) {
+      setShowPremium(false)
+      return true
+    }
+
+    return false
+  }
+
+  useBackHandler(handleAccountBack, showAppearance || showPremium, 100)
+
+  useBackHandler(
+    () => {
+      if (!showControlCentre) return false
+      setShowControlCentre(false)
+      return true
+    },
+    showControlCentre,
+    10
+  )
 
   useEffect(() => {
     let mounted = true

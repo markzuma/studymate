@@ -4,13 +4,16 @@ import './index.css'
 import App from './App.jsx'
 import AuthGate from './components/AuthGate.jsx'
 import { ThemeProvider } from './context/ThemeProvider.jsx'
+import { NavigationProvider } from './context/NavigationProvider.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ThemeProvider>
-      <AuthGate>
-        <App />
-      </AuthGate>
+      <NavigationProvider>
+        <AuthGate>
+          <App />
+        </AuthGate>
+      </NavigationProvider>
     </ThemeProvider>
   </StrictMode>,
 )

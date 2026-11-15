@@ -1,5 +1,6 @@
 import { additionalWrittenBanks } from './additionalWrittenBanks'
 import { useState, useEffect } from 'react'
+import { useBackHandler } from '../context/NavigationProvider'
 import { supabase } from '../lib/supabase'
 import './ExamCentre.css'
 import MockExam from './MockExam'
@@ -1335,6 +1336,32 @@ export default function ExamCentre({ onHome }) {
   const formattedTime = `${Math.floor(secondsLeft / 60)
     .toString().padStart(2, '0')}:${(secondsLeft % 60)
     .toString().padStart(2, '0')}`
+
+  function handleExamBack() {
+    if (showHistory) {
+      setShowHistory(false)
+      return true
+    }
+
+    if (started && !finished) {
+      const leave = window.confirm(
+        'Leave this examination? Your progress and timer will be saved. You can resume when you return to the Examination Centre.'
+      )
+      if (!leave) return true
+      onHome()
+      return true
+    }
+
+    if (finished) {
+      restart()
+      return true
+    }
+
+    onHome()
+    return true
+  }
+
+  useBackHandler(handleExamBack, true, 30)
 
   function startExam() {
     const shuffledQuestions = shuffleQuestions(questionBanks[selectedSubject])

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { useBackHandler } from '../context/NavigationProvider'
 import { supabase } from '../lib/supabase'
 
 export default function MockExam({ subjectId, subjectTitle, attemptKey, examStartedAt, mcqQuestions, writtenQuestions, onExit, onHome }) {
@@ -241,6 +242,11 @@ export default function MockExam({ subjectId, subjectTitle, attemptKey, examStar
     clearDraft()
     onHome()
   }
+
+  useBackHandler(() => {
+    leaveToExamCentre()
+    return true
+  }, true, 50)
 
   if (submitted) {
     return (
