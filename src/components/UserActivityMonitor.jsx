@@ -50,6 +50,13 @@ export default function UserActivityMonitor({ userId }) {
 
       if (Date.now() - lastActivity >= IDLE_LIMIT) {
         signingOut = true
+
+        const { error: activityError } = await supabase.rpc('record_my_logout')
+
+        if (activityError) {
+          console.error('PERIAK automatic logout activity update failed:', activityError.message)
+        }
+
         const { error } = await supabase.auth.signOut()
 
         if (error) {

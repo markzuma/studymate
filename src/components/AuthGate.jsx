@@ -206,6 +206,12 @@ export default function AuthGate({ children }) {
   }
 
   async function handleLogout() {
+    const { error: activityError } = await supabase.rpc('record_my_logout')
+
+    if (activityError) {
+      console.error('PERIAK logout activity update failed:', activityError.message)
+    }
+
     const { error } = await supabase.auth.signOut()
 
     if (error) {

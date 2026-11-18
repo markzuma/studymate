@@ -22,7 +22,6 @@ export default function ControlCentre({ onClose }) {
   const [section, setSection] = useState('overview')
   const [sectionHistory, setSectionHistory] = useState([])
   const [profiles, setProfiles] = useState([])
-  const [presenceNow, setPresenceNow] = useState(Date.now())
   const [courses, setCourses] = useState([])
   const [announcements, setAnnouncements] = useState([])
   const [userSearch, setUserSearch] = useState('')
@@ -65,33 +64,32 @@ export default function ControlCentre({ onClose }) {
 
   useEffect(() => {
     const refreshPresence = async () => {
-      const { data, error } = await supabase
-        .from('user_activity')
-        .select('user_id, last_seen')
+      const { data, error } = await supabase.rpc('get_admin_user_activity')
 
       if (!error) {
         const activityByUser = new Map(
-          (data || []).map(item => [item.user_id, item.last_seen])
+          (data || []).map(item => [item.user_id, item])
         )
 
-        setProfiles(previous => previous.map(user => ({
-          ...user,
-          last_seen: activityByUser.get(user.id) || null
-        })))
+        setProfiles(previous => previous.map(user => {
+          const activity = activityByUser.get(user.id)
+
+          return {
+            ...user,
+            last_seen: activity?.last_seen || null,
+            is_online: activity?.is_online || false,
+            last_login: activity?.last_login || null
+          }
+        }))
+      } else {
+        console.error('PERIAK presence refresh failed:', error.message)
       }
 
-      setPresenceNow(Date.now())
     }
 
-    const refreshTimer = window.setInterval(refreshPresence, 60000)
-    const clockTimer = window.setInterval(
-      () => setPresenceNow(Date.now()),
-      15000
-    )
-
+    const refreshTimer = window.setInterval(refreshPresence, 30000)
     return () => {
       window.clearInterval(refreshTimer)
-      window.clearInterval(clockTimer)
     }
   }, [])
 
@@ -125,8 +123,7 @@ export default function ControlCentre({ onClose }) {
       supabase.from('announcements')
         .select('id, title, audience, status, created_at')
         .order('created_at', { ascending: false }),
-      supabase.from('user_activity')
-        .select('user_id, last_seen')
+      supabase.rpc('get_admin_user_activity')
     ])
 
     const failed = results.find(result => result.error)
@@ -135,16 +132,21 @@ export default function ControlCentre({ onClose }) {
       setError('Unable to load dashboard information. Check database permissions.')
     } else {
       const activityByUser = new Map(
-        (results[3].data || []).map(item => [item.user_id, item.last_seen])
+        (results[3].data || []).map(item => [item.user_id, item])
       )
 
-      setProfiles((results[0].data || []).map(user => ({
-        ...user,
-        last_seen: activityByUser.get(user.id) || null
-      })))
+      setProfiles((results[0].data || []).map(user => {
+        const activity = activityByUser.get(user.id)
+
+        return {
+          ...user,
+          last_seen: activity?.last_seen || null,
+          is_online: activity?.is_online || false,
+          last_login: activity?.last_login || null
+        }
+      }))
       setCourses(results[1].data || [])
       setAnnouncements(results[2].data || [])
-      setPresenceNow(Date.now())
     }
 
     setLoading(false)
@@ -780,10 +782,7 @@ export default function ControlCentre({ onClose }) {
 
   const students = profiles.filter(user => user.role === 'student')
   const admins = profiles.filter(user => user.role === 'admin')
-  const onlineUsers = profiles.filter(user =>
-    user.last_seen &&
-    presenceNow - new Date(user.last_seen).getTime() < 2 * 60 * 1000
-  ).length
+  const onlineUsers = profiles.filter(user => user.is_online).length
 
   const filteredUsers = profiles.filter(user => {
     const search = userSearch.trim().toLowerCase()
@@ -890,19 +889,22 @@ export default function ControlCentre({ onClose }) {
                         <td>{user.phone_number || 'Not provided'}</td>
                         <td>{user.role}</td>
                         <td>
-                          {user.last_seen &&
-                           presenceNow - new Date(user.last_seen).getTime() < 2 * 60 * 1000 ? (
+                          {user.is_online ? (
                             <span className="cc-presence cc-presence-online">
                               <span className="cc-presence-dot" />
                               Online
                             </span>
                           ) : user.last_seen ? (
                             <span className="cc-presence cc-presence-offline">
-                              Last seen {new Date(user.last_seen).toLocaleString()}
+                              Last active {new Date(user.last_seen).toLocaleString()}
+                            </span>
+                          ) : user.last_login ? (
+                            <span className="cc-presence cc-presence-offline">
+                              Last login {new Date(user.last_login).toLocaleString()}
                             </span>
                           ) : (
                             <span className="cc-presence cc-presence-offline">
-                              Not active yet
+                              No login recorded
                             </span>
                           )}
                         </td>
