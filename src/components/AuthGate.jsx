@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import './AuthGate.css'
 import ControlCentre from './ControlCentre'
+import UserActivityMonitor from './UserActivityMonitor'
 import PremiumPage from './PremiumPage'
 import ThemeSettings from './ThemeSettings'
 import ProfileSettings from './ProfileSettings'
@@ -179,6 +180,16 @@ export default function AuthGate({ children }) {
 
           if (sessionError) throw sessionError
         }
+
+        const { data: sessionData } = await supabase.auth.getSession()
+        const signedInUserId = sessionData?.session?.user?.id
+
+        if (signedInUserId) {
+          localStorage.setItem(
+            `periak_last_activity_${signedInUserId}`,
+            String(Date.now())
+          )
+        }
       } else {
         const { error } = await supabase.auth.resetPasswordForEmail(
           email.trim(),
@@ -196,7 +207,12 @@ export default function AuthGate({ children }) {
 
   async function handleLogout() {
     const { error } = await supabase.auth.signOut()
-    if (error) setError(error.message)
+
+    if (error) {
+      setError(error.message)
+    } else if (session?.user?.id) {
+      localStorage.removeItem(`periak_last_activity_${session.user.id}`)
+    }
   }
 
   if (loading) {
@@ -206,6 +222,7 @@ export default function AuthGate({ children }) {
   if (session) {
     return (
       <>
+        <UserActivityMonitor userId={session.user.id} />
         <div className="auth-userbar">
           <span>
             Signed in as <strong>{session.user.email}</strong>

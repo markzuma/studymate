@@ -661,3 +661,32 @@
     min-height: 140px;
   }
 }
+
+
+/* Administrator-only user presence indicators */
+.cc-presence {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.cc-presence-online {
+  color: #16834a;
+  font-weight: 700;
+}
+
+.cc-presence-offline {
+  color: var(--text-secondary, #777);
+}
+
+.cc-presence-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  flex: 0 0 8px;
+  border-radius: 50%;
+  background: #20a45a;
+  box-shadow: 0 0 0 3px rgba(32, 164, 90, 0.13);
+}
