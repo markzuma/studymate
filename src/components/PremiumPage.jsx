@@ -60,6 +60,59 @@ export default function PremiumPage({ user, onBack }) {
     }
   }, [user.id])
 
+  // Automatically check pending M-Pesa payments until their status changes.
+  useEffect(() => {
+    if (subscription?.status !== 'pending' && !paymentInitiated) {
+      return
+    }
+
+    let active = true
+    let checking = false
+
+    async function refreshPaymentStatus() {
+      if (checking) return
+      checking = true
+
+      try {
+        const { data, error: queryError } = await supabase
+          .from('subscriptions')
+          .select('id, plan_id, status, starts_at, ends_at')
+          .eq('student_id', user.id)
+          .order('created_at', { ascending: false })
+          .limit(1)
+
+        if (!active || queryError || !data?.length) return
+
+        const latest = data[0]
+        setSubscription(latest)
+
+        if (latest.status === 'active') {
+          setPaymentInitiated(false)
+          setPaymentMessage(
+            'Payment verified successfully. Your PERIAK Premium membership is now active.'
+          )
+        } else if (latest.status !== 'pending') {
+          setPaymentInitiated(false)
+          setPaymentMessage(
+            'This payment attempt is no longer pending. If M-Pesa deducted money, contact PERIAK support before attempting another payment.'
+          )
+        }
+      } catch (error) {
+        console.error('Could not refresh payment status:', error)
+      } finally {
+        checking = false
+      }
+    }
+
+    refreshPaymentStatus()
+    const timer = setInterval(refreshPaymentStatus, 5000)
+
+    return () => {
+      active = false
+      clearInterval(timer)
+    }
+  }, [user.id, subscription?.id, subscription?.status, paymentInitiated])
+
   const activeSubscription =
     subscription?.status === 'active' &&
     (!subscription.ends_at || new Date(subscription.ends_at) > new Date())
@@ -173,6 +226,12 @@ export default function PremiumPage({ user, onBack }) {
         </section>
       )}
 
+      {paymentMessage && (
+        <p className="premium-success" role="status">
+          {paymentMessage}
+        </p>
+      )}
+
       <section className="premium-plans">
         <h2>Choose your plan</h2>
         <p>Affordable plans designed for nursing students.</p>
@@ -268,12 +327,6 @@ export default function PremiumPage({ user, onBack }) {
                 ? 'Payment prompt sent'
                 : 'Pay with M-Pesa'}
           </button>
-
-          {paymentMessage && (
-            <p className="premium-success" role="status">
-              {paymentMessage}
-            </p>
-          )}
 
           <p className="premium-note">
             Your subscription activates only after the payment is independently
