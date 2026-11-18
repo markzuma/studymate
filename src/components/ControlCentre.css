@@ -503,3 +503,161 @@
   }
 }
 
+
+
+/* PERIAK Learning Materials editor */
+.cc-materials-intro,
+.cc-materials-context,
+.cc-materials-help {
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
+.cc-materials-panel,
+.cc-material-form {
+  display: grid;
+  gap: 14px;
+  padding: 20px;
+  margin: 16px 0;
+  background: var(--surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: var(--card-radius);
+}
+
+.cc-materials-selectors {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.cc-materials-selectors label,
+.cc-material-form label {
+  display: grid;
+  gap: 7px;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.cc-materials-selectors select,
+.cc-material-form input,
+.cc-material-form select,
+.cc-material-json {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 11px 12px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--surface-secondary);
+  color: var(--text-primary);
+  font: inherit;
+}
+
+.cc-material-json {
+  min-height: 380px;
+  resize: vertical;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 13px;
+  line-height: 1.55;
+  tab-size: 2;
+}
+
+.cc-material-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.cc-material-actions button,
+.cc-material-action {
+  padding: 10px 15px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--accent);
+  color: white;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.cc-material-actions button:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+.cc-material-actions .cc-material-secondary {
+  background: var(--surface-secondary);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+}
+
+.cc-material-preview {
+  border-top: 1px solid var(--border);
+  padding-top: 12px;
+  color: var(--text-primary);
+}
+
+.cc-material-preview summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.cc-material-preview pre {
+  max-height: 360px;
+  overflow: auto;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  padding: 12px;
+  border-radius: 8px;
+  background: var(--surface-secondary);
+  color: var(--text-primary);
+  font-size: 12px;
+}
+
+@media (max-width: 640px) {
+  .cc-materials-selectors {
+    grid-template-columns: 1fr;
+  }
+
+  .cc-materials-panel,
+  .cc-material-form {
+    padding: 13px;
+  }
+
+  .cc-material-json {
+    min-height: 300px;
+    font-size: 12px;
+  }
+
+  .cc-material-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Academic management milestone */
+.cc-content input,
+.cc-content select,
+.cc-content textarea {
+  font: inherit;
+}
+
+.cc-content textarea {
+  max-width: 100%;
+}
+
+.cc-content button:disabled {
+  opacity: .6;
+  cursor: not-allowed;
+}
+
+@media (max-width: 600px) {
+  .cc-content section {
+    padding: 14px !important;
+  }
+
+  .cc-content textarea {
+    min-height: 140px;
+  }
+}

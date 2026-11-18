@@ -5,6 +5,7 @@ import { supabase } from '../lib/supabase'
 import './ExamCentre.css'
 import MockExam from './MockExam'
 import ExamHistory from './ExamHistory'
+import DatabaseExamCentre from './DatabaseExamCentre'
 
 function createAttemptKey() {
   if (globalThis.crypto?.randomUUID) {
@@ -1129,6 +1130,7 @@ function shuffleQuestions(questions) {
 
 export default function ExamCentre({ onHome }) {
   const [showHistory, setShowHistory] = useState(false)
+  const [showDatabaseExams, setShowDatabaseExams] = useState(false)
   const sessionKey = 'periak_exam_centre_session_v1'
 
   const [savedSession] = useState(() => {
@@ -1471,6 +1473,10 @@ export default function ExamCentre({ onHome }) {
     return <ExamHistory onBack={() => setShowHistory(false)} />
   }
 
+  if (showDatabaseExams) {
+    return <DatabaseExamCentre onBack={() => setShowDatabaseExams(false)} />
+  }
+
   return (
     <main className="exam-centre">
       <button
@@ -1507,6 +1513,24 @@ export default function ExamCentre({ onHome }) {
 
       {!started ? (
         <section className="exam-card">
+          <button
+            type="button"
+            onClick={() => setShowDatabaseExams(true)}
+            style={{
+              width: '100%',
+              padding: '13px',
+              marginBottom: '12px',
+              borderRadius: '10px',
+              border: '1px solid #15803d',
+              background: '#ecfdf5',
+              color: '#166534',
+              cursor: 'pointer',
+              fontWeight: '700'
+            }}
+          >
+            📝 Browse published examinations
+          </button>
+
           <button
             type="button"
             onClick={() => setShowHistory(true)}

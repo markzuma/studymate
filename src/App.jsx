@@ -4,12 +4,13 @@ import { supabase } from './lib/supabase'
 import './App.css'
 import ExamCentre from './components/ExamCentre'
 import StudyPlanner from './components/StudyPlanner'
+import CourseOutlineViewer from './components/CourseOutlineViewer'
 import { pharmacologyLessons } from './pharmacologyLessons'
 import { midwiferyLessons } from './midwiferyLessons'
 import { communityLessons } from './communityLessons'
 import { mentalHealthLessons } from './mentalHealthLessons'
 
-const courses = [
+const legacyCourseCatalogue = [
   { icon: '🫀', title: 'Anatomy & Physiology', desc: 'Understand the structure and functions of the human body.', level: 'FOUNDATION' },
   { icon: '🩺', title: 'Medical-Surgical Nursing', desc: 'Learn to assess, manage and care for patients with diseases.', level: 'CORE NURSING' },
   { icon: '💊', title: 'Clinical Pharmacology', desc: 'Master medicines, their actions and nursing considerations.', level: 'CORE NURSING' },
@@ -18,7 +19,7 @@ const courses = [
   { icon: '🧠', title: 'Mental Health Nursing', desc: 'Understand mental health conditions and compassionate care.', level: 'SPECIALTY' },
 ]
 
-const units = {
+const legacyUnitCatalogue = {
   'Anatomy & Physiology': ['Introduction to human anatomy and physiology', 'Cells and tissues', 'Skeletal system', 'Muscular system', 'Cardiovascular system', 'Respiratory system', 'Digestive system', 'Urinary system', 'Nervous system', 'Endocrine system'],
   'Medical-Surgical Nursing': ['Introduction to medical-surgical nursing', 'Patient assessment and diagnostic investigations', 'Respiratory disorders', 'Cardiovascular disorders', 'Gastrointestinal disorders', 'Renal and urinary disorders', 'Neurological disorders', 'Endocrine disorders', 'Haematological disorders', 'Perioperative nursing'],
   'Clinical Pharmacology': ['Introduction to pharmacology', 'Drug classifications and dosage forms', 'Pharmacokinetics', 'Pharmacodynamics', 'Medication administration', 'Antibiotics and antimicrobials', 'Cardiovascular drugs', 'Central nervous system drugs', 'Drug safety and adverse reactions'],
@@ -5862,6 +5863,151 @@ function App() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [selectedCourse, setSelectedCourse] = useState(null)
   const [selectedUnit, setSelectedUnit] = useState(null)
+  const [catalogueCourses, setCatalogueCourses] = useState(legacyCourseCatalogue)
+  const [catalogueUnits, setCatalogueUnits] = useState(legacyUnitCatalogue)
+  const [catalogueLessons, setCatalogueLessons] = useState(lessonContent)
+
+  // Load published courses, units and structured lessons from Supabase.
+  // Keep the original local catalogue if any database request fails.
+  useEffect(() => {
+    let active = true
+
+    const loadCatalogue = async (session) => {
+      if (!session?.user) return
+
+      try {
+        const { data: courseRows, error: courseError } = await supabase
+          .from('courses')
+          .select('id, title, description, programme, year_of_study, semester, status')
+          .eq('status', 'published')
+
+        if (courseError) throw courseError
+        if (!courseRows?.length) return
+
+        const courseIds = courseRows.map(course => course.id)
+
+        const { data: unitRows, error: unitError } = await supabase
+          .from('course_units')
+          .select('id, course_id, title, sort_order, status')
+          .in('course_id', courseIds)
+          .eq('status', 'published')
+          .order('sort_order', { ascending: true })
+
+        if (unitError) throw unitError
+
+        const unitIds = (unitRows || []).map(unit => unit.id)
+        let materialRows = []
+
+        if (unitIds.length) {
+          const { data, error } = await supabase
+            .from('learning_materials')
+            .select('unit_id, content, sort_order, status')
+            .in('unit_id', unitIds)
+            .eq('status', 'published')
+            .order('sort_order', { ascending: true })
+
+          if (error) throw error
+          materialRows = data || []
+        }
+
+        if (!active) return
+
+        const legacyByTitle = new Map(
+          legacyCourseCatalogue.map(course => [course.title, course])
+        )
+
+        const orderedCourses = [...courseRows].sort((a, b) => {
+          const aIndex = legacyCourseCatalogue.findIndex(item => item.title === a.title)
+          const bIndex = legacyCourseCatalogue.findIndex(item => item.title === b.title)
+
+          if (aIndex !== -1 && bIndex !== -1) return aIndex - bIndex
+          if (aIndex !== -1) return -1
+          if (bIndex !== -1) return 1
+          return a.title.localeCompare(b.title)
+        })
+
+        const nextCourses = orderedCourses.map(course => {
+          const legacy = legacyByTitle.get(course.title)
+
+          return {
+            id: course.id,
+            title: course.title,
+            icon: legacy?.icon || '📘',
+            desc: legacy?.desc || course.description || 'Explore this nursing course and its learning materials.',
+            level: legacy?.level || course.programme || 'NURSING'
+          }
+        })
+
+        const nextUnits = {}
+        const unitTitleById = new Map()
+
+        for (const course of orderedCourses) {
+          nextUnits[course.title] = []
+        }
+
+        for (const unit of unitRows || []) {
+          const parent = orderedCourses.find(course => course.id === unit.course_id)
+          if (!parent) continue
+
+          nextUnits[parent.title].push(unit.title)
+          unitTitleById.set(unit.id, unit.title)
+        }
+
+        const nextLessons = { ...lessonContent }
+
+        for (const material of materialRows) {
+          const unitTitle = unitTitleById.get(material.unit_id)
+          if (!unitTitle || !material.content) continue
+
+          try {
+            const parsed = JSON.parse(material.content)
+
+            if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+              nextLessons[unitTitle] = parsed
+            }
+          } catch {
+            console.warn('A published lesson could not be parsed:', unitTitle)
+          }
+        }
+
+        if (!active) return
+
+        setCatalogueCourses(nextCourses)
+        setCatalogueUnits(nextUnits)
+        setCatalogueLessons(nextLessons)
+
+        console.info(
+          'PERIAK catalogue loaded:',
+          nextCourses.length,
+          'courses,',
+          (unitRows || []).length,
+          'units,',
+          materialRows.length,
+          'published materials'
+        )
+      } catch (error) {
+        console.error(
+          'Could not load the database catalogue. Keeping the original catalogue:',
+          error.message
+        )
+      }
+    }
+
+    supabase.auth.getSession().then(({ data }) => {
+      loadCatalogue(data?.session)
+    })
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        Promise.resolve().then(() => loadCatalogue(session))
+      }
+    )
+
+    return () => {
+      active = false
+      subscription.unsubscribe()
+    }
+  }, [])
 
   useEffect(() => {
     let active = true
@@ -6041,7 +6187,7 @@ function App() {
   }
 
   const courseProgress = (course) => {
-    const courseUnits = units[course.title] || []
+    const courseUnits = catalogueUnits[course.title] || []
     const done = courseUnits.filter(unit =>
       learningData.completed.includes(lessonKey(course.title, unit))
     ).length
@@ -6146,19 +6292,19 @@ function App() {
             </div>
           </div>
 
-          {lessonContent[selectedUnit] ? (
+          {catalogueLessons[selectedUnit] ? (
             <>
               <section className="lesson-panel">
                 <h2>Learning objectives</h2>
                 <p>By the end of this unit, you should be able to:</p>
                 <ul>
-                  {lessonContent[selectedUnit].objectives.map((item, index) => <li key={index}>{item}</li>)}
+                  {catalogueLessons[selectedUnit].objectives.map((item, index) => <li key={index}>{item}</li>)}
                 </ul>
               </section>
 
               <section className="lesson-panel">
                 <h2>Comprehensive study notes</h2>
-                {lessonContent[selectedUnit].notes.map((item, index) => (
+                {catalogueLessons[selectedUnit].notes.map((item, index) => (
                   <div className="note-topic" key={index}>
                     <h3>{item.heading || item.title}</h3>
                     {item.content && <p>{item.content}</p>}
@@ -6177,7 +6323,7 @@ function App() {
               <section className="lesson-panel">
                 <h2>Clinical application</h2>
                 {(() => {
-                  const lesson = lessonContent[selectedUnit]
+                  const lesson = catalogueLessons[selectedUnit]
                   const clinical = lesson.clinical ?? lesson.clinicalApplication ?? lesson.clinicalCases
 
                   if (Array.isArray(clinical)) {
@@ -6213,14 +6359,14 @@ function App() {
               <section className="lesson-panel">
                 <h2>High-yield examination points</h2>
                 <ul>
-                  {lessonContent[selectedUnit].examPoints.map((item, index) => <li key={index}>{item}</li>)}
+                  {catalogueLessons[selectedUnit].examPoints.map((item, index) => <li key={index}>{item}</li>)}
                 </ul>
               </section>
 
               <section className="lesson-panel">
                 <h2>Practice questions</h2>
                 <p>Choose an answer, then open the explanation to check your understanding.</p>
-                {(lessonContent[selectedUnit].questions || lessonContent[selectedUnit].mcqs || []).map((question, index) => (
+                {(catalogueLessons[selectedUnit].questions || catalogueLessons[selectedUnit].mcqs || []).map((question, index) => (
                   <div className="practice-question" key={index}>
                     <h3>{index + 1}. {question.question || question.q}</h3>
                     {Object.values(question.options).map((option, optionIndex) => (
@@ -6292,8 +6438,10 @@ function App() {
             <div className="eyebrow">{selectedCourse.level}</div>
             <h1>{selectedCourse.title}</h1>
             <p>{selectedCourse.desc}</p>
-            <span className="unit-count">{units[selectedCourse.title].length} learning units</span>
+            <span className="unit-count">{catalogueUnits[selectedCourse.title].length} learning units</span>
           </div>
+
+          <CourseOutlineViewer courseId={selectedCourse.id} />
 
           <section className="unit-section">
             <div className="eyebrow">YOUR LEARNING PATH</div>
@@ -6301,7 +6449,7 @@ function App() {
             <p className="unit-intro">Work through these units systematically, building your knowledge step by step.</p>
 
             <div className="unit-list">
-              {units[selectedCourse.title].map((unit, index) => (
+              {catalogueUnits[selectedCourse.title].map((unit, index) => (
                 <button
                   className="unit-card unit-clickable"
                   key={unit}
@@ -6314,7 +6462,7 @@ function App() {
                   </div>
                   <div className="unit-info">
                     <h3>{unit}</h3>
-                    <p>{lessonContent[unit] ? 'Study notes, clinical applications and practice questions available.' : 'Study notes and revision materials coming soon.'}</p>
+                    <p>{catalogueLessons[unit] ? 'Study notes, clinical applications and practice questions available.' : 'Study notes and revision materials coming soon.'}</p>
                   </div>
                   <span className="unit-arrow">→</span>
                 </button>
@@ -6422,7 +6570,7 @@ function App() {
             </article>
             <article className="dashboard-stat">
               <span>🎓</span>
-              <strong>{courses.filter(course => courseProgress(course).percent === 100).length}</strong>
+              <strong>{catalogueCourses.filter(course => courseProgress(course).percent === 100).length}</strong>
               <small>Subjects completed</small>
             </article>
           </div>
@@ -6439,7 +6587,7 @@ function App() {
               {learningData.recent.length ? (
                 (() => {
                   const latest = learningData.recent[0]
-                  const course = courses.find(item => item.title === latest.courseTitle)
+                  const course = catalogueCourses.find(item => item.title === latest.courseTitle)
                   return course ? (
                     <div className="continue-content">
                       <span className="continue-icon">{course.icon}</span>
@@ -6471,7 +6619,7 @@ function App() {
               {learningData.recent.length ? (
                 <div className="recent-lesson-list">
                   {learningData.recent.slice(0, 4).map((item, index) => {
-                    const course = courses.find(entry => entry.title === item.courseTitle)
+                    const course = catalogueCourses.find(entry => entry.title === item.courseTitle)
                     return course ? (
                       <button className="recent-lesson" key={`${item.courseTitle}-${item.unit}-${index}`}
                         onClick={() => openUnit(course, item.unit)}>
@@ -6497,7 +6645,7 @@ function App() {
               <a href="#courses">View all subjects ↓</a>
             </div>
             <div className="subject-progress-grid">
-              {courses.map(course => {
+              {catalogueCourses.map(course => {
                 const progress = courseProgress(course)
                 return (
                   <div className="subject-progress" key={course.title}>
@@ -6526,7 +6674,7 @@ function App() {
             <a className="text-link" href="#features">Explore resources →</a>
           </div>
           <div className="course-grid">
-            {courses.map((course) => (
+            {catalogueCourses.map((course) => (
               <article className="course-card" key={course.title}>
                 <div className="course-icon">{course.icon}</div>
                 <div className="course-level">{course.level}</div>
