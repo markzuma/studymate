@@ -257,3 +257,51 @@
 .premium-price, .premium-eyebrow,
 .premium-header span { color: var(--accent); }
 .premium-card.selected { border-color: var(--accent); }
+
+/* Manual Pochi payment checkout */
+.premium-manual-payment {
+  margin: 20px 0;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+}
+
+.premium-manual-payment h3 {
+  margin-top: 0;
+}
+
+.premium-manual-payment ol {
+  padding-left: 22px;
+  line-height: 1.8;
+  color: var(--text-primary);
+}
+
+.premium-pochi-number {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 14px;
+  margin: 16px 0;
+  border-radius: 8px;
+  background: var(--page-bg);
+  border: 1px solid var(--border);
+}
+
+.premium-pochi-number span {
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 0.5px;
+}
+
+.premium-pochi-number button {
+  padding: 9px 14px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  background: var(--surface);
+  color: var(--text-primary);
+  cursor: pointer;
+  font-weight: 600;
+}

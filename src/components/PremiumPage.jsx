@@ -3,9 +3,30 @@ import { supabase } from '../lib/supabase'
 import './PremiumPage.css'
 
 const PAYMENT_METHODS = [
-  { id: 'mpesa', name: 'M-Pesa', description: 'Pay using M-Pesa', available: true },
-  { id: 'airtel_money', name: 'Airtel Money', description: 'Coming soon', available: false },
-  { id: 'card', name: 'Visa / Mastercard', description: 'Coming soon', available: false }
+  {
+    id: 'mpesa',
+    name: 'M-Pesa STK Push',
+    description: 'Receive a payment prompt on your phone',
+    available: true
+  },
+  {
+    id: 'pochi_manual',
+    name: 'M-Pesa (Pay manually)',
+    description: 'Pay to PERIAK and submit your receipt',
+    available: true
+  },
+  {
+    id: 'airtel_money',
+    name: 'Airtel Money',
+    description: 'Coming soon',
+    available: false
+  },
+  {
+    id: 'card',
+    name: 'Visa / Mastercard',
+    description: 'Coming soon',
+    available: false
+  }
 ]
 
 export default function PremiumPage({ user, onBack }) {
@@ -14,6 +35,8 @@ export default function PremiumPage({ user, onBack }) {
   const [selectedPlan, setSelectedPlan] = useState(null)
   const [paymentMethod, setPaymentMethod] = useState('mpesa')
   const [phoneNumber, setPhoneNumber] = useState('')
+  const [manualReceipt, setManualReceipt] = useState('')
+  const [pochiPhone, setPochiPhone] = useState('')
   const [loading, setLoading] = useState(true)
   const [paying, setPaying] = useState(false)
   const [paymentInitiated, setPaymentInitiated] = useState(false)
@@ -27,19 +50,25 @@ export default function PremiumPage({ user, onBack }) {
       setLoading(true)
       setError('')
 
-      const [planResult, subscriptionResult] = await Promise.all([
-        supabase
-          .from('subscription_plans')
-          .select('id, name, billing_interval, price_kes, duration_days')
-          .eq('is_active', true)
-          .order('price_kes'),
-        supabase
-          .from('subscriptions')
-          .select('id, plan_id, status, starts_at, ends_at')
-          .eq('student_id', user.id)
-          .order('created_at', { ascending: false })
-          .limit(1)
-      ])
+      const [planResult, subscriptionResult, settingsResult] =
+        await Promise.all([
+          supabase
+            .from('subscription_plans')
+            .select('id, name, billing_interval, price_kes, duration_days')
+            .eq('is_active', true)
+            .order('price_kes'),
+          supabase
+            .from('subscriptions')
+            .select('id, plan_id, status, starts_at, ends_at')
+            .eq('student_id', user.id)
+            .order('created_at', { ascending: false })
+            .limit(1),
+          supabase
+            .from('manual_payment_settings')
+            .select('pochi_phone_number')
+            .eq('id', 1)
+            .maybeSingle()
+        ])
 
       if (!active) return
 
@@ -50,6 +79,7 @@ export default function PremiumPage({ user, onBack }) {
         setSubscription(subscriptionResult.data?.[0] || null)
       }
 
+      setPochiPhone(settingsResult.data?.pochi_phone_number || '')
       setLoading(false)
     }
 
@@ -60,7 +90,7 @@ export default function PremiumPage({ user, onBack }) {
     }
   }, [user.id])
 
-  // Automatically check pending M-Pesa payments until their status changes.
+  // Check pending payments/subscriptions until the admin or Daraja updates them.
   useEffect(() => {
     if (subscription?.status !== 'pending' && !paymentInitiated) {
       return
@@ -94,11 +124,11 @@ export default function PremiumPage({ user, onBack }) {
         } else if (latest.status !== 'pending') {
           setPaymentInitiated(false)
           setPaymentMessage(
-            'This payment attempt is no longer pending. If M-Pesa deducted money, contact PERIAK support before attempting another payment.'
+            'Your payment submission was not approved or is no longer pending. Check the receipt or contact PERIAK support before paying again.'
           )
         }
-      } catch (error) {
-        console.error('Could not refresh payment status:', error)
+      } catch (err) {
+        console.error('Could not refresh payment status:', err)
       } finally {
         checking = false
       }
@@ -127,57 +157,92 @@ export default function PremiumPage({ user, onBack }) {
       return
     }
 
-    if (paymentMethod !== 'mpesa') {
-      setError('This payment method is not available yet.')
-      return
-    }
-
-    if (!phoneNumber.trim()) {
-      setError('Enter the M-Pesa phone number you want to pay with.')
-      return
-    }
-
     setPaying(true)
     setError('')
-    setPaymentMessage('Connecting securely to M-Pesa...')
+    setPaymentMessage('')
 
     try {
-      const { data, error: functionError } =
-        await supabase.functions.invoke('mpesa-stk-push', {
-          body: {
-            planId: selectedPlan.id,
-            phoneNumber: phoneNumber.trim()
-          }
-        })
-
-      if (functionError) {
-        let message = functionError.message
-
-        try {
-          const details = await functionError.context?.json()
-          if (details?.error) message = details.error
-        } catch {
-          // Keep the original function error message.
+      if (paymentMethod === 'mpesa') {
+        if (!phoneNumber.trim()) {
+          throw new Error('Enter the M-Pesa phone number that should receive the prompt.')
         }
 
-        throw new Error(message)
-      }
+        setPaymentMessage('Connecting securely to M-Pesa...')
 
-      if (!data?.success) {
-        throw new Error(data?.error || 'Unable to initiate M-Pesa payment.')
-      }
+        const { data, error: functionError } =
+          await supabase.functions.invoke('mpesa-stk-push', {
+            body: {
+              planId: selectedPlan.id,
+              phoneNumber: phoneNumber.trim()
+            }
+          })
 
-      setPaymentInitiated(true)
-      setPaymentMessage(
-        data.pending
-          ? (data.message || 'Payment status is uncertain. Do not retry; contact PERIAK support before attempting another payment.')
-          : 'M-Pesa prompt sent. Check your phone and enter your M-Pesa PIN. Premium access will activate after Safaricom confirms your payment.'
-      )
+        if (functionError) {
+          let message = functionError.message
+          try {
+            const details = await functionError.context?.json()
+            if (details?.error) message = details.error
+          } catch {
+            // Retain the original function error.
+          }
+          throw new Error(message)
+        }
+
+        if (!data?.success) {
+          throw new Error(data?.error || 'Unable to initiate M-Pesa payment.')
+        }
+
+        setPaymentInitiated(true)
+        setPaymentMessage(
+          data.pending
+            ? (data.message || 'Payment status is uncertain. Do not retry; contact PERIAK support before attempting another payment.')
+            : 'M-Pesa prompt sent. Check your phone and enter your M-Pesa PIN. Premium activates after Safaricom confirms payment.'
+        )
+      } else if (paymentMethod === 'pochi_manual') {
+        if (!pochiPhone) {
+          throw new Error('Manual M-Pesa payment is not configured yet.')
+        }
+
+        if (!manualReceipt.trim()) {
+          throw new Error('Enter the M-Pesa transaction receipt code.')
+        }
+
+        setPaymentMessage('Submitting your receipt for verification...')
+
+        const { data, error: rpcError } = await supabase.rpc(
+          'submit_manual_pochi_payment',
+          {
+            p_plan_id: selectedPlan.id,
+            p_receipt: manualReceipt.trim()
+          }
+        )
+
+        if (rpcError) throw rpcError
+        if (!data?.success) {
+          throw new Error('Your payment receipt could not be submitted.')
+        }
+
+        setPaymentInitiated(true)
+        setPaymentMessage(
+          'Receipt submitted successfully. Your payment is pending admin verification. Premium will activate after your payment is confirmed.'
+        )
+      } else {
+        throw new Error('This payment method is not available yet.')
+      }
     } catch (err) {
       setPaymentMessage('')
-      setError(err.message || 'Payment could not be initiated. Please try again.')
+      setError(err.message || 'Payment could not be submitted. Please try again.')
     } finally {
       setPaying(false)
+    }
+  }
+
+  async function copyPochiNumber() {
+    try {
+      await navigator.clipboard.writeText(pochiPhone)
+      setPaymentMessage('Payment number copied. Complete your payment in M-Pesa.')
+    } catch {
+      setError('Unable to copy the number. Please copy it manually.')
     }
   }
 
@@ -195,14 +260,10 @@ export default function PremiumPage({ user, onBack }) {
       <section className="premium-hero">
         <p className="premium-eyebrow">TAKE YOUR LEARNING FURTHER</p>
         <h1>Unlock your nursing potential.</h1>
-        <p>
-          Get more from your PERIAK learning experience with Premium.
-        </p>
+        <p>Get more from your PERIAK learning experience with Premium.</p>
       </section>
 
-      {error && (
-        <p className="premium-error" role="alert">{error}</p>
-      )}
+      {error && <p className="premium-error" role="alert">{error}</p>}
 
       {activeSubscription && (
         <section className="premium-status">
@@ -221,15 +282,12 @@ export default function PremiumPage({ user, onBack }) {
           <p>
             Your latest subscription is awaiting payment verification.
             Do not start another payment for the same subscription.
-            Refresh this page later to check your membership status.
           </p>
         </section>
       )}
 
       {paymentMessage && (
-        <p className="premium-success" role="status">
-          {paymentMessage}
-        </p>
+        <p className="premium-success" role="status">{paymentMessage}</p>
       )}
 
       <section className="premium-plans">
@@ -240,9 +298,7 @@ export default function PremiumPage({ user, onBack }) {
           {plans.map(plan => (
             <article
               key={plan.id}
-              className={`premium-card ${
-                selectedPlan?.id === plan.id ? 'selected' : ''
-              }`}
+              className={`premium-card ${selectedPlan?.id === plan.id ? 'selected' : ''}`}
             >
               <h3>{plan.name}</h3>
               <div className="premium-price">
@@ -254,9 +310,7 @@ export default function PremiumPage({ user, onBack }) {
                 onClick={() => setSelectedPlan(plan)}
                 disabled={activeSubscription || pendingSubscription || paymentInitiated}
               >
-                {selectedPlan?.id === plan.id
-                  ? 'Selected'
-                  : 'Choose Plan'}
+                {selectedPlan?.id === plan.id ? 'Selected' : 'Choose Plan'}
               </button>
             </article>
           ))}
@@ -272,34 +326,46 @@ export default function PremiumPage({ user, onBack }) {
           </p>
 
           <div className="premium-methods">
-            {PAYMENT_METHODS.map(method => (
-              <label
-                key={method.id}
-                className={`${paymentMethod === method.id ? 'chosen' : ''} ${
-                  !method.available ? 'unavailable' : ''
-                }`}
-              >
-                <input
-                  type="radio"
-                  name="payment-method"
-                  value={method.id}
-                  checked={paymentMethod === method.id}
-                  disabled={!method.available || paying || paymentInitiated}
-                  onChange={() => setPaymentMethod(method.id)}
-                />
-                <span>
-                  <strong>{method.name}</strong>
-                  <small>{method.description}</small>
-                </span>
-              </label>
-            ))}
+            {PAYMENT_METHODS.map(method => {
+              const unavailable =
+                !method.available ||
+                (method.id === 'pochi_manual' && !pochiPhone)
+
+              return (
+                <label
+                  key={method.id}
+                  className={`${paymentMethod === method.id ? 'chosen' : ''} ${
+                    unavailable ? 'unavailable' : ''
+                  }`}
+                >
+                  <input
+                    type="radio"
+                    name="payment-method"
+                    value={method.id}
+                    checked={paymentMethod === method.id}
+                    disabled={unavailable || paying || paymentInitiated}
+                    onChange={() => {
+                      setPaymentMethod(method.id)
+                      setError('')
+                      setPaymentMessage('')
+                    }}
+                  />
+                  <span>
+                    <strong>{method.name}</strong>
+                    <small>
+                      {method.id === 'pochi_manual' && !pochiPhone
+                        ? 'Not configured yet'
+                        : method.description}
+                    </small>
+                  </span>
+                </label>
+              )
+            })}
           </div>
 
           {paymentMethod === 'mpesa' && (
             <div className="premium-phone-field">
-              <label htmlFor="premium-phone">
-                M-Pesa phone number
-              </label>
+              <label htmlFor="premium-phone">M-Pesa phone number</label>
               <input
                 id="premium-phone"
                 type="tel"
@@ -316,21 +382,62 @@ export default function PremiumPage({ user, onBack }) {
             </div>
           )}
 
+          {paymentMethod === 'pochi_manual' && pochiPhone && (
+            <div className="premium-manual-payment">
+              <h3>Pay manually using M-Pesa</h3>
+              <ol>
+                <li>Open M-Pesa and choose Send Money.</li>
+                <li>Send the exact amount shown above to the number below.</li>
+                <li>Enter your M-Pesa transaction receipt code.</li>
+                <li>Submit it for admin verification.</li>
+              </ol>
+
+              <div className="premium-pochi-number">
+                <span>{pochiPhone}</span>
+                <button type="button" onClick={copyPochiNumber}>
+                  Copy number
+                </button>
+              </div>
+
+              <div className="premium-phone-field">
+                <label htmlFor="premium-receipt">M-Pesa transaction receipt</label>
+                <input
+                  id="premium-receipt"
+                  type="text"
+                  autoComplete="off"
+                  placeholder="e.g. QHX7ABCD12"
+                  value={manualReceipt}
+                  disabled={paying || paymentInitiated}
+                  onChange={event => setManualReceipt(event.target.value.toUpperCase())}
+                />
+                <small>
+                  Premium will not activate until an admin confirms the payment.
+                </small>
+              </div>
+            </div>
+          )}
+
           <button
             className="premium-pay"
             onClick={handlePayment}
-            disabled={paying || paymentInitiated || paymentMethod !== 'mpesa'}
+            disabled={
+              paying ||
+              paymentInitiated ||
+              (paymentMethod !== 'mpesa' && paymentMethod !== 'pochi_manual')
+            }
           >
             {paying
-              ? 'Connecting to M-Pesa...'
+              ? 'Submitting...'
               : paymentInitiated
-                ? 'Payment prompt sent'
-                : 'Pay with M-Pesa'}
+                ? 'Payment submitted'
+                : paymentMethod === 'pochi_manual'
+                  ? 'Submit receipt for verification'
+                  : 'Pay with M-Pesa'}
           </button>
 
           <p className="premium-note">
-            Your subscription activates only after the payment is independently
-            verified by Safaricom. Never share your M-Pesa PIN or OTP.
+            Never share your M-Pesa PIN or OTP. A receipt submission is not
+            payment confirmation; your membership activates only after verification.
           </p>
         </section>
       )}

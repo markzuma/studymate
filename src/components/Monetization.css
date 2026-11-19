@@ -89,3 +89,42 @@
     font-size: 12px;
   }
 }
+
+/* Manual payment settings and review queue */
+.mon-phone-setting {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-width: 480px;
+}
+
+.mon-phone-setting label {
+  font-weight: 700;
+}
+
+.mon-phone-setting input {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  font: inherit;
+}
+
+.mon-review-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.mon-approve {
+  color: #166534;
+  border-color: #86efac;
+  background: #f0fdf4;
+}
+
+.mon-reject {
+  color: #991b1b;
+  border-color: #fca5a5;
+  background: #fef2f2;
+}
