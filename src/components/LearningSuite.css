@@ -1,81 +1,173 @@
 .learning-suite {
-  margin: 32px 0;
-  padding: 24px;
-  border-radius: 18px;
-  background: var(--card-bg, #fff);
-  color: var(--text-color, #172033);
+  margin: 20px 0;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface);
+  color: var(--text-primary);
 }
+
 .suite-heading {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 16px;
-  margin-bottom: 24px;
+  gap: 12px;
+  margin-bottom: 16px;
 }
-.suite-heading small { color: #16856b; font-weight: 800; }
+
+.suite-heading small {
+  color: var(--accent);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .8px;
+}
+
+.suite-heading h2 {
+  margin: 5px 0;
+  font-size: 19px;
+  font-weight: 700;
+}
+
+.suite-heading p {
+  margin: 3px 0;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
 .suite-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
-  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(175px, 1fr));
+  gap: 10px;
 }
-.suite-card, .suite-option {
-  padding: 18px;
-  border: 1px solid var(--border-color, #ddd);
-  border-radius: 14px;
-  background: var(--surface-color, #f8fafc);
-  color: inherit;
+
+.suite-card,
+.suite-option {
+  padding: 13px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-secondary);
+  color: var(--text-primary);
   text-align: left;
   cursor: pointer;
+  transition: border-color .18s ease, transform .18s ease;
 }
-.suite-card { display: flex; flex-direction: column; gap: 10px; }
-.suite-card > span { font-size: 26px; }
-.suite-card p { margin: 0; }
-.suite-card b { color: #16856b; }
-.suite-content { line-height: 1.65; }
+
+.suite-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  min-height: 112px;
+}
+
+.suite-card > span {
+  font-size: 19px;
+}
+
+.suite-card strong {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.suite-card p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.suite-card b {
+  margin-top: 2px;
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.suite-card:hover,
+.suite-option:hover {
+  border-color: var(--accent);
+  transform: translateY(-1px);
+}
+
+.suite-content {
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.suite-content h3 {
+  margin: 8px 0;
+  font-size: 16px;
+}
+
+.suite-content h4 {
+  font-size: 13px;
+}
+
+.suite-content p {
+  color: var(--text-muted);
+}
+
 .suite-content input {
   display: block;
   width: 100%;
-  max-width: 500px;
-  padding: 12px;
-  margin: 12px 0;
-  border: 1px solid #aaa;
-  border-radius: 9px;
+  max-width: 480px;
+  padding: 10px 12px;
+  margin: 10px 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-secondary);
+  color: var(--text-primary);
+  font: inherit;
 }
-.suite-option { display: block; width: 100%; margin: 9px 0; }
-.suite-action, .suite-heading button {
-  padding: 11px 17px;
-  border: 0;
-  border-radius: 9px;
-  background: #16856b;
-  color: white;
+
+.suite-option {
+  display: block;
+  width: 100%;
+  margin: 7px 0;
+  font-size: 12px;
+}
+
+.suite-action,
+.suite-heading button {
+  padding: 8px 13px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-secondary);
+  color: var(--text-primary);
+  font-size: 12px;
   cursor: pointer;
 }
+
 .suite-content article {
-  padding: 12px;
-  margin: 12px 0;
-  border-radius: 10px;
-  background: var(--surface-color, #f8fafc);
-}
-@media (max-width: 600px) {
-  .learning-suite { padding: 14px; }
-  .suite-heading { align-items: flex-start; }
-}
-.suite-option { display: block; width: 100%; margin: 9px 0; }
-.suite-action, .suite-heading button {
-  padding: 11px 17px;
-  border: 0;
+  padding: 11px;
+  margin: 9px 0;
+  border: 1px solid var(--border);
   border-radius: 9px;
-  background: #16856b;
-  color: white;
-  cursor: pointer;
+  background: var(--surface-secondary);
 }
-.suite-content article {
-  padding: 12px;
-  margin: 12px 0;
-  border-radius: 10px;
-  background: var(--surface-color, #f8fafc);
-}
+
 @media (max-width: 600px) {
-  .learning-suite { padding: 14px; }
-  .suite-heading { align-items: flex-start; }
+  .learning-suite {
+    margin: 16px 0;
+    padding: 13px;
+    border-radius: 11px;
+  }
+
+  .suite-heading {
+    margin-bottom: 13px;
+  }
+
+  .suite-heading h2 {
+    font-size: 17px;
+  }
+
+  .suite-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .suite-card {
+    min-height: 108px;
+    padding: 10px;
+  }
 }
