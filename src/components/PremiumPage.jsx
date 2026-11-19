@@ -2,12 +2,14 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import './PremiumPage.css'
 
+const MPESA_STK_ENABLED = false
+
 const PAYMENT_METHODS = [
   {
     id: 'mpesa',
     name: 'M-Pesa STK Push',
-    description: 'Receive a payment prompt on your phone',
-    available: true
+    description: 'Temporarily unavailable — setup pending',
+    available: false
   },
   {
     id: 'pochi_manual',
@@ -34,7 +36,7 @@ export default function PremiumPage({ user, onBack, onSubscriptionUpdated = () =
   const [plans, setPlans] = useState([])
   const [subscription, setSubscription] = useState(null)
   const [selectedPlan, setSelectedPlan] = useState(null)
-  const [paymentMethod, setPaymentMethod] = useState('mpesa')
+  const [paymentMethod, setPaymentMethod] = useState('')
   const [phoneNumber, setPhoneNumber] = useState('')
   const [manualReceipt, setManualReceipt] = useState('')
   const [pochiPhone, setPochiPhone] = useState('')
@@ -158,6 +160,11 @@ export default function PremiumPage({ user, onBack, onSubscriptionUpdated = () =
 
   async function handlePayment() {
     if (paying || paymentInitiated || pendingSubscription) return
+
+    if (paymentMethod === 'mpesa' && !MPESA_STK_ENABLED) {
+      setError('M-Pesa STK Push is temporarily unavailable. Please use another available payment method.')
+      return
+    }
 
     if (!selectedPlan) {
       setError('Please select a Premium plan.')
@@ -390,6 +397,7 @@ export default function PremiumPage({ user, onBack, onSubscriptionUpdated = () =
             {PAYMENT_METHODS.map(method => {
               const unavailable =
                 !method.available ||
+                (method.id === 'mpesa' && !MPESA_STK_ENABLED) ||
                 (method.id === 'pochi_manual' && !pochiPhone)
 
               return (
@@ -414,9 +422,11 @@ export default function PremiumPage({ user, onBack, onSubscriptionUpdated = () =
                   <span>
                     <strong>{method.name}</strong>
                     <small>
-                      {method.id === 'pochi_manual' && !pochiPhone
-                        ? 'Not configured yet'
-                        : method.description}
+                      {method.id === 'mpesa'
+                        ? 'Temporarily unavailable — Till number and Daraja setup pending'
+                        : method.id === 'pochi_manual' && !pochiPhone
+                          ? 'Not configured yet'
+                          : method.description}
                     </small>
                   </span>
                 </label>
@@ -424,7 +434,7 @@ export default function PremiumPage({ user, onBack, onSubscriptionUpdated = () =
             })}
           </div>
 
-          {paymentMethod === 'mpesa' && (
+          {paymentMethod === 'mpesa' && MPESA_STK_ENABLED && (
             <div className="premium-phone-field">
               <label htmlFor="premium-phone">M-Pesa phone number</label>
               <input
@@ -484,7 +494,9 @@ export default function PremiumPage({ user, onBack, onSubscriptionUpdated = () =
             disabled={
               paying ||
               paymentInitiated ||
-              (paymentMethod !== 'mpesa' && paymentMethod !== 'pochi_manual')
+              !['mpesa', 'pochi_manual'].includes(paymentMethod) ||
+              (paymentMethod === 'mpesa' && !MPESA_STK_ENABLED) ||
+              (paymentMethod === 'pochi_manual' && !pochiPhone)
             }
           >
             {paying
