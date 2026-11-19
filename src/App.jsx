@@ -6299,13 +6299,13 @@ function App() {
                 <h2>Learning objectives</h2>
                 <p>By the end of this unit, you should be able to:</p>
                 <ul>
-                  {catalogueLessons[selectedUnit].objectives.map((item, index) => <li key={index}>{item}</li>)}
+                  {(catalogueLessons[selectedUnit].objectives || []).map((item, index) => <li key={index}>{item}</li>)}
                 </ul>
               </section>
 
               <section className="lesson-panel">
                 <h2>Comprehensive study notes</h2>
-                {catalogueLessons[selectedUnit].notes.map((item, index) => (
+                {(catalogueLessons[selectedUnit].notes || []).map((item, index) => (
                   <div className="note-topic" key={index}>
                     <h3>{item.heading || item.title}</h3>
                     {item.content && <p>{item.content}</p>}
@@ -6325,7 +6325,7 @@ function App() {
                 <h2>Clinical application</h2>
                 {(() => {
                   const lesson = catalogueLessons[selectedUnit]
-                  const clinical = lesson.clinical ?? lesson.clinicalApplication ?? lesson.clinicalCases
+                  const clinical = lesson.clinical ?? lesson.clinicalApplication
 
                   if (Array.isArray(clinical)) {
                     return clinical.map((item, index) => (
@@ -6360,38 +6360,92 @@ function App() {
               <section className="lesson-panel">
                 <h2>High-yield examination points</h2>
                 <ul>
-                  {catalogueLessons[selectedUnit].examPoints.map((item, index) => <li key={index}>{item}</li>)}
+                  {(catalogueLessons[selectedUnit].examPoints || []).map((item, index) => <li key={index}>{item}</li>)}
                 </ul>
               </section>
 
               <section className="lesson-panel">
                 <h2>Practice questions</h2>
                 <p>Choose an answer, then open the explanation to check your understanding.</p>
-                {(catalogueLessons[selectedUnit].questions || catalogueLessons[selectedUnit].mcqs || []).map((question, index) => (
-                  <div className="practice-question" key={index}>
-                    <h3>{index + 1}. {question.question || question.q}</h3>
-                    {Object.values(question.options).map((option, optionIndex) => (
-                      <p className="question-option" key={optionIndex}>
-                        {String.fromCharCode(65 + optionIndex)}. {option}
-                      </p>
-                    ))}
-                    <details>
-                      <summary>Reveal answer and explanation</summary>
-                      {(() => {
-                        const answerIndex = typeof question.answer === 'number'
-                          ? question.answer
-                          : String(question.answer).trim().toUpperCase().charCodeAt(0) - 65;
-                        return (
-                          <p><strong>
-                            Correct answer: {String.fromCharCode(65 + answerIndex)}. {Object.values(question.options)[answerIndex]}
-                          </strong></p>
-                        );
-                      })()}
-                      <p>{question.explanation}</p>
-                    </details>
-                  </div>
-                ))}
+                {(Array.isArray(catalogueLessons[selectedUnit].questions)
+                  ? catalogueLessons[selectedUnit].questions
+                  : Array.isArray(catalogueLessons[selectedUnit].mcqs)
+                    ? catalogueLessons[selectedUnit].mcqs
+                    : []).map((question, index) => {
+                      const options = Array.isArray(question.options)
+                        ? question.options
+                        : Object.values(question.options || {})
+                      const answerIndex = typeof question.answer === 'number'
+                        ? question.answer
+                        : /^[A-D]$/i.test(String(question.answer || '').trim())
+                          ? String(question.answer).trim().toUpperCase().charCodeAt(0) - 65
+                          : -1
+
+                      return (
+                        <div className="practice-question" key={index}>
+                          <h3>{index + 1}. {question.question || question.q || 'Question'}</h3>
+                          {options.map((option, optionIndex) => (
+                            <p className="question-option" key={optionIndex}>
+                              {String.fromCharCode(65 + optionIndex)}. {option}
+                            </p>
+                          ))}
+                          <details>
+                            <summary>Reveal answer and explanation</summary>
+                            {answerIndex >= 0 && answerIndex < options.length && (
+                              <p><strong>
+                                Correct answer: {String.fromCharCode(65 + answerIndex)}. {options[answerIndex]}
+                              </strong></p>
+                            )}
+                            {question.explanation && <p>{question.explanation}</p>}
+                          </details>
+                        </div>
+                      )
+                    })}
               </section>
+
+              {Array.isArray(catalogueLessons[selectedUnit].clinicalCases) && catalogueLessons[selectedUnit].clinicalCases.length > 0 && (
+                <section className="lesson-panel">
+                  <h2>Clinical case studies</h2>
+                  {catalogueLessons[selectedUnit].clinicalCases.map((item, index) => (
+                    <div className="note-topic" key={index}>
+                      <h3>{item.title || item.heading || `Case study ${index + 1}`}</h3>
+                      {(item.content || item.body) && <p>{item.content || item.body}</p>}
+                      {item.points && (
+                        <ul>
+                          {item.points.map((point, pointIndex) => <li key={pointIndex}>{point}</li>)}
+                        </ul>
+                      )}
+                    </div>
+                  ))}
+                </section>
+              )}
+
+              {Array.isArray(catalogueLessons[selectedUnit].writtenQuestions) && catalogueLessons[selectedUnit].writtenQuestions.length > 0 && (
+                <section className="lesson-panel">
+                  <h2>Written and short-answer questions</h2>
+                  <p>Attempt each question before revealing the model answer and marking guide.</p>
+                  {catalogueLessons[selectedUnit].writtenQuestions.map((item, index) => (
+                    <div className="practice-question" key={index}>
+                      <h3>{index + 1}. {item.question || 'Written question'}</h3>
+                      <details>
+                        <summary>Reveal model answer and marking guide</summary>
+                        {item.modelAnswer && (
+                          <>
+                            <h4>Model answer</h4>
+                            <p>{item.modelAnswer}</p>
+                          </>
+                        )}
+                        {item.markingGuide && (
+                          <>
+                            <h4>Marking guide</h4>
+                            <p>{item.markingGuide}</p>
+                          </>
+                        )}
+                      </details>
+                    </div>
+                  ))}
+                </section>
+              )}
             </>
           ) : (
             <>

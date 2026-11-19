@@ -1,0 +1,155 @@
+.lesson-editor {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+
+.lesson-editor-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.lesson-editor-heading h3,
+.lesson-editor-section h4 {
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.lesson-editor-heading p {
+  margin: 5px 0 0;
+  color: var(--text-secondary);
+  font-size: 0.88rem;
+}
+
+.lesson-editor-section,
+.lesson-editor-card {
+  display: grid;
+  gap: 10px;
+  min-width: 0;
+}
+
+.lesson-editor-section {
+  padding: 15px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.lesson-editor-card {
+  padding: 13px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--background);
+}
+
+.lesson-editor label {
+  display: grid;
+  gap: 5px;
+  color: var(--text-primary);
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.lesson-editor input,
+.lesson-editor textarea {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text-primary);
+  font: inherit;
+}
+
+.lesson-editor textarea {
+  resize: vertical;
+  line-height: 1.55;
+}
+
+.lesson-editor button {
+  width: fit-content;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text-primary);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.88rem;
+}
+
+.lesson-editor button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.lesson-editor-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.lesson-editor-row input {
+  flex: 1;
+}
+
+.lesson-editor-preview {
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  color: var(--text-primary);
+}
+
+.lesson-editor-preview summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.lesson-editor-preview pre {
+  overflow-x: auto;
+  max-height: 420px;
+  padding: 12px;
+  border-radius: 8px;
+  background: var(--background);
+  color: var(--text-primary);
+  font-size: 0.8rem;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.lesson-editor-json {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--background);
+  color: var(--text-primary);
+  font-family: monospace;
+}
+
+.lesson-editor-error {
+  color: var(--danger, #c62828);
+  font-size: 0.88rem;
+}
+
+@media (max-width: 640px) {
+  .lesson-editor-section {
+    padding: 11px;
+  }
+
+  .lesson-editor-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .lesson-editor-row button {
+    align-self: flex-start;
+  }
+}

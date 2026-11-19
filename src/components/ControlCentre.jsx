@@ -5,6 +5,7 @@ import './ControlCentre.css'
 import Monetization from './Monetization'
 import { legacyCourses, legacyUnits, legacyLessonContent } from '../legacyCourseData'
 import AdminAcademicManager from './AdminAcademicManager'
+import LessonContentEditor from './LessonContentEditor'
 
 const SECTIONS = [
   { id: 'overview', label: 'Overview' },
@@ -710,6 +711,13 @@ export default function ControlCentre({ onClose }) {
       return
     }
 
+    for (const field of ['clinicalCases', 'writtenQuestions']) {
+      if (parsedContent[field] !== undefined && !Array.isArray(parsedContent[field])) {
+        setMaterialMessage(`The "${field}" field must be an array.`)
+        return
+      }
+    }
+
     if (!editingMaterialId && materials.length > 0) {
       setMaterialMessage(
         'A material already exists for this unit. Select it above and edit it instead of creating a duplicate.'
@@ -1357,21 +1365,11 @@ export default function ControlCentre({ onClose }) {
                         <option value="archived">Archived — hidden from students</option>
                       </select>
 
-                      <label>Structured lesson content (JSON) *</label>
-                      <textarea
-                        className="cc-material-json"
+                      <LessonContentEditor
                         value={materialContent}
-                        onChange={event => setMaterialContent(event.target.value)}
-                        spellCheck={false}
-                        rows={22}
-                        required
+                        onChange={setMaterialContent}
+                        disabled={savingMaterial}
                       />
-
-                      <p className="cc-materials-help">
-                        Required fields: objectives, notes and examPoints must be
-                        arrays. Optional fields include clinical, questions and mcqs.
-                        Existing lessons retain their original structure.
-                      </p>
 
                       <div className="cc-material-actions">
                         <button type="submit" disabled={savingMaterial}>
