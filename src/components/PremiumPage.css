@@ -444,3 +444,96 @@
   background: var(--surface-secondary);
   color: var(--text-primary);
 }
+
+
+/* Mobile-first payment selection improvement */
+.premium-checkout {
+  scroll-margin-top: 16px;
+}
+
+.premium-methods {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.premium-methods label {
+  min-width: 0;
+  align-items: flex-start;
+  padding: 11px;
+}
+
+.premium-methods label span {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.premium-methods label strong {
+  font-size: 13px;
+}
+
+.premium-methods label small {
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+@media (max-width: 600px) {
+  .premium-plans,
+  .premium-checkout {
+    margin-bottom: 16px;
+  }
+
+  .premium-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+  }
+
+  .premium-card {
+    min-width: 0;
+    padding: 12px;
+  }
+
+  .premium-card h3 {
+    font-size: 13px;
+  }
+
+  .premium-price {
+    font-size: 23px;
+  }
+
+  .premium-card p {
+    font-size: 11px;
+  }
+
+  .premium-card button {
+    padding: 10px 7px;
+    font-size: 12px;
+  }
+
+  .premium-checkout {
+    padding: 13px;
+  }
+
+  .premium-methods {
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .premium-methods label {
+    gap: 7px;
+    padding: 9px;
+  }
+
+  .premium-methods label strong {
+    font-size: 12px;
+  }
+
+  .premium-methods label small {
+    font-size: 9px;
+  }
+
+  .premium-pay {
+    position: sticky;
+    bottom: 10px;
+    z-index: 2;
+    box-shadow: 0 3px 14px rgba(0, 0, 0, .18);
+  }
+}

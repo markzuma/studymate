@@ -1,10 +1,10 @@
 
-import { cloneElement, useCallback, useEffect, useState } from 'react'
+import { cloneElement, lazy, Suspense, useCallback, useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import './AuthGate.css'
 import ControlCentre from './ControlCentre'
 import UserActivityMonitor from './UserActivityMonitor'
-import PremiumPage from './PremiumPage'
+const PremiumPage = lazy(() => import('./PremiumPage'))
 import ThemeSettings from './ThemeSettings'
 import ProfileSettings from './ProfileSettings'
 import { useBackHandler } from '../context/NavigationProvider'
@@ -297,21 +297,23 @@ export default function AuthGate({ children }) {
         {profile?.role === 'admin' && showControlCentre ? (
           <ControlCentre onClose={() => setShowControlCentre(false)} />
         ) : (profile?.role === 'student' || profile?.role === 'admin') && showPremium ? (
-          <PremiumPage
-            user={session.user}
-            onBack={() => {
-              refreshPremiumAccess()
-              setShowPremium(false)
-            }}
-            onSubscriptionUpdated={refreshPremiumAccess}
-            hasPremiumAccess={premiumAccess || profile?.role === 'admin'}
-            onOpenFeature={(moduleId) => {
-              if (!premiumAccess && profile?.role !== 'admin') return
-              setPremiumModuleReturn(true)
-              setShowPremium(false)
-              setPremiumLaunch(moduleId)
-            }}
-          />
+          <Suspense fallback={<div className="premium-page">Opening Premium...</div>}>
+            <PremiumPage
+              user={session.user}
+              onBack={() => {
+                refreshPremiumAccess()
+                setShowPremium(false)
+              }}
+              onSubscriptionUpdated={refreshPremiumAccess}
+              hasPremiumAccess={premiumAccess || profile?.role === 'admin'}
+              onOpenFeature={(moduleId) => {
+                if (!premiumAccess && profile?.role !== 'admin') return
+                setPremiumModuleReturn(true)
+                setShowPremium(false)
+                setPremiumLaunch(moduleId)
+              }}
+            />
+          </Suspense>
         ) : (
           <div className="authenticated-app-shell">
             {cloneElement(children, {

@@ -53,8 +53,19 @@ export default function PremiumPage({ user, onBack, onSubscriptionUpdated = () =
       setLoading(true)
       setError('')
 
-      const [planResult, subscriptionResult, settingsResult] =
-        await Promise.all([
+      // Load payment settings independently; they must not delay the plans.
+      supabase
+        .from('manual_payment_settings')
+        .select('pochi_phone_number')
+        .eq('id', 1)
+        .maybeSingle()
+        .then(({ data }) => {
+          if (active) setPochiPhone(data?.pochi_phone_number || '')
+        })
+        .catch(() => {})
+
+      try {
+        const [planResult, subscriptionResult] = await Promise.all([
           supabase
             .from('subscription_plans')
             .select('id, name, billing_interval, price_kes, duration_days')
@@ -65,30 +76,29 @@ export default function PremiumPage({ user, onBack, onSubscriptionUpdated = () =
             .select('id, plan_id, status, starts_at, ends_at')
             .eq('student_id', user.id)
             .order('created_at', { ascending: false })
-            .limit(1),
-          supabase
-            .from('manual_payment_settings')
-            .select('pochi_phone_number')
-            .eq('id', 1)
-            .maybeSingle()
+            .limit(1)
         ])
 
-      if (!active) return
+        if (!active) return
 
-      if (planResult.error || subscriptionResult.error) {
-        setError('Unable to load Premium information. Please try again.')
-      } else {
-        setPlans(planResult.data || [])
-        const latestSubscription = subscriptionResult.data?.[0] || null
-        setSubscription(latestSubscription)
+        if (planResult.error || subscriptionResult.error) {
+          setError('Unable to load Premium information. Please try again.')
+        } else {
+          setPlans(planResult.data || [])
+          const latestSubscription = subscriptionResult.data?.[0] || null
+          setSubscription(latestSubscription)
 
-        if (latestSubscription?.status === 'active') {
-          onSubscriptionUpdated()
+          if (latestSubscription?.status === 'active') {
+            onSubscriptionUpdated()
+          }
         }
+      } catch {
+        if (active) {
+          setError('Unable to load Premium information. Please try again.')
+        }
+      } finally {
+        if (active) setLoading(false)
       }
-
-      setPochiPhone(settingsResult.data?.pochi_phone_number || '')
-      setLoading(false)
     }
 
     loadPremiumData()
@@ -151,6 +161,23 @@ export default function PremiumPage({ user, onBack, onSubscriptionUpdated = () =
       clearInterval(timer)
     }
   }, [user.id, subscription?.id, subscription?.status, paymentInitiated, onSubscriptionUpdated])
+
+  // Bring subscription plans into view when Premium opens.
+  useEffect(() => {
+    document.getElementById('premium-plans')?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    })
+  }, [])
+
+  useEffect(() => {
+    if (!selectedPlan || activeSubscription || pendingSubscription) return
+
+    document.getElementById('premium-checkout')?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    })
+  }, [selectedPlan])
 
   const activeSubscription =
     subscription?.status === 'active' &&
@@ -387,7 +414,7 @@ export default function PremiumPage({ user, onBack, onSubscriptionUpdated = () =
       </section>
 
       {selectedPlan && !activeSubscription && !pendingSubscription && (
-        <section className="premium-checkout">
+        <section className="premium-checkout" id="premium-checkout">
           <h2>Payment method</h2>
           <p>
             Selected: <strong>{selectedPlan.name}</strong> —
