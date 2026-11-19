@@ -307,7 +307,7 @@ export default function PremiumPage({ user, onBack, onSubscriptionUpdated = () =
       <section className="premium-feature-catalogue">
         <div className="premium-feature-heading">
           <span className="premium-eyebrow">YOUR PREMIUM TOOLKIT</span>
-          <h2>Explore the six learning features</h2>
+          <h2>Explore the seven learning features</h2>
           <p>Browse each tool, see what it offers, and open it when you have access.</p>
         </div>
 
@@ -318,7 +318,8 @@ export default function PremiumPage({ user, onBack, onSubscriptionUpdated = () =
             { id: 'exams', icon: '📝', title: 'Smart Exam Centre', desc: 'Practise CATs, revision questions and mock examinations.' },
             { id: 'clinical', icon: '🩺', title: 'Clinical Skills Lab', desc: 'Work through interactive clinical scenarios and prioritisation.' },
             { id: 'hub', icon: '📚', title: 'Nursing Knowledge Hub', desc: 'Browse nursing subjects and navigate learning materials.' },
-            { id: 'simulator', icon: '🏥', title: 'Virtual Patient Simulator', desc: 'Assess a simulated patient and practise clinical judgement.' }
+            { id: 'simulator', icon: '🏥', title: 'Virtual Patient Simulator', desc: 'Assess a simulated patient and practise clinical judgement.' },
+            { id: 'planner', icon: '📅', title: 'Study Planner', desc: 'Organise your study timetable, assignments, CATs and examinations in one place.' }
           ].map(feature => (
             <button
               type="button"

@@ -487,6 +487,23 @@ function App({ isPremium = false, premiumLoading = false, isAdmin = false, onOpe
     )
   }
 
+  if (activePremiumModule === 'planner') {
+    return (
+      <div className="app premium-module-page">
+        <header className="navbar">
+          <a className="brand" href="#" onClick={returnFromPremiumModule}>
+            <span className="brand-icon">✚</span>
+            <span>Study<span className="brand-green">Mate</span></span>
+          </a>
+          <button type="button" className="nav-button" onClick={returnFromPremiumModule}>
+            ← Back to Premium
+          </button>
+        </header>
+        <StudyPlanner />
+      </div>
+    )
+  }
+
   if (activePremiumModule && activePremiumModule !== 'exams') {
     return (
       <div className="app premium-module-page">
@@ -894,7 +911,7 @@ function App({ isPremium = false, premiumLoading = false, isAdmin = false, onOpe
             </button>
           </div>
 
-          <StudyPlanner />
+
 
           <section className="dashboard-premium-ad">
             <div className="dashboard-premium-ad-copy">
