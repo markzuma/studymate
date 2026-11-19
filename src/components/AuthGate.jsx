@@ -27,6 +27,8 @@ export default function AuthGate({ children }) {
   const [premiumLoading, setPremiumLoading] = useState(true)
   const [showControlCentre, setShowControlCentre] = useState(false)
   const [showPremium, setShowPremium] = useState(false)
+  const [premiumLaunch, setPremiumLaunch] = useState(null)
+  const [premiumModuleReturn, setPremiumModuleReturn] = useState(false)
   const [showAppearance, setShowAppearance] = useState(false)
   const [showProfile, setShowProfile] = useState(false)
 
@@ -271,8 +273,15 @@ export default function AuthGate({ children }) {
             </button>
           )}
 
-          {profile?.role === 'student' && (
-            <button onClick={() => setShowPremium(!showPremium)}>
+          {(profile?.role === 'student' || profile?.role === 'admin') && (
+            <button onClick={() => {
+              if (showPremium) {
+                setShowPremium(false)
+              } else {
+                setShowControlCentre(false)
+                setShowPremium(true)
+              }
+            }}>
               {showPremium ? 'Back to Learning' : 'Premium'}
             </button>
           )}
@@ -287,7 +296,7 @@ export default function AuthGate({ children }) {
 
         {profile?.role === 'admin' && showControlCentre ? (
           <ControlCentre onClose={() => setShowControlCentre(false)} />
-        ) : profile?.role === 'student' && showPremium ? (
+        ) : (profile?.role === 'student' || profile?.role === 'admin') && showPremium ? (
           <PremiumPage
             user={session.user}
             onBack={() => {
@@ -295,6 +304,13 @@ export default function AuthGate({ children }) {
               setShowPremium(false)
             }}
             onSubscriptionUpdated={refreshPremiumAccess}
+            hasPremiumAccess={premiumAccess || profile?.role === 'admin'}
+            onOpenFeature={(moduleId) => {
+              if (!premiumAccess && profile?.role !== 'admin') return
+              setPremiumModuleReturn(true)
+              setShowPremium(false)
+              setPremiumLaunch(moduleId)
+            }}
           />
         ) : (
           <div className="authenticated-app-shell">
@@ -302,7 +318,18 @@ export default function AuthGate({ children }) {
               isPremium: premiumAccess,
               premiumLoading,
               isAdmin: profile?.role === 'admin',
-              onOpenPremium: () => setShowPremium(true)
+              onOpenPremium: () => setShowPremium(true),
+              premiumLaunch,
+              onPremiumLaunchHandled: () => setPremiumLaunch(null),
+              onPremiumModuleBack: () => {
+                if (premiumModuleReturn) {
+                  setPremiumModuleReturn(false)
+                  setShowPremium(true)
+                }
+              },
+              onOpenPremiumFeature: (moduleId) => {
+                if (premiumAccess || profile?.role === 'admin') children.props?.onOpenPremiumFeature?.(moduleId)
+              }
             })}
           </div>
         )}

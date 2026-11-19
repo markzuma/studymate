@@ -29,7 +29,8 @@ const PAYMENT_METHODS = [
   }
 ]
 
-export default function PremiumPage({ user, onBack, onSubscriptionUpdated = () => {} }) {
+export default function PremiumPage({ user, onBack, onSubscriptionUpdated = () => {}, hasPremiumAccess = false, onOpenFeature = () => {} }) {
+  const [selectedPremiumFeature, setSelectedPremiumFeature] = useState(null)
   const [plans, setPlans] = useState([])
   const [subscription, setSubscription] = useState(null)
   const [selectedPlan, setSelectedPlan] = useState(null)
@@ -296,7 +297,61 @@ export default function PremiumPage({ user, onBack, onSubscriptionUpdated = () =
         <p className="premium-success" role="status">{paymentMessage}</p>
       )}
 
-      <section className="premium-plans">
+      <section className="premium-feature-catalogue">
+        <div className="premium-feature-heading">
+          <span className="premium-eyebrow">YOUR PREMIUM TOOLKIT</span>
+          <h2>Explore the six learning features</h2>
+          <p>Browse each tool, see what it offers, and open it when you have access.</p>
+        </div>
+
+        <div className="premium-feature-grid">
+          {[
+            { id: 'dashboard', icon: '📊', title: 'Learning Dashboard', desc: 'Monitor lesson completion, activity and progress across your subjects.' },
+            { id: 'tutor', icon: '🤖', title: 'Study Tutor', desc: 'Search available nursing lesson materials by topic and keyword.' },
+            { id: 'exams', icon: '📝', title: 'Smart Exam Centre', desc: 'Practise CATs, revision questions and mock examinations.' },
+            { id: 'clinical', icon: '🩺', title: 'Clinical Skills Lab', desc: 'Work through interactive clinical scenarios and prioritisation.' },
+            { id: 'hub', icon: '📚', title: 'Nursing Knowledge Hub', desc: 'Browse nursing subjects and navigate learning materials.' },
+            { id: 'simulator', icon: '🏥', title: 'Virtual Patient Simulator', desc: 'Assess a simulated patient and practise clinical judgement.' }
+          ].map(feature => (
+            <button
+              type="button"
+              className="premium-feature-card"
+              key={feature.id}
+              onClick={() => {
+                if (hasPremiumAccess) {
+                  onOpenFeature?.(feature.id)
+                } else {
+                  setSelectedPremiumFeature(feature)
+                }
+              }}
+            >
+              <span className="premium-feature-icon">{feature.icon}</span>
+              <h3>{feature.title}</h3>
+              <p>{feature.desc}</p>
+              <strong>{hasPremiumAccess ? 'Open feature →' : 'Explore feature →'}</strong>
+            </button>
+          ))}
+        </div>
+
+        {selectedPremiumFeature && !hasPremiumAccess && (
+          <div className="premium-feature-preview">
+            <span className="premium-feature-icon">{selectedPremiumFeature.icon}</span>
+            <h3>{selectedPremiumFeature.title}</h3>
+            <p>{selectedPremiumFeature.desc}</p>
+            <p>Premium access is required to launch this learning tool.</p>
+            <button type="button" onClick={() => {
+              setSelectedPremiumFeature(null)
+              document.getElementById('premium-plans')?.scrollIntoView({ behavior: 'smooth' })
+            }}>
+              View subscription plans ↓
+            </button>
+            <button type="button" className="premium-feature-dismiss"
+              onClick={() => setSelectedPremiumFeature(null)}>Close preview</button>
+          </div>
+        )}
+      </section>
+
+      <section className="premium-plans" id="premium-plans">
         <h2>Choose your plan</h2>
         <p>Affordable plans designed for nursing students.</p>
 
