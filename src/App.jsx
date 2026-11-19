@@ -61,17 +61,25 @@ function mergeLearningData(localData, cloudData) {
   return { completed, recent }
 }
 
-function App({ isPremium = false, premiumLoading = false, isAdmin = false, onOpenPremium = () => {} }) {
+function App({ isPremium = false, premiumLoading = false, isAdmin = false, onOpenPremium = () => {}, premiumLaunch = null, onPremiumLaunchHandled = () => {}, onPremiumModuleBack = () => {} }) {
   const [learningData, setLearningData] = useState(readLearningData)
   const [activeLearningUser, setActiveLearningUser] = useState(null)
   const [learningCloudReady, setLearningCloudReady] = useState(false)
   const [showExams, setShowExams] = useState(false)
+  const [activePremiumModule, setActivePremiumModule] = useState('')
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [selectedCourse, setSelectedCourse] = useState(null)
   const [selectedUnit, setSelectedUnit] = useState(null)
   const [catalogueCourses, setCatalogueCourses] = useState(legacyCourseCatalogue)
   const [catalogueUnits, setCatalogueUnits] = useState(legacyUnitCatalogue)
   const [catalogueLessons, setCatalogueLessons] = useState({})
+  useEffect(() => {
+    if (!premiumLaunch) return
+    setActivePremiumModule(premiumLaunch)
+    if (premiumLaunch === 'exams') setShowExams(true)
+    onPremiumLaunchHandled()
+  }, [premiumLaunch, onPremiumLaunchHandled])
+
 
   // Load published courses, units and structured lessons from Supabase.
   // Lesson content is loaded only from published Supabase materials.
@@ -415,10 +423,21 @@ function App({ isPremium = false, premiumLoading = false, isAdmin = false, onOpe
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 
+  const returnFromPremiumModule = () => {
+    setActivePremiumModule('')
+    setShowExams(false)
+    onPremiumModuleBack()
+  }
+
   const handleAppBack = () => {
     if (showExams) {
-      setShowExams(false)
+      returnFromPremiumModule()
       window.scrollTo({ top: 0, behavior: 'smooth' })
+      return true
+    }
+
+    if (activePremiumModule && !showExams) {
+      returnFromPremiumModule()
       return true
     }
 
@@ -436,7 +455,7 @@ function App({ isPremium = false, premiumLoading = false, isAdmin = false, onOpe
     return false
   }
 
-  useBackHandler(handleAppBack, showExams || Boolean(selectedCourse), 20)
+  useBackHandler(handleAppBack, showExams || Boolean(selectedCourse) || Boolean(activePremiumModule), 20)
 
   if (showExams) {
     return (
@@ -462,7 +481,36 @@ function App({ isPremium = false, premiumLoading = false, isAdmin = false, onOpe
           premiumLoading={premiumLoading}
           isAdmin={isAdmin}
           onUpgrade={onOpenPremium}
-          onHome={() => setShowExams(false)}
+          onHome={returnFromPremiumModule}
+        />
+      </div>
+    )
+  }
+
+  if (activePremiumModule && activePremiumModule !== 'exams') {
+    return (
+      <div className="app premium-module-page">
+        <LearningSuite
+          key={activePremiumModule}
+          courses={catalogueCourses}
+          learningData={learningData}
+          catalogueUnits={catalogueUnits}
+          catalogueLessons={catalogueLessons}
+          onOpenCourse={(course) => {
+            setActivePremiumModule('')
+            setSelectedCourse(course)
+          }}
+          onOpenExams={() => {
+            setActivePremiumModule('exams')
+            setShowExams(true)
+          }}
+          hasPremiumAccess={isPremium}
+          premiumLoading={premiumLoading}
+          isAdmin={isAdmin}
+          onOpenPremium={onOpenPremium}
+          initialActive={activePremiumModule}
+          standalone
+          onBack={returnFromPremiumModule}
         />
       </div>
     )
@@ -848,18 +896,22 @@ function App({ isPremium = false, premiumLoading = false, isAdmin = false, onOpe
 
           <StudyPlanner />
 
-          <LearningSuite
-            courses={catalogueCourses}
-            learningData={learningData}
-            catalogueUnits={catalogueUnits}
-            catalogueLessons={catalogueLessons}
-            onOpenCourse={setSelectedCourse}
-            onOpenExams={() => setShowExams(true)}
-            hasPremiumAccess={isPremium}
-            premiumLoading={premiumLoading}
-            isAdmin={isAdmin}
-            onOpenPremium={onOpenPremium}
-          />
+          <section className="dashboard-premium-ad">
+            <div className="dashboard-premium-ad-copy">
+              <span className="dashboard-premium-ad-label">PERIAK PREMIUM</span>
+              <h2>Learn. Practise. Excel.</h2>
+              <p>Explore dedicated nursing tools designed to strengthen your learning,
+                examination preparation and clinical decision-making.</p>
+              <div className="dashboard-premium-ad-features">
+                <span>📊 Learning progress</span>
+                <span>📝 Exam practice</span>
+                <span>🩺 Clinical simulations</span>
+              </div>
+              <button type="button" onClick={onOpenPremium}>
+                Explore Premium features →
+              </button>
+            </div>
+          </section>
 
           <div className="dashboard-stats">
             <article className="dashboard-stat">

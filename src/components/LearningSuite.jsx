@@ -32,9 +32,10 @@ const cases = [
 export default function LearningSuite({
   courses = [], learningData = {}, catalogueUnits = {},
   catalogueLessons = {}, onOpenCourse = () => {}, onOpenExams = () => {},
-  hasPremiumAccess = false, premiumLoading = false, isAdmin = false, onOpenPremium = () => {}
+  hasPremiumAccess = false, premiumLoading = false, isAdmin = false, onOpenPremium = () => {},
+  initialActive = '', standalone = false, onBack = () => {}
 }) {
-  const [active, setActive] = useState('')
+  const [active, setActive] = useState(initialActive)
   const [search, setSearch] = useState('')
   const [answer, setAnswer] = useState(null)
   const [caseIndex, setCaseIndex] = useState(0)
@@ -60,7 +61,7 @@ export default function LearningSuite({
       ) : !hasPremiumAccess && !isAdmin && (
         <button type="button" onClick={onOpenPremium}>Unlock all six modules →</button>
       )}
-      {active && <button onClick={() => setActive('')}>← Back</button>}
+      {standalone ? <button onClick={onBack}>← Back to Premium</button> : active && <button onClick={() => setActive('')}>← Back</button>}
     </header>
 
     {!active ? <>

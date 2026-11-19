@@ -246,3 +246,13 @@
     font-size: 12px;
   }
 }
+
+
+/* Standalone Premium feature page */
+.premium-module-page .learning-suite {
+  max-width: 1050px;
+  margin: 24px auto;
+}
+.premium-module-page .suite-heading {
+  align-items: flex-start;
+}
