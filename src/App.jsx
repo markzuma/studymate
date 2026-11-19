@@ -4,6 +4,7 @@ import { supabase } from './lib/supabase'
 import './App.css'
 import ExamCentre from './components/ExamCentre'
 import StudyPlanner from './components/StudyPlanner'
+import LearningSuite from './components/LearningSuite'
 import CourseOutlineViewer from './components/CourseOutlineViewer'
 import { pharmacologyLessons } from './pharmacologyLessons'
 import { midwiferyLessons } from './midwiferyLessons'
@@ -6556,6 +6557,15 @@ function App() {
           </div>
 
           <StudyPlanner />
+
+          <LearningSuite
+            courses={catalogueCourses}
+            learningData={learningData}
+            catalogueUnits={catalogueUnits}
+            catalogueLessons={catalogueLessons}
+            onOpenCourse={setSelectedCourse}
+            onOpenExams={() => setShowExams(true)}
+          />
 
           <div className="dashboard-stats">
             <article className="dashboard-stat">
