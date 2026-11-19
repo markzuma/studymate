@@ -305,3 +305,60 @@
   cursor: pointer;
   font-weight: 600;
 }
+
+
+/* PERIAK 2.0 — compact Premium and checkout experience */
+.premium-page {
+  padding: 20px clamp(14px, 3vw, 28px) 35px;
+  background: var(--page-bg);
+  color: var(--text-primary);
+}
+.premium-header { max-width: 1120px; margin: 0 auto 25px; }
+.premium-header button { color: var(--accent); font-size: 13px; }
+.premium-hero { max-width: 720px; margin-bottom: 30px; }
+.premium-eyebrow { font-size: 10px; letter-spacing: 1.5px; }
+.premium-hero h1 { margin: 9px 0; font-size: clamp(27px, 4vw, 40px); letter-spacing: -1px; }
+.premium-hero p { color: var(--text-muted); font-size: 14px; line-height: 1.65; }
+.premium-plans, .premium-checkout, .premium-status, .premium-error { max-width: 1050px; }
+.premium-plans, .premium-checkout { margin-bottom: 25px; }
+.premium-plans h2, .premium-checkout h2 { font-size: 19px; letter-spacing: -.35px; }
+.premium-plans > p, .premium-checkout > p { color: var(--text-muted); font-size: 13px; }
+.premium-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)); gap: 12px; margin-top: 16px; }
+.premium-card { padding: 18px; border: 1px solid var(--border); border-radius: var(--card-radius); background: var(--surface); box-shadow: none; }
+.premium-card.selected { border: 2px solid var(--accent); background: var(--accent-soft); }
+.premium-card h3 { font-size: 15px; }
+.premium-price { margin: 12px 0 5px; color: var(--accent); font-size: 27px; letter-spacing: -.5px; }
+.premium-card p { color: var(--text-muted); font-size: 13px; line-height: 1.5; }
+.premium-card button, .premium-pay { margin-top: 12px; padding: 11px 13px; border-radius: 9px; background: var(--accent); font-size: 13px; }
+.premium-checkout { padding: 19px; border: 1px solid var(--border); border-radius: var(--card-radius); background: var(--surface); }
+.premium-methods { gap: 9px; margin-top: 14px; }
+.premium-methods label { padding: 12px; border-color: var(--border); border-radius: 9px; background: var(--surface); color: var(--text-primary); font-size: 13px; }
+.premium-methods label.chosen { border-color: var(--accent); background: var(--accent-soft); }
+.premium-methods small, .premium-phone-field small { color: var(--text-muted); font-size: 11px; }
+.premium-phone-field { gap: 7px; margin: 15px 0; }
+.premium-phone-field label { font-size: 13px; }
+.premium-phone-field input { padding: 11px 12px; border-color: var(--border); border-radius: 9px; background: var(--surface); color: var(--text-primary); }
+.premium-note { color: var(--text-muted); font-size: 12px; }
+.premium-manual-payment { padding: 15px; border-radius: 10px; background: var(--surface-secondary); }
+.premium-manual-payment h3 { font-size: 15px; }
+.premium-manual-payment ol { font-size: 13px; }
+.premium-pochi-number { border-radius: 9px; background: var(--page-bg); }
+.premium-pochi-number span { font-size: 17px; }
+.premium-status { padding: 15px; border-radius: 10px; font-size: 13px; }
+.premium-error { font-size: 13px; }
+.premium-success, .premium-pending { padding: 12px; border-radius: 9px; font-size: 13px; }
+.premium-footer { padding: 22px 0; color: var(--text-muted); }
+@media (max-width: 600px) {
+  .premium-page { padding: 14px 12px 25px; }
+  .premium-header { margin-bottom: 20px; }
+  .premium-hero { margin-bottom: 23px; }
+  .premium-card { padding: 15px; }
+  .premium-checkout { padding: 14px; }
+}
+:root[data-theme="dark"] .premium-status,
+:root[data-theme="dark"] .premium-success {
+  background: #173d2c; border-color: #329b62; color: #a7f3c2;
+}
+:root[data-theme="dark"] .premium-pending {
+  background: #49391d; color: #fbd38d;
+}

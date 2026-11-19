@@ -3,7 +3,6 @@ import { useBackHandler } from '../context/NavigationProvider'
 import { supabase } from '../lib/supabase'
 import './ControlCentre.css'
 import Monetization from './Monetization'
-import { legacyCourses, legacyUnits, legacyLessonContent } from '../legacyCourseData'
 import AdminAcademicManager from './AdminAcademicManager'
 import LessonContentEditor from './LessonContentEditor'
 
@@ -37,8 +36,6 @@ export default function ControlCentre({ onClose }) {
   const [savingCourse, setSavingCourse] = useState(false)
   const [editingCourseId, setEditingCourseId] = useState('')
   const [courseMessage, setCourseMessage] = useState('')
-  const [importingLegacy, setImportingLegacy] = useState(false)
-  const [importMessage, setImportMessage] = useState('')
   const [selectedCourseId, setSelectedCourseId] = useState('')
   const [units, setUnits] = useState([])
   const [materialCourseId, setMaterialCourseId] = useState('')
@@ -156,198 +153,6 @@ export default function ControlCentre({ onClose }) {
   useEffect(() => {
     loadDashboard()
   }, [])
-
-  async function importLegacyCourses() {
-    if (importingLegacy) return
-
-    setImportingLegacy(true)
-    setImportMessage('Preparing original PERIAK courses...')
-
-    const counts = {
-      coursesCreated: 0,
-      unitsCreated: 0,
-      lessonsCreated: 0,
-      lessonsSkipped: 0
-    }
-
-    try {
-      const { data: userData, error: userError } = await supabase.auth.getUser()
-
-      if (userError || !userData.user) {
-        throw new Error('Administrator session not found. Please sign in again.')
-      }
-
-      for (const legacyCourse of legacyCourses) {
-        const { data: matchingCourses, error: courseLookupError } = await supabase
-          .from('courses')
-          .select('id, title')
-          .eq('title', legacyCourse.title)
-
-        if (courseLookupError) {
-          throw new Error(`Could not check course "${legacyCourse.title}": ${courseLookupError.message}`)
-        }
-
-        if (matchingCourses.length > 1) {
-          throw new Error(`Multiple courses named "${legacyCourse.title}" already exist. Import stopped to avoid ambiguity.`)
-        }
-
-        let courseId
-
-        if (matchingCourses.length === 1) {
-          courseId = matchingCourses[0].id
-        } else {
-          const { data: newCourse, error: courseInsertError } = await supabase
-            .from('courses')
-            .insert({
-              title: legacyCourse.title,
-              description: legacyCourse.desc || null,
-              programme: 'BSc Nursing',
-              year_of_study: 1,
-              semester: 1,
-              status: 'published',
-              created_by: userData.user.id
-            })
-            .select('id')
-            .single()
-
-          if (courseInsertError) {
-            throw new Error(`Could not create course "${legacyCourse.title}": ${courseInsertError.message}`)
-          }
-
-          courseId = newCourse.id
-          counts.coursesCreated++
-        }
-
-        const originalUnitTitles = legacyUnits[legacyCourse.title] || []
-
-        const { data: existingUnits, error: unitLookupError } = await supabase
-          .from('course_units')
-          .select('id, title')
-          .eq('course_id', courseId)
-
-        if (unitLookupError) {
-          throw new Error(`Could not load units for "${legacyCourse.title}": ${unitLookupError.message}`)
-        }
-
-        const unitMap = new Map()
-
-        for (const unit of existingUnits || []) {
-          if (unitMap.has(unit.title)) {
-            throw new Error(`Duplicate unit "${unit.title}" found in "${legacyCourse.title}". Import stopped safely.`)
-          }
-          unitMap.set(unit.title, unit.id)
-        }
-
-        const missingUnits = originalUnitTitles
-          .map((title, index) => ({ title, sort_order: index * 10 }))
-          .filter(unit => !unitMap.has(unit.title))
-          .map(unit => ({
-            course_id: courseId,
-            title: unit.title,
-            unit_code: null,
-            description: null,
-            sort_order: unit.sort_order,
-            status: 'published'
-          }))
-
-        if (missingUnits.length > 0) {
-          const { data: insertedUnits, error: unitInsertError } = await supabase
-            .from('course_units')
-            .insert(missingUnits)
-            .select('id, title')
-
-          if (unitInsertError) {
-            throw new Error(`Could not add units to "${legacyCourse.title}": ${unitInsertError.message}`)
-          }
-
-          for (const unit of insertedUnits || []) {
-            unitMap.set(unit.title, unit.id)
-          }
-
-          counts.unitsCreated += insertedUnits?.length || 0
-        }
-
-        const unitIds = originalUnitTitles
-          .map(title => unitMap.get(title))
-          .filter(Boolean)
-
-        if (unitIds.length === 0) continue
-
-        const { data: existingMaterials, error: materialLookupError } = await supabase
-          .from('learning_materials')
-          .select('id, unit_id, title')
-          .in('unit_id', unitIds)
-
-        if (materialLookupError) {
-          throw new Error(`Could not check lesson materials for "${legacyCourse.title}": ${materialLookupError.message}`)
-        }
-
-        const materialKeys = new Set()
-
-        for (const material of existingMaterials || []) {
-          const key = `${material.unit_id}::${material.title}`
-          if (materialKeys.has(key)) {
-            throw new Error(`Duplicate material "${material.title}" found. Import stopped safely.`)
-          }
-          materialKeys.add(key)
-        }
-
-        const materialsToInsert = []
-
-        for (const unitTitle of originalUnitTitles) {
-          const lesson = legacyLessonContent[unitTitle]
-          const unitId = unitMap.get(unitTitle)
-
-          if (!lesson || !unitId) continue
-
-          const materialTitle = 'PERIAK original lesson content'
-          const key = `${unitId}::${materialTitle}`
-
-          if (materialKeys.has(key)) {
-            counts.lessonsSkipped++
-            continue
-          }
-
-          materialsToInsert.push({
-            unit_id: unitId,
-            title: materialTitle,
-            material_type: 'notes',
-            content: JSON.stringify(lesson),
-            sort_order: 0,
-            status: 'published',
-            created_by: userData.user.id
-          })
-
-          materialKeys.add(key)
-        }
-
-        if (materialsToInsert.length > 0) {
-          const { data: insertedMaterials, error: materialInsertError } = await supabase
-            .from('learning_materials')
-            .insert(materialsToInsert)
-            .select('id')
-
-          if (materialInsertError) {
-            throw new Error(`Could not save lessons for "${legacyCourse.title}": ${materialInsertError.message}`)
-          }
-
-          counts.lessonsCreated += insertedMaterials?.length || 0
-        }
-
-        setImportMessage(`Imported/checking: ${legacyCourse.title}`)
-      }
-
-      setImportMessage(
-        `Import complete. New courses: ${counts.coursesCreated}; new units: ${counts.unitsCreated}; new lessons: ${counts.lessonsCreated}; existing lessons skipped: ${counts.lessonsSkipped}.`
-      )
-
-      await loadDashboard()
-    } catch (error) {
-      setImportMessage(`Import stopped safely: ${error.message} You can run it again after resolving the issue.`)
-    } finally {
-      setImportingLegacy(false)
-    }
-  }
 
   async function createCourse(event) {
     event.preventDefault()
@@ -932,16 +737,6 @@ export default function ControlCentre({ onClose }) {
 
           {section === 'courses' && (
             <>
-              <button
-                type="button"
-                className="cc-unit-action"
-                disabled={importingLegacy}
-                onClick={importLegacyCourses}
-              >
-                {importingLegacy ? 'Importing original courses...' : 'Import original PERIAK courses and lessons'}
-              </button>
-              {importMessage && <p className="cc-course-message">{importMessage}</p>}
-
               <div className="cc-section-heading">
                 <div>
                   <h2>Courses & Units</h2>

@@ -1128,7 +1128,7 @@ function shuffleQuestions(questions) {
   return shuffled
 }
 
-export default function ExamCentre({ onHome }) {
+export default function ExamCentre({ onHome, hasPremiumAccess = false, premiumLoading = false, isAdmin = false, onUpgrade = () => {} }) {
   const [showHistory, setShowHistory] = useState(false)
   const [showDatabaseExams, setShowDatabaseExams] = useState(false)
   const sessionKey = 'periak_exam_centre_session_v1'
@@ -1452,6 +1452,36 @@ export default function ExamCentre({ onHome }) {
     setResponses(questionBanks[selectedSubject].map(() => null))
     setAttemptKey(null)
     setExamStartedAt(null)
+  }
+
+  if (premiumLoading && !isAdmin) {
+    return (
+      <main className="exam-centre premium-locked-page">
+        <section className="exam-card">
+          <p>Checking your Premium access…</p>
+        </section>
+      </main>
+    )
+  }
+
+  if (!hasPremiumAccess && !isAdmin) {
+    return (
+      <main className="exam-centre premium-locked-page">
+        <button type="button" onClick={onHome}>← Back to Home</button>
+        <section className="exam-card">
+          <p className="exam-label">PERIAK PREMIUM</p>
+          <h1>Examination Centre</h1>
+          <h2>Unlock your nursing exam practice</h2>
+          <p>
+            Access CAT practice, mock examinations, question banks,
+            timed assessments and examination history with Premium.
+          </p>
+          <button type="button" className="primary-button" onClick={onUpgrade}>
+            Explore Premium plans →
+          </button>
+        </section>
+      </main>
+    )
   }
 
   if (mode === 'mock' && started) {

@@ -1,5 +1,5 @@
 
-import { useEffect, useState } from 'react'
+import { cloneElement, useCallback, useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import './AuthGate.css'
 import ControlCentre from './ControlCentre'
@@ -23,6 +23,8 @@ export default function AuthGate({ children }) {
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
   const [profile, setProfile] = useState(null)
+  const [premiumAccess, setPremiumAccess] = useState(false)
+  const [premiumLoading, setPremiumLoading] = useState(true)
   const [showControlCentre, setShowControlCentre] = useState(false)
   const [showPremium, setShowPremium] = useState(false)
   const [showAppearance, setShowAppearance] = useState(false)
@@ -114,6 +116,33 @@ export default function AuthGate({ children }) {
       active = false
     }
   }, [session])
+
+  const refreshPremiumAccess = useCallback(async () => {
+    if (!session?.user?.id) {
+      setPremiumAccess(false)
+      setPremiumLoading(false)
+      return false
+    }
+
+    const { data, error } = await supabase.rpc('is_premium')
+
+    if (error) {
+      console.error('PERIAK Premium status check failed:', error.message)
+      setPremiumAccess(false)
+      setPremiumLoading(false)
+      return false
+    }
+
+    const active = data === true
+    setPremiumAccess(active)
+    setPremiumLoading(false)
+    return active
+  }, [session?.user?.id])
+
+  useEffect(() => {
+    setPremiumLoading(true)
+    refreshPremiumAccess()
+  }, [refreshPremiumAccess])
 
   async function handleSubmit(event) {
     event.preventDefault()
@@ -261,11 +290,20 @@ export default function AuthGate({ children }) {
         ) : profile?.role === 'student' && showPremium ? (
           <PremiumPage
             user={session.user}
-            onBack={() => setShowPremium(false)}
+            onBack={() => {
+              refreshPremiumAccess()
+              setShowPremium(false)
+            }}
+            onSubscriptionUpdated={refreshPremiumAccess}
           />
         ) : (
           <div className="authenticated-app-shell">
-            {children}
+            {cloneElement(children, {
+              isPremium: premiumAccess,
+              premiumLoading,
+              isAdmin: profile?.role === 'admin',
+              onOpenPremium: () => setShowPremium(true)
+            })}
           </div>
         )}
       </>

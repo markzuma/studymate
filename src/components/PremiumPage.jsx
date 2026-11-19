@@ -29,7 +29,7 @@ const PAYMENT_METHODS = [
   }
 ]
 
-export default function PremiumPage({ user, onBack }) {
+export default function PremiumPage({ user, onBack, onSubscriptionUpdated = () => {} }) {
   const [plans, setPlans] = useState([])
   const [subscription, setSubscription] = useState(null)
   const [selectedPlan, setSelectedPlan] = useState(null)
@@ -76,7 +76,12 @@ export default function PremiumPage({ user, onBack }) {
         setError('Unable to load Premium information. Please try again.')
       } else {
         setPlans(planResult.data || [])
-        setSubscription(subscriptionResult.data?.[0] || null)
+        const latestSubscription = subscriptionResult.data?.[0] || null
+        setSubscription(latestSubscription)
+
+        if (latestSubscription?.status === 'active') {
+          onSubscriptionUpdated()
+        }
       }
 
       setPochiPhone(settingsResult.data?.pochi_phone_number || '')
@@ -88,7 +93,7 @@ export default function PremiumPage({ user, onBack }) {
     return () => {
       active = false
     }
-  }, [user.id])
+  }, [user.id, onSubscriptionUpdated])
 
   // Check pending payments/subscriptions until the admin or Daraja updates them.
   useEffect(() => {
@@ -117,6 +122,7 @@ export default function PremiumPage({ user, onBack }) {
         setSubscription(latest)
 
         if (latest.status === 'active') {
+          onSubscriptionUpdated()
           setPaymentInitiated(false)
           setPaymentMessage(
             'Payment verified successfully. Your PERIAK Premium membership is now active.'
@@ -141,7 +147,7 @@ export default function PremiumPage({ user, onBack }) {
       active = false
       clearInterval(timer)
     }
-  }, [user.id, subscription?.id, subscription?.status, paymentInitiated])
+  }, [user.id, subscription?.id, subscription?.status, paymentInitiated, onSubscriptionUpdated])
 
   const activeSubscription =
     subscription?.status === 'active' &&

@@ -171,3 +171,78 @@
     padding: 10px;
   }
 }
+
+/* PERIAK 2.0 — compact Learning Suite */
+.learning-suite {
+  margin: 15px 0;
+  padding: 16px;
+  border-radius: var(--card-radius);
+  box-shadow: 0 3px 14px rgba(15, 23, 42, .035);
+}
+
+.suite-heading {
+  margin-bottom: 13px;
+}
+
+.suite-heading h2 {
+  font-size: 18px;
+  letter-spacing: -.35px;
+}
+
+.suite-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 9px;
+}
+
+.suite-card {
+  min-height: 105px;
+  padding: 12px;
+  border-radius: 11px;
+  background: var(--surface);
+}
+
+.suite-card:hover,
+.suite-option:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  transform: translateY(-2px);
+}
+
+.suite-card:disabled {
+  opacity: .72;
+  cursor: wait;
+  transform: none;
+}
+
+.suite-card strong {
+  letter-spacing: -.15px;
+}
+
+.suite-card b {
+  color: var(--accent);
+}
+
+.suite-content article {
+  border-radius: 11px;
+}
+
+@media (max-width: 760px) {
+  .suite-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 380px) {
+  .learning-suite {
+    padding: 11px;
+  }
+
+  .suite-card {
+    min-height: 100px;
+    padding: 9px;
+  }
+
+  .suite-card strong {
+    font-size: 12px;
+  }
+}

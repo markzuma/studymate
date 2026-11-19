@@ -31,7 +31,8 @@ const cases = [
 
 export default function LearningSuite({
   courses = [], learningData = {}, catalogueUnits = {},
-  catalogueLessons = {}, onOpenCourse = () => {}, onOpenExams = () => {}
+  catalogueLessons = {}, onOpenCourse = () => {}, onOpenExams = () => {},
+  hasPremiumAccess = false, premiumLoading = false, isAdmin = false, onOpenPremium = () => {}
 }) {
   const [active, setActive] = useState('')
   const [search, setSearch] = useState('')
@@ -43,6 +44,8 @@ export default function LearningSuite({
   const subjects = courses.filter(c => c.title.toLowerCase().includes(search.toLowerCase()))
 
   function open(id) {
+    if (premiumLoading && !isAdmin) return
+    if (!hasPremiumAccess && !isAdmin) return onOpenPremium()
     if (id === 'exams') return onOpenExams()
     setActive(id)
     setAnswer(null)
@@ -52,14 +55,19 @@ export default function LearningSuite({
     <header className="suite-heading">
       <div><small>PERIAK LEARNING SUITE</small><h2>Learn. Practise. Excel.</h2>
       <p>Your integrated nursing learning space.</p></div>
+      {premiumLoading && !isAdmin ? (
+        <span>Checking Premium access…</span>
+      ) : !hasPremiumAccess && !isAdmin && (
+        <button type="button" onClick={onOpenPremium}>Unlock all six modules →</button>
+      )}
       {active && <button onClick={() => setActive('')}>← Back</button>}
     </header>
 
     {!active ? <>
       <div className="suite-grid">
         {items.map(([id, icon, title, desc]) =>
-          <button className="suite-card" key={id} onClick={() => open(id)}>
-            <span>{icon}</span><strong>{title}</strong><p>{desc}</p><b>Open →</b>
+          <button className="suite-card" key={id} onClick={() => open(id)} disabled={premiumLoading && !isAdmin}>
+            <span>{icon}</span><strong>{title}</strong><p>{desc}</p>{premiumLoading && !isAdmin ? <b>Checking…</b> : hasPremiumAccess || isAdmin ? <b>Open →</b> : <b>🔒 Premium</b>}
           </button>
         )}
       </div>

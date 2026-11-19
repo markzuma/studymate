@@ -34,3 +34,4 @@ supabase/.temp/
 
 # Component backup files
 *.backup.*
+backups/
