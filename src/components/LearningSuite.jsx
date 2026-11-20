@@ -33,6 +33,7 @@ export default function LearningSuite({
   courses = [], learningData = {}, catalogueUnits = {},
   catalogueLessons = {}, onOpenCourse = () => {}, onOpenExams = () => {},
   hasPremiumAccess = false, premiumLoading = false, isAdmin = false, onOpenPremium = () => {},
+  onOpenPremiumFeature = () => onOpenPremium(),
   initialActive = '', standalone = false, onBack = () => {}
 }) {
   const [active, setActive] = useState(initialActive)
@@ -46,7 +47,7 @@ export default function LearningSuite({
 
   function open(id) {
     if (premiumLoading && !isAdmin) return
-    if (!hasPremiumAccess && !isAdmin) return onOpenPremium()
+    if (!hasPremiumAccess && !isAdmin) return onOpenPremiumFeature(id)
     if (id === 'exams') return onOpenExams()
     setActive(id)
     setAnswer(null)

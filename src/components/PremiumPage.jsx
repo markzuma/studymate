@@ -1,8 +1,19 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import './PremiumPage.css'
 
 const MPESA_STK_ENABLED = false
+
+const PREMIUM_FEATURES = [
+  { id: 'pastpapers', icon: '📑', title: 'Real Past Papers Library', desc: 'Access authentic examination papers from different institutions, organized by course, unit, year, semester and exam type.' },
+  { id: 'dashboard', icon: '📊', title: 'Learning Dashboard', desc: 'Monitor lesson completion, activity and progress across your subjects.' },
+  { id: 'exams', icon: '📝', title: 'Smart Exam Centre', desc: 'Practise CATs, revision questions and mock examinations.' },
+  { id: 'tutor', icon: '🤖', title: 'Study Tutor', desc: 'Search available nursing lesson materials by topic and keyword.' },
+  { id: 'clinical', icon: '🩺', title: 'Clinical Skills Lab', desc: 'Work through interactive clinical scenarios and prioritisation.' },
+  { id: 'hub', icon: '📚', title: 'Nursing Knowledge Hub', desc: 'Browse nursing subjects and navigate learning materials.' },
+  { id: 'simulator', icon: '🏥', title: 'Virtual Patient Simulator', desc: 'Assess a simulated patient and practise clinical judgement.' },
+  { id: 'planner', icon: '📅', title: 'Study Planner', desc: 'Organise your study timetable, assignments, CATs and examinations in one place.' }
+]
 
 const PAYMENT_METHODS = [
   {
@@ -31,8 +42,10 @@ const PAYMENT_METHODS = [
   }
 ]
 
-export default function PremiumPage({ user, onBack, onSubscriptionUpdated = () => {}, hasPremiumAccess = false, onOpenFeature = () => {} }) {
-  const [selectedPremiumFeature, setSelectedPremiumFeature] = useState(null)
+export default function PremiumPage({ user, onBack, onSubscriptionUpdated = () => {}, hasPremiumAccess = false, onOpenFeature = () => {}, onRegisterBackHandler = () => {}, initialFeatureId = null }) {
+  const launchHandled = useRef(false)
+  const [selectedPremiumFeature, setSelectedPremiumFeature] = useState(() => PREMIUM_FEATURES.find(feature => feature.id === initialFeatureId) || null)
+  const [purchaseStep, setPurchaseStep] = useState(initialFeatureId ? 'feature' : 'catalogue')
   const [plans, setPlans] = useState([])
   const [subscription, setSubscription] = useState(null)
   const [selectedPlan, setSelectedPlan] = useState(null)
@@ -162,28 +175,69 @@ export default function PremiumPage({ user, onBack, onSubscriptionUpdated = () =
     }
   }, [user.id, subscription?.id, subscription?.status, paymentInitiated, onSubscriptionUpdated])
 
-  // Bring subscription plans into view when Premium opens.
+  // Normal Premium entry scrolls to plans; feature-specific entry starts at the feature.
   useEffect(() => {
+    if (loading || initialFeatureId) return
     document.getElementById('premium-plans')?.scrollIntoView({
       behavior: 'smooth',
       block: 'start'
     })
-  }, [])
+  }, [loading, initialFeatureId])
 
   useEffect(() => {
-    if (!selectedPlan || activeSubscription || pendingSubscription) return
+    if (initialFeatureId || !selectedPlan || activeSubscription || pendingSubscription) return
 
     document.getElementById('premium-checkout')?.scrollIntoView({
       behavior: 'smooth',
       block: 'start'
     })
-  }, [selectedPlan])
+  }, [selectedPlan, initialFeatureId])
 
   const activeSubscription =
     subscription?.status === 'active' &&
     (!subscription.ends_at || new Date(subscription.ends_at) > new Date())
 
   const pendingSubscription = subscription?.status === 'pending'
+
+  function handlePremiumBack() {
+    if (initialFeatureId && selectedPremiumFeature && !hasPremiumAccess) {
+      if (purchaseStep === 'payment') {
+        setPaymentMethod('')
+        setPurchaseStep('plans')
+        return
+      }
+
+      if (purchaseStep === 'plans') {
+        setSelectedPlan(null)
+        setPaymentMethod('')
+        setPurchaseStep('feature')
+        return
+      }
+    }
+
+    onBack?.()
+  }
+
+  const premiumBackHandlerRef = useRef(handlePremiumBack)
+  premiumBackHandlerRef.current = handlePremiumBack
+
+  useEffect(() => {
+    const registeredHandler = () => premiumBackHandlerRef.current()
+    onRegisterBackHandler(registeredHandler)
+    return () => onRegisterBackHandler(null)
+  }, [onRegisterBackHandler])
+
+  useEffect(() => {
+    if (!initialFeatureId) return
+
+    const target = purchaseStep === 'feature'
+      ? document.querySelector('.premium-feature-focus')
+      : purchaseStep === 'plans'
+        ? document.getElementById('premium-plans')
+        : document.getElementById('premium-checkout')
+
+    target?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, [purchaseStep, initialFeatureId])
 
   async function handlePayment() {
     if (paying || paymentInitiated || pendingSubscription) return
@@ -287,16 +341,53 @@ export default function PremiumPage({ user, onBack, onSubscriptionUpdated = () =
     }
   }
 
+  useEffect(() => {
+    if (
+      !launchHandled.current &&
+      hasPremiumAccess &&
+      subscription?.status === 'active' &&
+      selectedPremiumFeature
+    ) {
+      launchHandled.current = true
+      onOpenFeature(selectedPremiumFeature.id)
+    }
+  }, [hasPremiumAccess, subscription?.status, selectedPremiumFeature, onOpenFeature])
+
   if (loading) {
     return <div className="premium-page">Loading Premium plans...</div>
   }
 
   return (
-    <main className="premium-page">
+    <main className={initialFeatureId && selectedPremiumFeature && !hasPremiumAccess ? `premium-page feature-purchase-flow purchase-step-${purchaseStep}` : 'premium-page'}>
       <header className="premium-header">
-        <button onClick={onBack}>← Back to Learning</button>
+        <button type="button" onClick={handlePremiumBack}>
+          {initialFeatureId && purchaseStep === 'payment'
+            ? '← Back to plans'
+            : initialFeatureId && purchaseStep === 'plans'
+              ? '← Back to feature'
+              : '← Back to Learning'}
+        </button>
         <span>PERIAK PREMIUM</span>
       </header>
+
+      {initialFeatureId && selectedPremiumFeature && !hasPremiumAccess && (
+        <section className="premium-feature-focus">
+          <span className="premium-feature-icon">{selectedPremiumFeature.icon}</span>
+          <div>
+            <p className="premium-eyebrow">UNLOCK YOUR SELECTED FEATURE</p>
+            <h1>{selectedPremiumFeature.title}</h1>
+            <p>{selectedPremiumFeature.desc}</p>
+            <small>Choose a Premium plan to continue to payment.</small>
+            <button
+              type="button"
+              className="premium-feature-continue"
+              onClick={() => setPurchaseStep('plans')}
+            >
+              Continue to plans →
+            </button>
+          </div>
+        </section>
+      )}
 
       <section className="premium-hero">
         <p className="premium-eyebrow">TAKE YOUR LEARNING FURTHER</p>
@@ -339,15 +430,7 @@ export default function PremiumPage({ user, onBack, onSubscriptionUpdated = () =
         </div>
 
         <div className="premium-feature-grid">
-          {[
-            { id: 'dashboard', icon: '📊', title: 'Learning Dashboard', desc: 'Monitor lesson completion, activity and progress across your subjects.' },
-            { id: 'tutor', icon: '🤖', title: 'Study Tutor', desc: 'Search available nursing lesson materials by topic and keyword.' },
-            { id: 'exams', icon: '📝', title: 'Smart Exam Centre', desc: 'Practise CATs, revision questions and mock examinations.' },
-            { id: 'clinical', icon: '🩺', title: 'Clinical Skills Lab', desc: 'Work through interactive clinical scenarios and prioritisation.' },
-            { id: 'hub', icon: '📚', title: 'Nursing Knowledge Hub', desc: 'Browse nursing subjects and navigate learning materials.' },
-            { id: 'simulator', icon: '🏥', title: 'Virtual Patient Simulator', desc: 'Assess a simulated patient and practise clinical judgement.' },
-            { id: 'planner', icon: '📅', title: 'Study Planner', desc: 'Organise your study timetable, assignments, CATs and examinations in one place.' }
-          ].map(feature => (
+          {PREMIUM_FEATURES.map(feature => (
             <button
               type="button"
               className="premium-feature-card"
@@ -403,7 +486,13 @@ export default function PremiumPage({ user, onBack, onSubscriptionUpdated = () =
               <p>{plan.duration_days} days of Premium access</p>
 
               <button
-                onClick={() => setSelectedPlan(plan)}
+                onClick={() => {
+                  setSelectedPlan(plan)
+                  if (initialFeatureId) {
+                    setPaymentMethod('')
+                    setPurchaseStep('payment')
+                  }
+                }}
                 disabled={activeSubscription || pendingSubscription || paymentInitiated}
               >
                 {selectedPlan?.id === plan.id ? 'Selected' : 'Choose Plan'}
@@ -413,7 +502,7 @@ export default function PremiumPage({ user, onBack, onSubscriptionUpdated = () =
         </div>
       </section>
 
-      {selectedPlan && !activeSubscription && !pendingSubscription && (
+      {selectedPlan && !activeSubscription && !pendingSubscription && (!initialFeatureId || purchaseStep === 'payment') && (
         <section className="premium-checkout" id="premium-checkout">
           <h2>Payment method</h2>
           <p>

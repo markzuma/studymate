@@ -6,6 +6,7 @@ import ExamCentre from './components/ExamCentre'
 import StudyPlanner from './components/StudyPlanner'
 import LearningSuite from './components/LearningSuite'
 import CourseOutlineViewer from './components/CourseOutlineViewer'
+import PastPapersLibrary from './components/PastPapersLibrary'
 
 const legacyCourseCatalogue = [
   { icon: '🫀', title: 'Anatomy & Physiology', desc: 'Understand the structure and functions of the human body.', level: 'FOUNDATION' },
@@ -61,7 +62,7 @@ function mergeLearningData(localData, cloudData) {
   return { completed, recent }
 }
 
-function App({ isPremium = false, premiumLoading = false, isAdmin = false, onOpenPremium = () => {}, premiumLaunch = null, onPremiumLaunchHandled = () => {}, onPremiumModuleBack = () => {} }) {
+function App({ isPremium = false, premiumLoading = false, isAdmin = false, onOpenPremium = () => {}, onOpenPremiumFeature = () => {}, premiumLaunch = null, onPremiumLaunchHandled = () => {}, onPremiumModuleBack = () => {} }) {
   const [learningData, setLearningData] = useState(readLearningData)
   const [activeLearningUser, setActiveLearningUser] = useState(null)
   const [learningCloudReady, setLearningCloudReady] = useState(false)
@@ -487,6 +488,20 @@ function App({ isPremium = false, premiumLoading = false, isAdmin = false, onOpe
     )
   }
 
+  if (activePremiumModule === 'pastpapers') {
+    return (
+      <div className="app premium-module-page">
+        <PastPapersLibrary
+          isAdmin={isAdmin}
+          hasPremiumAccess={isPremium}
+          premiumLoading={premiumLoading}
+          onBack={returnFromPremiumModule}
+          onUpgrade={() => onOpenPremiumFeature('pastpapers')}
+        />
+      </div>
+    )
+  }
+
   if (activePremiumModule === 'planner') {
     return (
       <div className="app premium-module-page">
@@ -525,6 +540,7 @@ function App({ isPremium = false, premiumLoading = false, isAdmin = false, onOpe
           premiumLoading={premiumLoading}
           isAdmin={isAdmin}
           onOpenPremium={onOpenPremium}
+          onOpenPremiumFeature={onOpenPremiumFeature}
           initialActive={activePremiumModule}
           standalone
           onBack={returnFromPremiumModule}
@@ -915,17 +931,17 @@ function App({ isPremium = false, premiumLoading = false, isAdmin = false, onOpe
 
           <section className="dashboard-premium-ad">
             <div className="dashboard-premium-ad-copy">
-              <span className="dashboard-premium-ad-label">PERIAK PREMIUM</span>
-              <h2>Learn. Practise. Excel.</h2>
-              <p>Explore dedicated nursing tools designed to strengthen your learning,
-                examination preparation and clinical decision-making.</p>
+              <span className="dashboard-premium-ad-label">PERIAK PREMIUM · FLAGSHIP</span>
+              <h2>Real Past Papers. Real Exam Preparation.</h2>
+              <p>Access authentic examination papers from different institutions.
+                Explore previous exams by course, unit, year, semester and exam type.</p>
               <div className="dashboard-premium-ad-features">
-                <span>📊 Learning progress</span>
-                <span>📝 Exam practice</span>
-                <span>🩺 Clinical simulations</span>
+                <span>🏫 Multiple institutions</span>
+                <span>📚 Course & unit library</span>
+                <span>📄 Secure PDF access</span>
               </div>
-              <button type="button" onClick={onOpenPremium}>
-                Explore Premium features →
+              <button type="button" onClick={() => onOpenPremiumFeature('pastpapers')}>
+                Explore Real Past Papers →
               </button>
             </div>
           </section>

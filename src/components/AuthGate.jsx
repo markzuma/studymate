@@ -1,5 +1,6 @@
 
-import { cloneElement, lazy, Suspense, useCallback, useEffect, useState } from 'react'
+import { cloneElement, lazy, Suspense, useCallback, useEffect, useState,
+  useRef} from 'react'
 import { supabase } from '../lib/supabase'
 import './AuthGate.css'
 import ControlCentre from './ControlCentre'
@@ -28,6 +29,11 @@ export default function AuthGate({ children }) {
   const [showControlCentre, setShowControlCentre] = useState(false)
   const [showPremium, setShowPremium] = useState(false)
   const [premiumLaunch, setPremiumLaunch] = useState(null)
+  const [premiumFeatureIntent, setPremiumFeatureIntent] = useState(null)
+  const premiumBackHandlerRef = useRef(null)
+  const registerPremiumBackHandler = useCallback((handler) => {
+    premiumBackHandlerRef.current = handler
+  }, [])
   const [premiumModuleReturn, setPremiumModuleReturn] = useState(false)
   const [showAppearance, setShowAppearance] = useState(false)
   const [showProfile, setShowProfile] = useState(false)
@@ -44,6 +50,10 @@ export default function AuthGate({ children }) {
     }
 
     if (showPremium) {
+      if (premiumFeatureIntent && premiumBackHandlerRef.current) {
+        return premiumBackHandlerRef.current() !== false
+      }
+
       setShowPremium(false)
       return true
     }
@@ -302,13 +312,17 @@ export default function AuthGate({ children }) {
               user={session.user}
               onBack={() => {
                 refreshPremiumAccess()
+                setPremiumFeatureIntent(null)
                 setShowPremium(false)
               }}
               onSubscriptionUpdated={refreshPremiumAccess}
               hasPremiumAccess={premiumAccess || profile?.role === 'admin'}
+              initialFeatureId={premiumFeatureIntent}
+              onRegisterBackHandler={registerPremiumBackHandler}
               onOpenFeature={(moduleId) => {
                 if (!premiumAccess && profile?.role !== 'admin') return
                 setPremiumModuleReturn(true)
+                setPremiumFeatureIntent(null)
                 setShowPremium(false)
                 setPremiumLaunch(moduleId)
               }}
@@ -330,7 +344,14 @@ export default function AuthGate({ children }) {
                 }
               },
               onOpenPremiumFeature: (moduleId) => {
-                if (premiumAccess || profile?.role === 'admin') children.props?.onOpenPremiumFeature?.(moduleId)
+                if (premiumAccess || profile?.role === 'admin') {
+                  setPremiumModuleReturn(false)
+                  setPremiumLaunch(moduleId)
+                } else {
+                  setPremiumFeatureIntent(moduleId)
+                  setShowControlCentre(false)
+                  setShowPremium(true)
+                }
               }
             })}
           </div>

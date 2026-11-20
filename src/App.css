@@ -1304,3 +1304,15 @@ footer,
   font-weight: 700;
   cursor: pointer;
 }
+
+/* PERIAK flagship Past Papers promotion */
+.dashboard-premium-ad {
+  border-color: var(--accent);
+  background: linear-gradient(135deg, var(--surface), var(--surface-secondary));
+}
+.dashboard-premium-ad h2 {
+  max-width: 800px;
+}
+.dashboard-premium-ad button {
+  min-height: 44px;
+}

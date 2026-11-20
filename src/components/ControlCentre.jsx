@@ -5,6 +5,7 @@ import './ControlCentre.css'
 import Monetization from './Monetization'
 import AdminAcademicManager from './AdminAcademicManager'
 import LessonContentEditor from './LessonContentEditor'
+import AdminPastPapersManager from './AdminPastPapersManager'
 
 const SECTIONS = [
   { id: 'overview', label: 'Overview' },
@@ -15,6 +16,7 @@ const SECTIONS = [
   { id: 'exams', label: 'Examinations' },
   { id: 'results', label: 'Results & Analytics' },
   { id: 'announcements', label: 'Announcements' },
+  { id: 'pastpapers', label: 'Past Papers Library' },
   { id: 'monetization', label: 'Monetization' }
 ]
 
@@ -1017,6 +1019,8 @@ export default function ControlCentre({ onClose }) {
               )}
             </>
           )}
+
+          {section === 'pastpapers' && <AdminPastPapersManager />}
 
           {section === 'monetization' && <Monetization />}
 

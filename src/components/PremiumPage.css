@@ -537,3 +537,83 @@
     box-shadow: 0 3px 14px rgba(0, 0, 0, .18);
   }
 }
+
+
+/* Feature-specific Premium purchase journey */
+.premium-feature-focus {
+  max-width: 1050px;
+  margin: 0 auto 24px;
+  padding: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border: 1px solid var(--accent);
+  border-radius: var(--card-radius);
+  background: var(--surface);
+  color: var(--text-primary);
+}
+.premium-feature-focus h1 {
+  margin: 5px 0;
+  font-size: clamp(21px, 3vw, 30px);
+}
+.premium-feature-focus p { margin: 5px 0; color: var(--text-muted); }
+.premium-feature-focus small { color: var(--text-muted); }
+.feature-purchase-flow .premium-hero,
+.feature-purchase-flow .premium-feature-catalogue {
+  display: none;
+}
+.feature-purchase-flow .premium-plans,
+.feature-purchase-flow .premium-checkout {
+  scroll-margin-top: 18px;
+}
+@media (max-width: 600px) {
+  .premium-feature-focus {
+    margin-bottom: 18px;
+    padding: 16px;
+    align-items: flex-start;
+  }
+  .premium-feature-focus .premium-feature-icon { font-size: 30px; }
+  .feature-purchase-flow .premium-plans { margin-top: 8px; }
+  .feature-purchase-flow .premium-checkout {
+    min-height: calc(100dvh - 110px);
+  }
+}
+
+
+/* Progressive navigation for feature-specific Premium checkout */
+.feature-purchase-flow.purchase-step-feature .premium-plans,
+.feature-purchase-flow.purchase-step-feature .premium-checkout,
+.feature-purchase-flow.purchase-step-plans .premium-feature-focus,
+.feature-purchase-flow.purchase-step-plans .premium-checkout,
+.feature-purchase-flow.purchase-step-payment .premium-feature-focus,
+.feature-purchase-flow.purchase-step-payment .premium-plans {
+  display: none;
+}
+
+.feature-purchase-flow .premium-feature-continue {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 14px;
+  padding: 12px 18px;
+  border: 0;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 700;
+}
+
+.feature-purchase-flow .premium-plans,
+.feature-purchase-flow .premium-checkout,
+.feature-purchase-flow .premium-feature-focus {
+  scroll-margin-top: 18px;
+}
+
+/* Flagship Real Past Papers feature */
+.premium-feature-card:first-child {
+  border: 2px solid var(--accent);
+  background: var(--surface-secondary);
+  position: relative;
+}
+.premium-feature-card:first-child strong {
+  font-size: 13px;
+}
