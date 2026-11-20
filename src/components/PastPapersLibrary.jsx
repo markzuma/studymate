@@ -110,6 +110,12 @@ export default function PastPapersLibrary({
   })
 
   async function openPaper(paper) {
+    if (!isAdmin && !hasPremiumAccess &&
+        !unlockedIds.includes(paper.id) && remainingUnlocks <= 0) {
+      onUpgrade?.()
+      return
+    }
+
     if (!paper.storage_path) {
       setMessage('PDF is not available for this paper.')
       return
@@ -135,7 +141,10 @@ export default function PastPapersLibrary({
           access?.message ||
           'This paper could not be unlocked. Please try again.'
         )
-        if (access?.remaining === 0) setRemainingUnlocks(0)
+        if (access?.remaining === 0) {
+          setRemainingUnlocks(0)
+          onUpgrade?.()
+        }
         return
       }
 
