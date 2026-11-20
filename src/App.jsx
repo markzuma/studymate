@@ -932,17 +932,35 @@ function App({ isPremium = false, premiumLoading = false, isAdmin = false, onOpe
           <section className="dashboard-premium-ad">
             <div className="dashboard-premium-ad-copy">
               <span className="dashboard-premium-ad-label">PERIAK PREMIUM · FLAGSHIP</span>
-              <h2>Real Past Papers. Real Exam Preparation.</h2>
-              <p>Access authentic examination papers from different institutions.
-                Explore previous exams by course, unit, year, semester and exam type.</p>
+              <h2>Past Papers &amp; Exam Practice</h2>
+              <p>Search past papers and exam-style practice papers by course, unit,
+                year, semester and exam type.</p>
               <div className="dashboard-premium-ad-features">
-                <span>🏫 Multiple institutions</span>
-                <span>📚 Course & unit library</span>
+                <span>🔎 Searchable library</span>
+                <span>📚 Course &amp; unit filters</span>
                 <span>📄 Secure PDF access</span>
               </div>
               <button type="button" onClick={() => onOpenPremiumFeature('pastpapers')}>
-                Explore Real Past Papers →
+                {isPremium || isAdmin ? 'Open Past Papers →' : 'Explore Past Papers →'}
               </button>
+            </div>
+            <div className="dashboard-premium-tools">
+              {[
+                { id: 'dashboard', icon: '📊', title: 'Learning Dashboard', tag: 'Track your progress' },
+                { id: 'exams', icon: '📝', title: 'Smart Exam Centre', tag: 'CATs and mock exams' },
+                { id: 'clinical', icon: '🩺', title: 'Clinical Skills Lab', tag: 'Interactive scenarios' },
+                { id: 'simulator', icon: '🏥', title: 'Virtual Patient Simulator', tag: 'Clinical simulations' },
+                { id: 'tutor', icon: '🤖', title: 'Study Tutor', tag: 'Search lesson materials' },
+                { id: 'hub', icon: '📚', title: 'Nursing Knowledge Hub', tag: 'Browse subjects' },
+                { id: 'planner', icon: '📅', title: 'Study Planner', tag: 'Plan CATs and exams' }
+              ].map(tool => (
+                <button type="button" key={tool.id} className="dashboard-premium-tool"
+                  onClick={() => onOpenPremiumFeature(tool.id)}>
+                  <span>{tool.icon}</span>
+                  <strong>{tool.title}</strong>
+                  <small>{tool.tag}</small>
+                </button>
+              ))}
             </div>
           </section>
 
