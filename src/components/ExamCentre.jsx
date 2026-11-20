@@ -6,6 +6,7 @@ import './ExamCentre.css'
 import MockExam from './MockExam'
 import ExamHistory from './ExamHistory'
 import DatabaseExamCentre from './DatabaseExamCentre'
+import ExamPageErrorBoundary from './ExamPageErrorBoundary'
 
 function createAttemptKey() {
   if (globalThis.crypto?.randomUUID) {
@@ -1558,7 +1559,11 @@ export default function ExamCentre({ onHome, hasPremiumAccess = false, premiumLo
         </main>
       )
     }
-    return <DatabaseExamCentre onBack={() => setShowDatabaseExams(false)} />
+    return (
+      <ExamPageErrorBoundary onBack={() => setShowDatabaseExams(false)}>
+        <DatabaseExamCentre onBack={() => setShowDatabaseExams(false)} />
+      </ExamPageErrorBoundary>
+    )
   }
 
   return (
