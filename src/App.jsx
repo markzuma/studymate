@@ -567,7 +567,7 @@ function App({ isPremium = false, premiumLoading = false, isAdmin = false, onOpe
           hasPremiumAccess={isPremium}
           premiumLoading={premiumLoading}
           onBack={returnFromPremiumModule}
-          onUpgrade={() => onOpenPremiumFeature('pastpapers')}
+          onUpgrade={() => onOpenPremium()}
         />
       </div>
     )
