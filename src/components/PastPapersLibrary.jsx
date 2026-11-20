@@ -20,23 +20,22 @@ export default function PastPapersLibrary({
   const [type, setType] = useState('')
   const [message, setMessage] = useState('')
   const [opening, setOpening] = useState('')
+  const [unlockedIds, setUnlockedIds] = useState([])
+  const [remainingUnlocks, setRemainingUnlocks] = useState(2)
 
   useEffect(() => {
-    if (!isAdmin && !hasPremiumAccess) {
-      setLoading(false)
-      return
-    }
-
     let alive = true
 
     async function load() {
       setLoading(true)
-      const query = supabase
+      setMessage('')
+
+      let query = supabase
         .from('past_papers')
         .select('*')
         .order('academic_year', { ascending: false })
 
-      if (!isAdmin) query.eq('status', 'published')
+      if (!isAdmin) query = query.eq('status', 'published')
 
       const { data, error } = await query
       if (!alive) return
@@ -63,7 +62,7 @@ export default function PastPapersLibrary({
         }
       }
 
-      setLoading(false)
+      if (alive) setLoading(false)
     }
 
     load()
