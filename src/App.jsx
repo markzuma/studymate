@@ -74,6 +74,77 @@ function App({ isPremium = false, premiumLoading = false, isAdmin = false, onOpe
   const [catalogueCourses, setCatalogueCourses] = useState(legacyCourseCatalogue)
   const [catalogueUnits, setCatalogueUnits] = useState(legacyUnitCatalogue)
   const [catalogueLessons, setCatalogueLessons] = useState({})
+  const [isBookmarked, setIsBookmarked] = useState(false)
+  const [bookmarkBusy, setBookmarkBusy] = useState(false)
+
+  useEffect(() => {
+    let active = true
+
+    async function loadBookmark() {
+      if (!selectedCourse || !selectedUnit) {
+        setIsBookmarked(false)
+        return
+      }
+
+      const { data, error } = await supabase
+        .from('user_bookmarks')
+        .select('id')
+        .eq('course_title', selectedCourse.title)
+        .eq('unit_title', selectedUnit)
+        .maybeSingle()
+
+      if (!active) return
+      if (error) {
+        console.error('Could not load lesson bookmark:', error.message)
+        setIsBookmarked(false)
+      } else {
+        setIsBookmarked(Boolean(data))
+      }
+    }
+
+    loadBookmark()
+    return () => { active = false }
+  }, [selectedCourse, selectedUnit])
+
+  async function toggleLessonBookmark() {
+    if (!selectedCourse || !selectedUnit || bookmarkBusy) return
+
+    setBookmarkBusy(true)
+
+    try {
+      const { data: authData, error: authError } = await supabase.auth.getUser()
+      if (authError) throw authError
+      if (!authData?.user) throw new Error('Please sign in to save bookmarks.')
+
+      if (isBookmarked) {
+        const { error } = await supabase
+          .from('user_bookmarks')
+          .delete()
+          .eq('user_id', authData.user.id)
+          .eq('course_title', selectedCourse.title)
+          .eq('unit_title', selectedUnit)
+
+        if (error) throw error
+        setIsBookmarked(false)
+      } else {
+        const { error } = await supabase
+          .from('user_bookmarks')
+          .insert({
+            user_id: authData.user.id,
+            course_title: selectedCourse.title,
+            unit_title: selectedUnit
+          })
+
+        if (error) throw error
+        setIsBookmarked(true)
+      }
+    } catch (error) {
+      console.error('Could not update lesson bookmark:', error.message)
+    } finally {
+      setBookmarkBusy(false)
+    }
+  }
+
   useEffect(() => {
     if (!premiumLaunch) return
     setActivePremiumModule(premiumLaunch)
@@ -582,6 +653,22 @@ function App({ isPremium = false, premiumLoading = false, isAdmin = false, onOpe
                   : '✓ Mark this lesson as complete'}
               </button>
               <span>{courseProgress(selectedCourse).done} of {courseProgress(selectedCourse).total} units completed</span>
+              <button
+                type="button"
+                onClick={toggleLessonBookmark}
+                disabled={bookmarkBusy}
+                aria-pressed={isBookmarked}
+                style={{
+                  border: '1px solid #cbd5e1',
+                  borderRadius: '8px',
+                  padding: '8px 12px',
+                  background: isBookmarked ? '#eff6ff' : '#ffffff',
+                  color: '#1e40af',
+                  cursor: bookmarkBusy ? 'wait' : 'pointer'
+                }}
+              >
+                {bookmarkBusy ? 'Saving…' : isBookmarked ? '★ Bookmarked' : '☆ Save lesson'}
+              </button>
             </div>
           </div>
 
@@ -599,7 +686,7 @@ function App({ isPremium = false, premiumLoading = false, isAdmin = false, onOpe
                 <section className="lesson-panel">
                   <p>Checking your Premium access…</p>
                 </section>
-              ) : (isPremium || isAdmin) ? (
+              ) : true ? (
                 <>
               <section className="lesson-panel">
                 <h2>Comprehensive study notes</h2>
@@ -946,18 +1033,21 @@ function App({ isPremium = false, premiumLoading = false, isAdmin = false, onOpe
             </div>
             <div className="dashboard-premium-tools">
               {[
-                { id: 'dashboard', icon: '📊', title: 'Learning Dashboard', tag: 'Track your progress' },
-                { id: 'exams', icon: '📝', title: 'Smart Exam Centre', tag: 'CATs and mock exams' },
-                { id: 'clinical', icon: '🩺', title: 'Clinical Skills Lab', tag: 'Interactive scenarios' },
-                { id: 'simulator', icon: '🏥', title: 'Virtual Patient Simulator', tag: 'Clinical simulations' },
-                { id: 'tutor', icon: '🤖', title: 'Study Tutor', tag: 'Search lesson materials' },
-                { id: 'hub', icon: '📚', title: 'Nursing Knowledge Hub', tag: 'Browse subjects' },
-                { id: 'planner', icon: '📅', title: 'Study Planner', tag: 'Plan CATs and exams' }
+                { id: 'dashboard', icon: '📊', title: 'Learning Dashboard', short: 'Dashboard', tag: 'Track your progress' },
+                { id: 'exams', icon: '📝', title: 'Smart Exam Centre', short: 'Exams', tag: 'CATs and mock exams' },
+                { id: 'clinical', icon: '🩺', title: 'Clinical Skills Lab', short: 'Clinical Lab', tag: 'Interactive scenarios' },
+                { id: 'simulator', icon: '🏥', title: 'Virtual Patient Simulator', short: 'Patient Sim', tag: 'Clinical simulations' },
+                { id: 'tutor', icon: '🤖', title: 'Study Tutor', short: 'Tutor', tag: 'Search lesson materials' },
+                { id: 'hub', icon: '📚', title: 'Nursing Knowledge Hub', short: 'Knowledge Hub', tag: 'Browse subjects' },
+                { id: 'planner', icon: '📅', title: 'Study Planner', short: 'Planner', tag: 'Plan CATs and exams' }
               ].map(tool => (
                 <button type="button" key={tool.id} className="dashboard-premium-tool"
-                  onClick={() => onOpenPremiumFeature(tool.id)}>
-                  <span>{tool.icon}</span>
-                  <strong>{tool.title}</strong>
+                  aria-label={tool.title} onClick={() => onOpenPremiumFeature(tool.id)}>
+                  <span className="tool-icon">{tool.icon}</span>
+                  <strong>
+                    <span className="tool-full">{tool.title}</span>
+                    <span className="tool-short">{tool.short}</span>
+                  </strong>
                   <small>{tool.tag}</small>
                 </button>
               ))}

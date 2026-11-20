@@ -344,7 +344,8 @@ export default function AuthGate({ children }) {
                 }
               },
               onOpenPremiumFeature: (moduleId) => {
-                if (premiumAccess || profile?.role === 'admin') {
+                const freeModules = ['pastpapers', 'dashboard', 'hub', 'exams']
+                if (premiumAccess || profile?.role === 'admin' || freeModules.includes(moduleId)) {
                   setPremiumModuleReturn(false)
                   setPremiumLaunch(moduleId)
                 } else {

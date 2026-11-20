@@ -47,7 +47,10 @@ export default function LearningSuite({
 
   function open(id) {
     if (premiumLoading && !isAdmin) return
-    if (!hasPremiumAccess && !isAdmin) return onOpenPremiumFeature(id)
+    const freeModules = ['dashboard', 'hub']
+    if (!hasPremiumAccess && !isAdmin && !freeModules.includes(id)) {
+      return onOpenPremiumFeature(id)
+    }
     if (id === 'exams') return onOpenExams()
     setActive(id)
     setAnswer(null)
@@ -60,7 +63,7 @@ export default function LearningSuite({
       {premiumLoading && !isAdmin ? (
         <span>Checking Premium access…</span>
       ) : !hasPremiumAccess && !isAdmin && (
-        <button type="button" onClick={onOpenPremium}>Unlock all six modules →</button>
+        <button type="button" onClick={onOpenPremium}>Unlock advanced learning tools →</button>
       )}
       {standalone ? <button onClick={onBack}>← Back to Premium</button> : active && <button onClick={() => setActive('')}>← Back</button>}
     </header>
@@ -69,7 +72,7 @@ export default function LearningSuite({
       <div className="suite-grid">
         {items.map(([id, icon, title, desc]) =>
           <button className="suite-card" key={id} onClick={() => open(id)} disabled={premiumLoading && !isAdmin}>
-            <span>{icon}</span><strong>{title}</strong><p>{desc}</p>{premiumLoading && !isAdmin ? <b>Checking…</b> : hasPremiumAccess || isAdmin ? <b>Open →</b> : <b>🔒 Premium</b>}
+            <span>{icon}</span><strong>{title}</strong><p>{desc}</p>{premiumLoading && !isAdmin ? <b>Checking…</b> : hasPremiumAccess || isAdmin || ['dashboard', 'hub'].includes(id) ? <b>Open →</b> : <b>🔒 Premium</b>}
           </button>
         )}
       </div>

@@ -41,8 +41,27 @@ export default function PastPapersLibrary({
       const { data, error } = await query
       if (!alive) return
 
-      if (error) setMessage(`Library could not load: ${error.message}`)
-      else setPapers(data || [])
+      if (error) {
+        setMessage(`Library could not load: ${error.message}`)
+      } else {
+        setPapers(data || [])
+      }
+
+      if (!isAdmin && !hasPremiumAccess) {
+        const { data: unlocks, error: unlockError } = await supabase
+          .from('past_paper_unlocks')
+          .select('paper_id')
+
+        if (!alive) return
+
+        if (unlockError) {
+          setMessage(`Could not load your paper unlocks: ${unlockError.message}`)
+        } else {
+          const ids = (unlocks || []).map(item => item.paper_id)
+          setUnlockedIds(ids)
+          setRemainingUnlocks(Math.max(0, 2 - ids.length))
+        }
+      }
 
       setLoading(false)
     }
@@ -103,6 +122,32 @@ export default function PastPapersLibrary({
     // Open synchronously from the click to reduce popup blocking on mobile.
     const pdfWindow = window.open('about:blank', '_blank')
 
+    if (!isAdmin && !hasPremiumAccess && !unlockedIds.includes(paper.id)) {
+      const { data: access, error: accessError } = await supabase.rpc(
+        'unlock_past_paper',
+        { p_paper_id: paper.id }
+      )
+
+      if (accessError || !access?.unlocked) {
+        if (pdfWindow) pdfWindow.close()
+        setOpening('')
+        setMessage(
+          accessError?.message ||
+          access?.message ||
+          'This paper could not be unlocked. Please try again.'
+        )
+        if (access?.remaining === 0) setRemainingUnlocks(0)
+        return
+      }
+
+      setUnlockedIds(previous =>
+        previous.includes(paper.id) ? previous : [...previous, paper.id]
+      )
+      if (Number.isInteger(access.remaining)) {
+        setRemainingUnlocks(access.remaining)
+      }
+    }
+
     const { data, error } = await supabase.storage
       .from('past-papers')
       .createSignedUrl(paper.storage_path, 60 * 10)
@@ -133,40 +178,21 @@ export default function PastPapersLibrary({
     setType('')
   }
 
-  if (!isAdmin && !hasPremiumAccess) {
-    return (
-      <main className="past-papers-page papers-locked">
-        <header className="papers-page-header">
-          <button type="button" className="papers-back" onClick={onBack}>← Back</button>
-          <span className="papers-eyebrow">PERIAK PREMIUM · FLAGSHIP</span>
-        </header>
-        <section className="papers-locked-content">
-          <div className="papers-hero-icon">📑</div>
-          <h1>Real Past Papers Library</h1>
-          <p>Access authentic examination papers from different institutions,
-            organized by course, unit, year and examination type.</p>
-          <div className="papers-feature-points">
-            <span>🏫 Multiple institutions</span>
-            <span>📚 Course & unit filters</span>
-            <span>📆 Previous examination years</span>
-            <span>📄 Secure PDF access</span>
-          </div>
-          <button type="button" onClick={onUpgrade} disabled={premiumLoading}>
-            {premiumLoading ? 'Checking access…' : 'Unlock with PERIAK Premium'}
-          </button>
-        </section>
-      </main>
-    )
-  }
-
   return (
     <main className="past-papers-page">
       <header className="papers-page-header">
         <button type="button" className="papers-back" onClick={onBack}>← Back</button>
         <div>
-          <span className="papers-eyebrow">PERIAK PREMIUM</span>
+          <span className="papers-eyebrow">{hasPremiumAccess || isAdmin ? 'PERIAK PREMIUM' : 'PERIAK PAST PAPERS'}</span>
           <h1>Real Past Papers Library</h1>
           <p>Authentic papers organized for focused examination revision.</p>
+          {!hasPremiumAccess && !isAdmin && (
+            <p className="papers-free-allowance">
+              Free access: {remainingUnlocks} of 2 lifetime PDF unlocks remaining.
+              Already unlocked papers can be reopened without using another unlock.
+              {' '}<button type="button" onClick={onUpgrade}>Explore Premium →</button>
+            </p>
+          )}
         </div>
       </header>
 
@@ -235,7 +261,10 @@ export default function PastPapersLibrary({
                   {paper.notes && <p className="papers-card-notes">{paper.notes}</p>}
                   <button type="button" onClick={() => openPaper(paper)}
                     disabled={opening === paper.id || !paper.storage_path}>
-                    {opening === paper.id ? 'Preparing secure PDF…' : 'Open PDF →'}
+                    {opening === paper.id ? 'Preparing secure PDF…'
+                      : !hasPremiumAccess && !isAdmin && !unlockedIds.includes(paper.id)
+                        ? 'Unlock & open PDF →'
+                        : 'Open PDF →'}
                   </button>
                 </article>
               ))}

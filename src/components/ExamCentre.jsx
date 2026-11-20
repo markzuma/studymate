@@ -1131,6 +1131,9 @@ function shuffleQuestions(questions) {
 export default function ExamCentre({ onHome, hasPremiumAccess = false, premiumLoading = false, isAdmin = false, onUpgrade = () => {} }) {
   const [showHistory, setShowHistory] = useState(false)
   const [showDatabaseExams, setShowDatabaseExams] = useState(false)
+  const [accessMessage, setAccessMessage] = useState('')
+  const [startingExam, setStartingExam] = useState(false)
+  const [answerSubmitting, setAnswerSubmitting] = useState(false)
   const sessionKey = 'periak_exam_centre_session_v1'
 
   const [savedSession] = useState(() => {
@@ -1365,24 +1368,56 @@ export default function ExamCentre({ onHome, hasPremiumAccess = false, premiumLo
 
   useBackHandler(handleExamBack, true, 30)
 
-  function startExam() {
-    const shuffledQuestions = shuffleQuestions(questionBanks[selectedSubject])
-    const newAttemptKey = createAttemptKey()
-    const newStartedAt = Date.now()
+  async function startExam() {
+    if (startingExam) return
 
-    setAttemptKey(newAttemptKey)
-    setExamStartedAt(newStartedAt)
-    setExamQuestions(shuffledQuestions)
-    setIndex(0)
-    setSelected(null)
-    setAnswered(false)
-    setFinished(false)
-    setSecondsLeft(catDuration)
-    setCatDeadline(
-      mode === 'cat' ? Date.now() + catDuration * 1000 : null
-    )
-    setResponses(shuffledQuestions.map(() => null))
-    setStarted(true)
+    if (!hasPremiumAccess && !isAdmin && mode === 'cat') {
+      setAccessMessage('CAT Mode is a Premium feature.')
+      onUpgrade()
+      return
+    }
+
+    setStartingExam(true)
+    setAccessMessage('')
+
+    try {
+      if (!hasPremiumAccess && !isAdmin && mode === 'mock') {
+        const { data, error } = await supabase.rpc('claim_free_mock', {
+          p_subject_id: selectedSubject
+        })
+
+        if (error) throw error
+
+        if (!data?.allowed) {
+          setAccessMessage(
+            data?.message ||
+            'This free mock is not available. Upgrade for the complete mock collection.'
+          )
+          return
+        }
+      }
+
+      const shuffledQuestions = shuffleQuestions(questionBanks[selectedSubject])
+      const newAttemptKey = createAttemptKey()
+      const newStartedAt = Date.now()
+
+      setAttemptKey(newAttemptKey)
+      setExamStartedAt(newStartedAt)
+      setExamQuestions(shuffledQuestions)
+      setIndex(0)
+      setSelected(null)
+      setAnswered(false)
+      setFinished(false)
+      setSecondsLeft(catDuration)
+      setCatDeadline(mode === 'cat' ? Date.now() + catDuration * 1000 : null)
+      setResponses(shuffledQuestions.map(() => null))
+      setStarted(true)
+    } catch (error) {
+      console.error('Could not start examination:', error)
+      setAccessMessage(error.message || 'Could not verify examination access. Please try again.')
+    } finally {
+      setStartingExam(false)
+    }
   }
 
   function chooseAnswer(optionIndex) {
@@ -1399,16 +1434,42 @@ export default function ExamCentre({ onHome, hasPremiumAccess = false, premiumLo
     }
   }
 
-  function submitAnswer() {
-    if (selected === null || answered) return
+  async function submitAnswer() {
+    if (selected === null || answered || answerSubmitting) return
 
-    setResponses(previous =>
-      previous.map((response, i) =>
-        i === index ? selected : response
+    setAnswerSubmitting(true)
+
+    try {
+      if (!hasPremiumAccess && !isAdmin && mode === 'practice') {
+        const { data, error } = await supabase.rpc('consume_daily_practice_question')
+
+        if (error) throw error
+
+        if (!data?.allowed) {
+          setAccessMessage(
+            data?.message ||
+            'You have used your 10 free practice questions for today. Come back tomorrow or upgrade to Premium.'
+          )
+          return
+        }
+
+        if (Number.isInteger(data.remaining)) {
+          setDailyRemaining(data.remaining)
+        }
+      }
+
+      setAccessMessage('')
+      setResponses(previous =>
+        previous.map((response, i) =>
+          i === index ? selected : response
+        )
       )
-    )
-
-    setAnswered(true)
+      setAnswered(true)
+    } catch (error) {
+      setAccessMessage(`Practice access could not be verified: ${error.message}`)
+    } finally {
+      setAnswerSubmitting(false)
+    }
   }
 
   function goToQuestion(newIndex) {
@@ -1464,26 +1525,6 @@ export default function ExamCentre({ onHome, hasPremiumAccess = false, premiumLo
     )
   }
 
-  if (!hasPremiumAccess && !isAdmin) {
-    return (
-      <main className="exam-centre premium-locked-page">
-        <button type="button" onClick={onHome}>← Back to Home</button>
-        <section className="exam-card">
-          <p className="exam-label">PERIAK PREMIUM</p>
-          <h1>Examination Centre</h1>
-          <h2>Unlock your nursing exam practice</h2>
-          <p>
-            Access CAT practice, mock examinations, question banks,
-            timed assessments and examination history with Premium.
-          </p>
-          <button type="button" className="primary-button" onClick={onUpgrade}>
-            Explore Premium plans →
-          </button>
-        </section>
-      </main>
-    )
-  }
-
   if (mode === 'mock' && started) {
     return (
       <MockExam
@@ -1504,6 +1545,19 @@ export default function ExamCentre({ onHome, hasPremiumAccess = false, premiumLo
   }
 
   if (showDatabaseExams) {
+    if (!hasPremiumAccess && !isAdmin) {
+      return (
+        <main className="exam-centre premium-locked-page">
+          <button type="button" onClick={() => setShowDatabaseExams(false)}>← Back</button>
+          <section className="exam-card">
+            <p className="exam-label">PERIAK PREMIUM</p>
+            <h2>Published examination collection</h2>
+            <p>Browse the complete collection of uploaded institutional examinations with Premium.</p>
+            <button className="primary-button" onClick={onUpgrade}>Explore Premium plans →</button>
+          </section>
+        </main>
+      )
+    }
     return <DatabaseExamCentre onBack={() => setShowDatabaseExams(false)} />
   }
 
@@ -1611,12 +1665,35 @@ export default function ExamCentre({ onHome, hasPremiumAccess = false, premiumLo
 
           <h2>2. Choose examination mode</h2>
 
+          {!hasPremiumAccess && !isAdmin && (
+            <p style={{ background: '#eff6ff', padding: '12px', borderRadius: '10px', color: '#1e40af' }}>
+              Free plan: 10 practice answers daily and one mock examination per course.
+              CAT Mode and the published examination collection require Premium.
+            </p>
+          )}
+
+          {accessMessage && (
+            <p role="alert" style={{ background: '#fff7ed', padding: '12px', borderRadius: '10px', color: '#9a3412' }}>
+              {accessMessage}
+              {' '}
+              {!hasPremiumAccess && <button type="button" onClick={onUpgrade}>Upgrade to Premium</button>}
+            </p>
+          )}
+
           <div style={{ display: 'grid', gap: '12px' }}>
             {modes.map(item => (
               <button
                 key={item.id}
                 type="button"
-                onClick={() => setMode(item.id)}
+                onClick={() => {
+                  if (item.id === 'cat' && !hasPremiumAccess && !isAdmin) {
+                    setAccessMessage('CAT Mode is available with Premium.')
+                    onUpgrade()
+                    return
+                  }
+                  setAccessMessage('')
+                  setMode(item.id)
+                }}
                 style={{
                   padding: '18px',
                   textAlign: 'left',
@@ -1681,8 +1758,14 @@ export default function ExamCentre({ onHome, hasPremiumAccess = false, premiumLo
             {currentQuestions.length} sample questions available for this subject.
           </p>
 
-          <button className="exam-submit" onClick={startExam}>
-            Start {modes.find(item => item.id === mode).title}
+          {mode === 'practice' && !hasPremiumAccess && !isAdmin && (
+            <p style={{ textAlign: 'center', color: '#64748b' }}>
+              Free accounts can submit up to 10 practice questions per day. Your allowance is checked when you submit each answer.
+            </p>
+          )}
+
+          <button className="exam-submit" onClick={startExam} disabled={startingExam}>
+            {startingExam ? 'Preparing examination…' : `Start ${modes.find(item => item.id === mode).title}`}
           </button>
         </section>
       ) : !finished ? (
@@ -1770,10 +1853,10 @@ export default function ExamCentre({ onHome, hasPremiumAccess = false, premiumLo
             !answered ? (
               <button
                 className="exam-submit"
-                disabled={selected === null}
+                disabled={selected === null || answerSubmitting}
                 onClick={submitAnswer}
               >
-                Submit answer
+                {answerSubmitting ? 'Checking access…' : 'Submit answer'}
               </button>
             ) : (
               <button className="exam-submit" onClick={nextQuestion}>
