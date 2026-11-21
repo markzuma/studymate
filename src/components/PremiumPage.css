@@ -617,3 +617,15 @@
 .premium-feature-card:first-child strong {
   font-size: 13px;
 }
+
+/* PERIAK compact Premium page (phones) */
+@media (max-width: 600px) {
+  .premium-page .premium-hero { padding: 16px 14px; }
+  .premium-page .premium-hero h1,
+  .premium-page .premium-hero h2 { font-size: 1.4rem; line-height: 1.2; }
+  .premium-page .premium-feature-grid { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .premium-page .premium-feature-card { padding: 10px; min-height: 0; }
+  .premium-page .premium-feature-card p { display: none; }
+  .premium-page .premium-feature-card h3 { font-size: 0.85rem; margin: 4px 0; }
+  .premium-page .premium-feature-card strong { font-size: 0.75rem; }
+}

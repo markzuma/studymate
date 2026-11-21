@@ -1,12 +1,19 @@
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { useBackHandler } from './context/NavigationProvider'
 import { supabase } from './lib/supabase'
 import './App.css'
-import ExamCentre from './components/ExamCentre'
-import StudyPlanner from './components/StudyPlanner'
-import LearningSuite from './components/LearningSuite'
-import CourseOutlineViewer from './components/CourseOutlineViewer'
-import PastPapersLibrary from './components/PastPapersLibrary'
+
+// Heavy screens load on demand, then are warmed in the background (see AppInner).
+const loadExamCentre = () => import('./components/ExamCentre')
+const loadStudyPlanner = () => import('./components/StudyPlanner')
+const loadLearningSuite = () => import('./components/LearningSuite')
+const loadCourseOutlineViewer = () => import('./components/CourseOutlineViewer')
+const loadPastPapersLibrary = () => import('./components/PastPapersLibrary')
+const ExamCentre = lazy(loadExamCentre)
+const StudyPlanner = lazy(loadStudyPlanner)
+const LearningSuite = lazy(loadLearningSuite)
+const CourseOutlineViewer = lazy(loadCourseOutlineViewer)
+const PastPapersLibrary = lazy(loadPastPapersLibrary)
 
 const legacyCourseCatalogue = [
   { icon: '🫀', title: 'Anatomy & Physiology', desc: 'Understand the structure and functions of the human body.', level: 'FOUNDATION' },
@@ -62,12 +69,31 @@ function mergeLearningData(localData, cloudData) {
   return { completed, recent }
 }
 
-function App({ isPremium = false, premiumLoading = false, isAdmin = false, onOpenPremium = () => {}, onOpenPremiumFeature = () => {}, premiumLaunch = null, onPremiumLaunchHandled = () => {}, onPremiumModuleBack = () => {} }) {
+function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, onOpenPremium = () => {}, onOpenPremiumFeature = () => {}, premiumLaunch = null, onPremiumLaunchHandled = () => {}, onPremiumModuleBack = () => {} }) {
   const [learningData, setLearningData] = useState(readLearningData)
   const [activeLearningUser, setActiveLearningUser] = useState(null)
   const [learningCloudReady, setLearningCloudReady] = useState(false)
   const [showExams, setShowExams] = useState(false)
   const [activePremiumModule, setActivePremiumModule] = useState('')
+
+  // Warm the screens a student is likely to open next, once the browser is idle.
+  useEffect(() => {
+    if (navigator.connection?.saveData) return undefined
+    const warm = () => {
+      loadPastPapersLibrary().catch(() => {})
+      loadLearningSuite().catch(() => {})
+      loadExamCentre().catch(() => {})
+      loadStudyPlanner().catch(() => {})
+      loadCourseOutlineViewer().catch(() => {})
+    }
+    const id = 'requestIdleCallback' in window
+      ? window.requestIdleCallback(warm, { timeout: 5000 })
+      : window.setTimeout(warm, 3000)
+    return () => {
+      if ('cancelIdleCallback' in window) window.cancelIdleCallback(id)
+      else window.clearTimeout(id)
+    }
+  }, [])
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [selectedCourse, setSelectedCourse] = useState(null)
   const [selectedUnit, setSelectedUnit] = useState(null)
@@ -1223,6 +1249,18 @@ function App({ isPremium = false, premiumLoading = false, isAdmin = false, onOpe
         <span>© 2026 PERIAK. Learning made easier.</span>
       </footer>
     </div>
+  )
+}
+
+function AppLoading() {
+  return <div className="app-loading" role="status">Loading...</div>
+}
+
+function App(props) {
+  return (
+    <Suspense fallback={<AppLoading />}>
+      <AppInner {...props} />
+    </Suspense>
   )
 }
 

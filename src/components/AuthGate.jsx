@@ -3,9 +3,10 @@ import { cloneElement, lazy, Suspense, useCallback, useEffect, useState,
   useRef} from 'react'
 import { supabase } from '../lib/supabase'
 import './AuthGate.css'
-import ControlCentre from './ControlCentre'
 import UserActivityMonitor from './UserActivityMonitor'
-const PremiumPage = lazy(() => import('./PremiumPage'))
+const loadPremiumPage = () => import('./PremiumPage')
+const PremiumPage = lazy(loadPremiumPage)
+const ControlCentre = lazy(() => import('./ControlCentre'))
 import ThemeSettings from './ThemeSettings'
 import ProfileSettings from './ProfileSettings'
 import { useBackHandler } from '../context/NavigationProvider'
@@ -136,6 +137,15 @@ export default function AuthGate({ children }) {
       return false
     }
 
+    // UI hint only: the database still enforces Premium access on every request.
+    try {
+      const hint = JSON.parse(localStorage.getItem('periak_premium_hint') || 'null')
+      if (hint && hint.uid === session.user.id && hint.active === true && Date.now() - hint.ts < 86400000) {
+        setPremiumAccess(true)
+        setPremiumLoading(false)
+      }
+    } catch { /* ignore storage errors */ }
+
     const { data, error } = await supabase.rpc('is_premium')
 
     if (error) {
@@ -146,6 +156,10 @@ export default function AuthGate({ children }) {
     }
 
     const active = data === true
+    try {
+      localStorage.setItem('periak_premium_hint',
+        JSON.stringify({ uid: session.user.id, active, ts: Date.now() }))
+    } catch { /* ignore storage errors */ }
     setPremiumAccess(active)
     setPremiumLoading(false)
     return active
@@ -155,6 +169,19 @@ export default function AuthGate({ children }) {
     setPremiumLoading(true)
     refreshPremiumAccess()
   }, [refreshPremiumAccess])
+
+  // Warm the Premium page once the browser is idle so it opens instantly.
+  useEffect(() => {
+    if (!session?.user?.id || navigator.connection?.saveData) return undefined
+    const run = () => { loadPremiumPage().catch(() => {}) }
+    const id = 'requestIdleCallback' in window
+      ? window.requestIdleCallback(run, { timeout: 4000 })
+      : window.setTimeout(run, 2500)
+    return () => {
+      if ('cancelIdleCallback' in window) window.cancelIdleCallback(id)
+      else window.clearTimeout(id)
+    }
+  }, [session?.user?.id])
 
   async function handleSubmit(event) {
     event.preventDefault()
@@ -305,7 +332,7 @@ export default function AuthGate({ children }) {
         {showProfile && <ProfileSettings user={session.user} onClose={() => setShowProfile(false)} />}
 
         {profile?.role === 'admin' && showControlCentre ? (
-          <ControlCentre onClose={() => setShowControlCentre(false)} />
+          <Suspense fallback={<div className="premium-page">Loading Control Centre...</div>}><ControlCentre onClose={() => setShowControlCentre(false)} /></Suspense>
         ) : (profile?.role === 'student' || profile?.role === 'admin') && showPremium ? (
           <Suspense fallback={<div className="premium-page">Opening Premium...</div>}>
             <PremiumPage
@@ -343,9 +370,11 @@ export default function AuthGate({ children }) {
                   setShowPremium(true)
                 }
               },
-              onOpenPremiumFeature: (moduleId) => {
+              onOpenPremiumFeature: async (moduleId) => {
                 const freeModules = ['pastpapers', 'dashboard', 'hub', 'exams']
-                if (premiumAccess || profile?.role === 'admin' || freeModules.includes(moduleId)) {
+                const allowed = premiumAccess || profile?.role === 'admin' || freeModules.includes(moduleId) ||
+                  (premiumLoading ? await refreshPremiumAccess() : false)
+                if (allowed) {
                   setPremiumModuleReturn(false)
                   setPremiumLaunch(moduleId)
                 } else {

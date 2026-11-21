@@ -65,7 +65,6 @@ export default function LearningSuite({
   useBackHandler(handleLearningSuiteBack, Boolean(active) || standalone, 30)
 
   function open(id) {
-    if (premiumLoading && !isAdmin) return
     const freeModules = ['dashboard', 'hub']
     if (!hasPremiumAccess && !isAdmin && !freeModules.includes(id)) {
       return onOpenPremiumFeature(id)
