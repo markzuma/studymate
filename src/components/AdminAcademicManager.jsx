@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useBackHandler } from '../context/NavigationProvider'
 import { supabase } from '../lib/supabase'
 
 const panelStyle = {
@@ -319,6 +320,44 @@ export default function AdminAcademicManager({ mode, courses = [] }) {
   }
 
   const selectedExamRow = exams.find(item => item.id === selectedExam)
+
+  function handleAcademicBack() {
+    if (mode === 'exams' && selectedExam) {
+      setSelectedExam('')
+      setQuestions([])
+      setQuestionText('')
+      setQuestionOptions('Option A\nOption B\nOption C\nOption D')
+      setCorrectAnswer('')
+      setExplanation('')
+      setPoints('1')
+      setMessage('')
+      return true
+    }
+
+    if (mode === 'outlines' && outlineCourse) {
+      setOutlineCourse('')
+      setOutlineContent(JSON.stringify({
+        course_description: '',
+        learning_outcomes: [],
+        topics: [],
+        teaching_methods: [],
+        assessment_methods: [],
+        references: []
+      }, null, 2))
+      setOutlineStatus('draft')
+      setMessage('')
+      return true
+    }
+
+    return false
+  }
+
+  useBackHandler(
+    handleAcademicBack,
+    (mode === 'exams' && Boolean(selectedExam)) ||
+      (mode === 'outlines' && Boolean(outlineCourse)),
+    35
+  )
 
   return (
     <div>

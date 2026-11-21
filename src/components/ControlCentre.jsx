@@ -107,6 +107,73 @@ export default function ControlCentre({ onClose }) {
     return true
   }
 
+  function handleControlCentreNestedBack() {
+    if (section === 'courses') {
+      if (editingUnitId) {
+        setEditingUnitId('')
+        setUnitTitle('')
+        setUnitCode('')
+        setUnitDescription('')
+        setUnitMessage('')
+        return true
+      }
+
+      if (showCourseForm) {
+        setShowCourseForm(false)
+        setEditingCourseId('')
+        setCourseTitle('')
+        setCourseCode('')
+        setDescription('')
+        setProgramme('BSc Nursing')
+        setYear('1')
+        setSemester('1')
+        setCourseMessage('')
+        return true
+      }
+
+      if (selectedCourseId) {
+        setSelectedCourseId('')
+        setUnits([])
+        setUnitMessage('')
+        return true
+      }
+    }
+
+    if (section === 'materials') {
+      if (editingMaterialId) {
+        resetMaterialForm()
+        setMaterialMessage('')
+        return true
+      }
+
+      if (materialUnitId) {
+        setMaterialUnitId('')
+        setMaterials([])
+        resetMaterialForm()
+        setMaterialMessage('')
+        return true
+      }
+
+      if (materialCourseId) {
+        setMaterialCourseId('')
+        setMaterialUnits([])
+        setMaterialUnitId('')
+        setMaterials([])
+        resetMaterialForm()
+        setMaterialMessage('')
+        return true
+      }
+    }
+
+    return false
+  }
+
+  useBackHandler(
+    handleControlCentreNestedBack,
+    section === 'courses' || section === 'materials',
+    40
+  )
+
   useBackHandler(handleSectionBack, sectionHistory.length > 0, 30)
 
   async function loadDashboard() {

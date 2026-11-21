@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useBackHandler } from '../context/NavigationProvider'
 import { supabase } from '../lib/supabase'
 import './StudyPlanner.css'
 
@@ -186,6 +187,19 @@ export default function StudyPlanner() {
     setNotice('')
     setShowForm(true)
   }
+
+  function handlePlannerBack() {
+    if (!showForm) return false
+
+    setShowForm(false)
+    setEditingId(null)
+    setForm(emptyForm())
+    setError('')
+    setNotice('')
+    return true
+  }
+
+  useBackHandler(handlePlannerBack, showForm, 40)
 
   async function handleSubmit(event) {
     event.preventDefault()

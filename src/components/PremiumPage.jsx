@@ -200,6 +200,18 @@ export default function PremiumPage({ user, onBack, onSubscriptionUpdated = () =
   const pendingSubscription = subscription?.status === 'pending'
 
   function handlePremiumBack() {
+    if (!initialFeatureId && selectedPlan) {
+      setSelectedPlan(null)
+      setPaymentMethod('')
+      return
+    }
+
+    if (!initialFeatureId && selectedPremiumFeature) {
+      setSelectedPremiumFeature(null)
+      setPaymentMethod('')
+      return
+    }
+
     if (initialFeatureId && selectedPremiumFeature && !hasPremiumAccess) {
       if (purchaseStep === 'payment') {
         setPaymentMethod('')

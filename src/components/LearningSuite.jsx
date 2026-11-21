@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useBackHandler } from '../context/NavigationProvider'
 import './LearningSuite.css'
 
 const items = [
@@ -45,6 +46,24 @@ export default function LearningSuite({
 
   const subjects = courses.filter(c => c.title.toLowerCase().includes(search.toLowerCase()))
 
+  function handleLearningSuiteBack() {
+    if (active) {
+      setActive('')
+      setAnswer(null)
+      setCaseIndex(0)
+      return true
+    }
+
+    if (standalone) {
+      onBack()
+      return true
+    }
+
+    return false
+  }
+
+  useBackHandler(handleLearningSuiteBack, Boolean(active) || standalone, 30)
+
   function open(id) {
     if (premiumLoading && !isAdmin) return
     const freeModules = ['dashboard', 'hub']
@@ -65,7 +84,7 @@ export default function LearningSuite({
       ) : !hasPremiumAccess && !isAdmin && (
         <button type="button" onClick={onOpenPremium}>Unlock advanced learning tools →</button>
       )}
-      {standalone ? <button onClick={onBack}>← Back to Premium</button> : active && <button onClick={() => setActive('')}>← Back</button>}
+      {standalone ? <button onClick={handleLearningSuiteBack}>← Back to Premium</button> : active && <button onClick={handleLearningSuiteBack}>← Back</button>}
     </header>
 
     {!active ? <>

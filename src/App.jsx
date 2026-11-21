@@ -502,6 +502,11 @@ function App({ isPremium = false, premiumLoading = false, isAdmin = false, onOpe
   }
 
   const handleAppBack = () => {
+    if (mobileMenuOpen) {
+      setMobileMenuOpen(false)
+      return true
+    }
+
     if (showExams) {
       returnFromPremiumModule()
       window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -527,7 +532,7 @@ function App({ isPremium = false, premiumLoading = false, isAdmin = false, onOpe
     return false
   }
 
-  useBackHandler(handleAppBack, showExams || Boolean(selectedCourse) || Boolean(activePremiumModule), 20)
+  useBackHandler(handleAppBack, mobileMenuOpen || showExams || Boolean(selectedCourse) || Boolean(activePremiumModule), 20)
 
   if (showExams) {
     return (

@@ -1368,6 +1368,12 @@ export default function ExamCentre({ onHome, hasPremiumAccess = false, premiumLo
     return true
   }
 
+  useBackHandler(() => {
+    if (!showDatabaseExams) return false
+    setShowDatabaseExams(false)
+    return true
+  }, showDatabaseExams, 35)
+
   useBackHandler(handleExamBack, true, 30)
 
   async function startExam() {

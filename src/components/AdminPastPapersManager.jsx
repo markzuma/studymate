@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useBackHandler } from '../context/NavigationProvider'
 import { supabase } from '../lib/supabase'
 import './PastPapers.css'
 
@@ -128,6 +129,13 @@ export default function AdminPastPapersManager() {
     setFile(null)
     setUnits([])
   }
+
+  useBackHandler(() => {
+    if (!editing) return false
+    resetForm()
+    setMessage('Edit cancelled.')
+    return true
+  }, Boolean(editing), 35)
 
   async function savePaper(event) {
     event.preventDefault()

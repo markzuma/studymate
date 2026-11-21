@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useBackHandler } from '../context/NavigationProvider'
 import { supabase } from '../lib/supabase'
 
 const panel = {
@@ -110,6 +111,16 @@ export default function DatabaseExamCentre({ onBack }) {
     setResult(null)
     setMessage('')
   }
+
+  useBackHandler(() => {
+    if (busy) {
+      setMessage('Your examination is being submitted. Please wait for submission to finish.')
+      return true
+    }
+
+    leaveExam()
+    return true
+  }, Boolean(selectedExam), 55)
 
   const timeLabel = secondsLeft === null
     ? ''
