@@ -1359,7 +1359,8 @@ export default function ExamCentre({ onHome, hasPremiumAccess = false, premiumLo
     }
 
     if (finished) {
-      restart()
+      clearSavedSession()
+      onHome()
       return true
     }
 
