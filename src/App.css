@@ -1995,3 +1995,65 @@ footer,
 .lesson-page {
   padding-bottom: max(125px, 9vw);
 }
+
+
+/* PERIAK DESKTOP READING BALANCE V1 */
+
+@media (min-width: 761px) {
+
+  /* Balanced width for Chromebook and laptop reading */
+  .lesson-page {
+    width: min(93%, 1240px);
+    max-width: 1240px;
+    margin-inline: auto;
+    padding: 32px clamp(16px, 2vw, 28px) 100px;
+  }
+
+  .course-detail {
+    width: min(94%, 1320px);
+    max-width: 1320px;
+    margin-inline: auto;
+  }
+
+  /* Larger, clearer unbolded study text */
+  .lesson-page .periak-study-text-v2 .periak-study-paragraph,
+  .lesson-page .periak-study-text-v2 li,
+  .lesson-page .lesson-panel > p,
+  .lesson-page .lesson-panel > ul > li,
+  .lesson-page .lesson-panel > ol > li,
+  .lesson-page .lesson-panel .note-topic > p,
+  .lesson-page .question-option,
+  .lesson-page .practice-question p,
+  .lesson-page .practice-question li,
+  .lesson-page .practice-question details {
+    font-size: calc(19px * var(--reader-scale, 1));
+    line-height: 1.85;
+    letter-spacing: 0.1px;
+    color: var(--text-primary);
+  }
+
+  /* Better topic hierarchy */
+  .lesson-page .periak-notes-panel .note-topic h3 {
+    font-size: calc(23px * var(--reader-scale, 1));
+    line-height: 1.45;
+  }
+
+  .lesson-page .practice-question h3 {
+    font-size: calc(20px * var(--reader-scale, 1));
+    line-height: 1.55;
+  }
+
+  /* Comfortable spacing between concepts */
+  .lesson-page .periak-study-text-v2 .periak-study-paragraph {
+    margin-bottom: 23px;
+  }
+
+  .lesson-page .periak-study-text-v2 li {
+    margin-bottom: 14px;
+  }
+
+  .lesson-page .periak-notes-panel .note-topic {
+    padding-top: 29px;
+    padding-bottom: 29px;
+  }
+}
