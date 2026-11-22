@@ -1,6 +1,7 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
 import { useBackHandler } from './context/NavigationProvider'
 import { supabase } from './lib/supabase'
+import LessonReadingTools from './components/LessonReadingTools'
 import './App.css'
 
 // Heavy screens load on demand, then are warmed in the background (see AppInner).
@@ -810,6 +811,18 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
         </header>
 
         <main className="lesson-page">
+      {catalogueLessons[selectedUnit] && (
+        <LessonReadingTools
+          key={`${selectedCourse?.title}:${selectedUnit}`}
+          unitKey={selectedUnit}
+          topics={
+            Array.isArray(catalogueLessons[selectedUnit].notes)
+              ? catalogueLessons[selectedUnit].notes
+              : []
+          }
+        />
+      )}
+
           <button className="back-link" onClick={() => setSelectedUnit(null)}>
             ← Back to course content
           </button>
@@ -851,7 +864,7 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
           {catalogueLessons[selectedUnit] ? (
             <>
               <section className="lesson-panel">
-                <h2>Learning objectives</h2>
+                <h2 id="periak-lesson-objectives">Learning objectives</h2>
                 <p>By the end of this unit, you should be able to:</p>
                 <ul>
                   {(catalogueLessons[selectedUnit].objectives || []).map((item, index) => <li key={index}>{item}</li>)}
@@ -865,9 +878,9 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
               ) : true ? (
                 <>
               <section className="lesson-panel periak-notes-panel">
-                <h2>Comprehensive study notes</h2>
+                <h2 id="periak-lesson-notes">Comprehensive study notes</h2>
                 {(catalogueLessons[selectedUnit].notes || []).map((item, index) => (
-                  <div className="note-topic" key={index}>
+                  <div className="note-topic" id={`periak-note-topic-${index}`} key={index}>
                     <h3>{item.heading || item.title}</h3>
                     {item.content && <StudyText value={item.content} />}
                     {item.body && <StudyText value={item.body} />}
@@ -883,7 +896,7 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
               </section>
 
               <section className="lesson-panel">
-                <h2>Clinical application</h2>
+                <h2 id="periak-lesson-clinical">Clinical application</h2>
                 {(() => {
                   const lesson = catalogueLessons[selectedUnit]
                   const clinical = lesson.clinical ?? lesson.clinicalApplication
@@ -919,14 +932,14 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
               </section>
 
               <section className="lesson-panel">
-                <h2>High-yield examination points</h2>
+                <h2 id="periak-lesson-revision">High-yield examination points</h2>
                 <ul>
                   {(catalogueLessons[selectedUnit].examPoints || []).map((item, index) => <li key={index}>{item}</li>)}
                 </ul>
               </section>
 
               <section className="lesson-panel">
-                <h2>Practice questions</h2>
+                <h2 id="periak-lesson-questions">Practice questions</h2>
                 <p>Choose an answer, then open the explanation to check your understanding.</p>
                 {(Array.isArray(catalogueLessons[selectedUnit].questions)
                   ? catalogueLessons[selectedUnit].questions
