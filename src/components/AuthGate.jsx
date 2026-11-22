@@ -17,7 +17,6 @@ export default function AuthGate({ children }) {
   const [mode, setMode] = useState('login')
   const [fullName, setFullName] = useState('')
   const [username, setUsername] = useState('')
-  const [phoneNumber, setPhoneNumber] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -208,7 +207,6 @@ export default function AuthGate({ children }) {
             data: {
               full_name: fullName.trim(),
               username: cleanUsername,
-              phone_number: phoneNumber.trim() || null
             },
             emailRedirectTo: window.location.origin
           }
@@ -219,9 +217,8 @@ export default function AuthGate({ children }) {
         if (data.session) {
           setMessage('Your PERIAK account has been created successfully.')
         } else {
-          setMessage('Registration successful. Please check your email and click the confirmation link before signing in.')
+          setMessage('Your account was created. Sign in below using the same email and password.')
           setMode('login')
-          setPassword('')
         }
       } else if (mode === 'login') {
         const identifier = email.trim()
@@ -442,6 +439,8 @@ export default function AuthGate({ children }) {
                   onChange={(e) => setUsername(e.target.value)}
                   placeholder="Choose a username"
                   autoComplete="username"
+                  autoCapitalize="none"
+                  spellCheck={false}
                   minLength={3}
                   maxLength={24}
                   pattern="[A-Za-z0-9._]{3,24}"
@@ -450,16 +449,6 @@ export default function AuthGate({ children }) {
                 />
               </label>
 
-              <label>
-                Phone number <span className="auth-optional">(optional)</span>
-                <input
-                  type="tel"
-                  value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                  placeholder="e.g. 07XX XXX XXX"
-                  autoComplete="tel"
-                />
-              </label>
             </>
           )}
 
@@ -471,6 +460,8 @@ export default function AuthGate({ children }) {
               onChange={(e) => setEmail(e.target.value)}
               placeholder={mode === 'login' ? 'Enter email or username' : 'Enter your email'}
               autoComplete={mode === 'login' ? 'username' : 'email'}
+              autoCapitalize="none"
+              spellCheck={false}
               required
             />
           </label>
@@ -484,6 +475,7 @@ export default function AuthGate({ children }) {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="At least 8 characters"
+                  autoComplete={mode === 'register' ? 'new-password' : 'current-password'}
                   minLength={8}
                   required
                 />
