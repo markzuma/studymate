@@ -2057,3 +2057,244 @@ footer,
     padding-bottom: 29px;
   }
 }
+
+
+/* PERIAK FOCUS READING MODE V1 */
+
+/* Hide distractions only while Focus Mode is active */
+body.periak-focus-active {
+  background: var(--page-bg);
+}
+
+body.periak-focus-active .auth-userbar,
+body.periak-focus-active .navbar,
+body.periak-focus-active footer,
+body.periak-focus-active .lesson-page > .back-link {
+  display: none !important;
+}
+
+body.periak-focus-active .lesson-page {
+  width: min(96%, 1260px);
+  max-width: 1260px;
+  margin-inline: auto;
+  padding-top: 88px;
+  padding-bottom: 135px;
+}
+
+/* Focus Mode entry button */
+.periak-reader-focus-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 11px 17px;
+  border: 1px solid var(--accent);
+  border-radius: 11px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 800;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.periak-reader-focus-button:hover {
+  filter: brightness(.96);
+}
+
+.periak-reader-focus-button:focus-visible,
+.periak-focus-toolbar button:focus-visible,
+.periak-focus-sidebar button:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* Persistent focus controls */
+.periak-focus-toolbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 70;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 62px;
+  padding: 9px clamp(12px, 3vw, 32px);
+  background: var(--surface);
+  color: var(--text-primary);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 4px 18px rgba(0,0,0,.08);
+}
+
+.periak-focus-title {
+  font-size: 15px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.periak-focus-toolbar-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+
+.periak-focus-toolbar button {
+  min-height: 38px;
+  padding: 8px 13px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--surface-secondary);
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.periak-focus-toolbar button:hover {
+  border-color: var(--accent);
+}
+
+.periak-focus-toolbar button:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+.periak-focus-toolbar .periak-focus-exit {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: white;
+}
+
+/* Optional contents sidebar */
+.periak-focus-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 71;
+  border: none;
+  background: rgba(8, 20, 30, .38);
+  cursor: pointer;
+}
+
+.periak-focus-sidebar {
+  position: fixed;
+  z-index: 72;
+  top: 73px;
+  bottom: 16px;
+  left: 16px;
+  width: min(340px, calc(100vw - 32px));
+  padding: 20px;
+  overflow-y: auto;
+  background: var(--surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: 17px;
+  box-shadow: 0 16px 55px rgba(0,0,0,.23);
+}
+
+.periak-focus-sidebar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border);
+}
+
+.periak-focus-sidebar-header strong {
+  font-size: 18px;
+  color: var(--text-primary);
+}
+
+.periak-focus-sidebar-header button {
+  width: 36px;
+  height: 36px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--surface-secondary);
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.periak-focus-sidebar nav {
+  display: grid;
+  gap: 7px;
+}
+
+.periak-focus-sidebar nav button {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  width: 100%;
+  min-height: 40px;
+  padding: 11px 12px;
+  text-align: left;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-primary);
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: var(--surface-secondary);
+  cursor: pointer;
+}
+
+.periak-focus-sidebar nav button:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.periak-focus-sidebar-label {
+  margin: 20px 0 7px;
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 1.1px;
+}
+
+.periak-focus-sidebar nav button span {
+  color: var(--accent);
+  font-weight: 800;
+}
+
+/* The existing floating progress dock remains visible */
+body.periak-focus-active .periak-reader-floating-dock {
+  z-index: 65;
+}
+
+@media (max-width: 600px) {
+  .periak-focus-title {
+    display: none;
+  }
+
+  .periak-focus-toolbar {
+    min-height: 57px;
+    padding: 7px 10px;
+  }
+
+  .periak-focus-toolbar-actions {
+    width: 100%;
+    justify-content: space-between;
+    gap: 5px;
+  }
+
+  .periak-focus-toolbar button {
+    padding: 8px 9px;
+    font-size: 11px;
+  }
+
+  body.periak-focus-active .lesson-page {
+    width: 100%;
+    padding: 73px 4% 135px;
+  }
+
+  .periak-focus-sidebar {
+    top: 65px;
+    bottom: 10px;
+    left: 10px;
+    width: calc(100vw - 20px);
+  }
+}

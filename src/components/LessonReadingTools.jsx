@@ -20,6 +20,43 @@ export default function LessonReadingTools({ unitKey, topics = [] }) {
   const [showTop, setShowTop] = useState(false)
   const [topic, setTopic] = useState('')
 
+  // PERIAK FOCUS READING MODE V1
+  const [focusMode, setFocusMode] = useState(false)
+  const [contentsOpen, setContentsOpen] = useState(false)
+
+  useEffect(() => {
+    document.body.classList.toggle(
+      'periak-focus-active',
+      focusMode
+    )
+
+    return () => {
+      document.body.classList.remove('periak-focus-active')
+    }
+  }, [focusMode])
+
+  useEffect(() => {
+    if (!focusMode) return undefined
+
+    const onKeyDown = event => {
+      if (event.key !== 'Escape') return
+
+      if (contentsOpen) {
+        setContentsOpen(false)
+      } else {
+        setFocusMode(false)
+      }
+    }
+
+    window.addEventListener('keydown', onKeyDown)
+
+    return () => {
+      window.removeEventListener('keydown', onKeyDown)
+    }
+  }, [focusMode, contentsOpen])
+
+
+
   const sections = [
     ['periak-lesson-objectives', 'Objectives'],
     ['periak-lesson-notes', 'Study notes'],
@@ -146,6 +183,125 @@ export default function LessonReadingTools({ unitKey, topics = [] }) {
 
   return (
     <>
+
+      {focusMode && (
+        <div
+          className="periak-focus-toolbar"
+          role="toolbar"
+          aria-label="Focus reading controls"
+        >
+          <span className="periak-focus-title">
+            📖 Focus Reading
+          </span>
+
+          <div className="periak-focus-toolbar-actions">
+            <button
+              type="button"
+              onClick={() => setContentsOpen(true)}
+              aria-expanded={contentsOpen}
+              aria-controls="periak-focus-contents"
+            >
+              ☰ Contents
+            </button>
+
+            <button
+              type="button"
+              onClick={() => changeSize(-0.1)}
+              disabled={scale <= 0.9}
+              aria-label="Decrease reading text size"
+            >
+              A−
+            </button>
+
+            <button
+              type="button"
+              onClick={() => changeSize(0.1)}
+              disabled={scale >= 1.4}
+              aria-label="Increase reading text size"
+            >
+              A+
+            </button>
+
+            <button
+              type="button"
+              className="periak-focus-exit"
+              onClick={() => {
+                setContentsOpen(false)
+                setFocusMode(false)
+              }}
+            >
+              ✕ Exit Focus
+            </button>
+          </div>
+        </div>
+      )}
+
+      {focusMode && contentsOpen && (
+        <>
+          <button
+            type="button"
+            className="periak-focus-backdrop"
+            aria-label="Close lesson contents"
+            onClick={() => setContentsOpen(false)}
+          />
+
+          <aside
+            id="periak-focus-contents"
+            className="periak-focus-sidebar"
+            aria-label="Lesson contents sidebar"
+          >
+            <div className="periak-focus-sidebar-header">
+              <strong>Lesson contents</strong>
+
+              <button
+                type="button"
+                onClick={() => setContentsOpen(false)}
+                aria-label="Close contents"
+              >
+                ✕
+              </button>
+            </div>
+
+            <nav aria-label="Focus lesson navigation">
+              {sections.map(([id, label]) => (
+                <button
+                  type="button"
+                  key={id}
+                  onClick={() => {
+                    setContentsOpen(false)
+                    jump(id)
+                  }}
+                >
+                  {label}
+                </button>
+              ))}
+
+              {topics.length > 0 && (
+                <p className="periak-focus-sidebar-label">
+                  STUDY TOPICS
+                </p>
+              )}
+
+              {topics.map((item, index) => (
+                <button
+                  type="button"
+                  key={index}
+                  onClick={() => {
+                    setContentsOpen(false)
+                    jump(`periak-note-topic-${index}`)
+                  }}
+                >
+                  <span>{index + 1}.</span>
+                  {item?.heading ||
+                    item?.title ||
+                    `Topic ${index + 1}`}
+                </button>
+              ))}
+            </nav>
+          </aside>
+        </>
+      )}
+
       <section className="periak-reader-tools">
         <div className="periak-reader-header">
           <div>
@@ -158,6 +314,19 @@ export default function LessonReadingTools({ unitKey, topics = [] }) {
               customise your reading experience.
             </p>
           </div>
+
+
+          <button
+            type="button"
+            className="periak-reader-focus-button"
+            aria-pressed={focusMode}
+            onClick={() => {
+              setContentsOpen(false)
+              setFocusMode(previous => !previous)
+            }}
+          >
+            {focusMode ? '✕ Exit Focus' : '⛶ Focus Mode'}
+          </button>
 
           <div className="periak-reader-size">
             <span>Text size</span>
