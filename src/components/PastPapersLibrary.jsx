@@ -168,6 +168,12 @@ export default function PastPapersLibrary({
       return
     }
 
+    supabase.rpc('record_my_event', {
+      p_event_type: 'paper_open',
+      p_feature_id: 'pastpapers',
+      p_paper_id: paper.id
+    }).then(() => {}).catch(() => {})
+
     if (pdfWindow) {
       pdfWindow.location.href = data.signedUrl
     } else {

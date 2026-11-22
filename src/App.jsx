@@ -76,6 +76,15 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
   const [showExams, setShowExams] = useState(false)
   const [activePremiumModule, setActivePremiumModule] = useState('')
 
+  useEffect(() => {
+    if (!activePremiumModule) return
+    supabase.rpc('record_my_event', {
+      p_event_type: 'feature_open',
+      p_feature_id: String(activePremiumModule),
+      p_paper_id: null
+    }).then(() => {}).catch(() => {})
+  }, [activePremiumModule])
+
   // Warm the screens a student is likely to open next, once the browser is idle.
   useEffect(() => {
     if (navigator.connection?.saveData) return undefined
