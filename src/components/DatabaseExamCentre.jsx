@@ -188,7 +188,7 @@ export default function DatabaseExamCentre({ onBack }) {
                 {question.question_type === 'mcq' ? (
                   <div style={{ display: 'grid', gap: 9 }}>
                     {(question.options || []).map((option, optionIndex) => (
-                      <label key={optionIndex} style={{
+                      <label key={optionIndex} className="periak-db-option" style={{
                         padding: 10,
                         border: '1px solid #dbe3ed',
                         borderRadius: 8

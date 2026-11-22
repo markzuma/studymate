@@ -15,6 +15,142 @@ const LearningSuite = lazy(loadLearningSuite)
 const CourseOutlineViewer = lazy(loadCourseOutlineViewer)
 const PastPapersLibrary = lazy(loadPastPapersLibrary)
 
+
+
+// PERIAK STUDY READING V2
+// Presentation only. Source text and database records remain unchanged.
+function StudyText({ value }) {
+  const raw = typeof value === 'string'
+    ? value
+    : Array.isArray(value)
+      ? value.map(item =>
+          typeof item === 'string'
+            ? item
+            : item?.content ?? item?.body ?? ''
+        ).join('\n\n')
+      : value?.content ?? value?.body ?? ''
+
+  const text = String(raw ?? '')
+    .replace(/\r\n?/g, '\n')
+    .trim()
+
+  if (!text) return null
+
+  const terms = /^(?:deficiency|toxicity|excess|clinical manifestations|nursing care|nursing management|nursing interventions|assessment|diagnosis|investigations|treatment|management|prevention|complications|food sources|risk factors|signs and symptoms|contraindications|patient education|monitoring|mechanism of action|pathophysiology|priority)$/i
+
+  const highlight = input => String(input)
+    .split(/(\*\*[^*]+\*\*|\b(?:deficiency|toxicity|excess|clinical manifestations|nursing care|nursing management|nursing interventions|assessment|diagnosis|investigations|treatment|management|prevention|complications|food sources|risk factors|signs and symptoms|contraindications|patient education|monitoring|mechanism of action|pathophysiology|priority)\b)/gi)
+    .map((part, index) => {
+      if (part.startsWith('**') && part.endsWith('**')) {
+        return <strong key={index}>{part.slice(2, -2)}</strong>
+      }
+
+      return terms.test(part)
+        ? <strong className="periak-key-term" key={index}>{part}</strong>
+        : part
+    })
+
+  const paragraphElements = (content, key) => {
+    const sentences = content.trim()
+      .replace(/\s+/g, ' ')
+      .split(/(?<=[.!?])\s+(?=[A-Z])/g)
+
+    const chunks = []
+    let chunk = ''
+
+    for (const sentence of sentences) {
+      if (chunk && chunk.length + sentence.length > 230) {
+        chunks.push(chunk)
+        chunk = sentence
+      } else {
+        chunk = chunk ? `${chunk} ${sentence}` : sentence
+      }
+    }
+
+    if (chunk) chunks.push(chunk)
+
+    return chunks.map((part, index) => (
+      <p className="periak-study-paragraph" key={`${key}-${index}`}>
+        {highlight(part)}
+      </p>
+    ))
+  }
+
+  const elements = []
+
+  text.split(/\n\s*\n/).forEach((block, blockIndex) => {
+    const lines = block.split('\n')
+      .map(line => line.trim())
+      .filter(Boolean)
+
+    let group = []
+    let groupType = ''
+
+    const flush = () => {
+      if (!group.length) return
+
+      const key = `${blockIndex}-${elements.length}`
+
+      if (groupType === 'bullet') {
+        elements.push(
+          <ul className="periak-study-list" key={key}>
+            {group.map((line, i) => (
+              <li key={i}>
+                {highlight(line.replace(/^[-*•]\s+/, ''))}
+              </li>
+            ))}
+          </ul>
+        )
+      } else if (groupType === 'number') {
+        elements.push(
+          <ol className="periak-study-list" key={key}>
+            {group.map((line, i) => (
+              <li key={i}>
+                {highlight(line.replace(/^\d+[.)]\s+/, ''))}
+              </li>
+            ))}
+          </ol>
+        )
+      } else if (groupType === 'heading') {
+        group.forEach((line, i) => {
+          elements.push(
+            <h4 className="periak-study-subheading" key={`${key}-${i}`}>
+              {highlight(line.replace(/^#{2,4}\s+/, ''))}
+            </h4>
+          )
+        })
+      } else {
+        elements.push(...paragraphElements(group.join(' '), key))
+      }
+
+      group = []
+    }
+
+    for (const line of lines) {
+      const nextType = /^[-*•]\s+/.test(line)
+        ? 'bullet'
+        : /^\d+[.)]\s+/.test(line)
+          ? 'number'
+          : /^#{2,4}\s+/.test(line)
+            ? 'heading'
+            : 'prose'
+
+      if (groupType && nextType !== groupType) flush()
+
+      groupType = nextType
+      group.push(line)
+    }
+
+    flush()
+  })
+
+  return (
+    <div className="periak-study-text periak-study-text-v2">
+      {elements}
+    </div>
+  )
+}
+
 const legacyCourseCatalogue = [
   { icon: '🫀', title: 'Anatomy & Physiology', desc: 'Understand the structure and functions of the human body.', level: 'FOUNDATION' },
   { icon: '🩺', title: 'Medical-Surgical Nursing', desc: 'Learn to assess, manage and care for patients with diseases.', level: 'CORE NURSING' },
@@ -728,13 +864,13 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
                 </section>
               ) : true ? (
                 <>
-              <section className="lesson-panel">
+              <section className="lesson-panel periak-notes-panel">
                 <h2>Comprehensive study notes</h2>
                 {(catalogueLessons[selectedUnit].notes || []).map((item, index) => (
                   <div className="note-topic" key={index}>
                     <h3>{item.heading || item.title}</h3>
-                    {item.content && <p>{item.content}</p>}
-                    {item.body && <p>{item.body}</p>}
+                    {item.content && <StudyText value={item.content} />}
+                    {item.body && <StudyText value={item.body} />}
                     {item.points && (
                       <ul>
                         {item.points.map((point, pointIndex) => (

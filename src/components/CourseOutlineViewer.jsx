@@ -39,9 +39,10 @@ export default function CourseOutlineViewer({ courseId }) {
   ]
 
   return (
-    <section style={{
-      background: '#fff',
-      border: '1px solid #e2e8f0',
+    <section className="periak-outline-card" style={{
+      background: 'var(--surface)',
+      color: 'var(--text-primary)',
+      border: '1px solid var(--border)',
       borderRadius: 14,
       padding: 20,
       margin: '22px 0'

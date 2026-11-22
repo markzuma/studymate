@@ -224,3 +224,94 @@ button {
   outline-offset: 3px;
 }
 
+
+/* PERIAK database examination option contrast */
+.periak-db-option {
+  cursor: pointer;
+  transition: background-color .15s ease;
+}
+
+:root[data-theme="dark"] .periak-db-option {
+  background: #1e293b !important;
+  color: #f1f5f9 !important;
+  border: 1px solid #64748b !important;
+}
+
+:root[data-theme="dark"] .periak-db-option:has(input:checked) {
+  background: #173b5b !important;
+  color: #ffffff !important;
+  border: 2px solid #93c5fd !important;
+}
+
+.periak-db-option:focus-within {
+  outline: 2px solid #60a5fa;
+  outline-offset: 2px;
+}
+
+.periak-db-option input[type="radio"] {
+  accent-color: #2563eb;
+}
+
+/* PERIAK MOCK AND OUTLINE CONTRAST V2 */
+:root[data-theme="dark"] .periak-mock-card {
+  background: #1e293b !important;
+  color: #f1f5f9 !important;
+  border-color: #475569 !important;
+}
+
+:root[data-theme="dark"] .periak-mock-card h1,
+:root[data-theme="dark"] .periak-mock-card h2,
+:root[data-theme="dark"] .periak-mock-card h3,
+:root[data-theme="dark"] .periak-mock-card h4,
+:root[data-theme="dark"] .periak-mock-card p,
+:root[data-theme="dark"] .periak-mock-card small,
+:root[data-theme="dark"] .periak-mock-card label {
+  color: #f1f5f9 !important;
+}
+
+.periak-mock-card label:has(input[type="radio"]) {
+  padding: 13px !important;
+  margin: 7px 0;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+:root[data-theme="dark"] .periak-mock-card label:has(input[type="radio"]) {
+  background: #29374c;
+  border-color: #52647c;
+}
+
+.periak-mock-card label:has(input[type="radio"]:checked) {
+  background: var(--accent-soft);
+  border: 2px solid var(--accent);
+}
+
+:root[data-theme="dark"] .periak-mock-card label:has(input[type="radio"]:checked) {
+  background: #173b5b;
+  border-color: #93c5fd;
+}
+
+.periak-mock-card input[type="radio"] {
+  accent-color: #3b82f6;
+}
+
+.periak-mock-card label:focus-within {
+  outline: 2px solid #60a5fa;
+  outline-offset: 2px;
+}
+
+.periak-outline-card {
+  color: var(--text-primary);
+}
+
+.periak-outline-card h2,
+.periak-outline-card h3,
+.periak-outline-card p,
+.periak-outline-card li {
+  color: var(--text-primary) !important;
+}
+
+.periak-outline-card .eyebrow {
+  color: var(--accent) !important;
+}

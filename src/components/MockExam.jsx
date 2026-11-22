@@ -259,7 +259,7 @@ export default function MockExam({ subjectId, subjectTitle, attemptKey, examStar
             Back to Home
           </button>
         </div>
-        <div style={styles.card}>
+        <div className="periak-mock-card" style={styles.card}>
           <h1>Mock Examination Results</h1>
           <p>{subjectTitle}</p>
 
@@ -406,7 +406,7 @@ export default function MockExam({ subjectId, subjectTitle, attemptKey, examStar
             Back to Home
           </button>
         </div>
-      <header style={styles.card}>
+      <header className="periak-mock-card" style={styles.card}>
         <p>PERIAK EXAMINATION CENTRE</p>
         <h1>{subjectTitle}</h1>
         <h2>Mock Examination — 100 Marks</h2>
@@ -438,7 +438,7 @@ export default function MockExam({ subjectId, subjectTitle, attemptKey, examStar
         </div>
       </header>
 
-      <section style={styles.card}>
+      <section className="periak-mock-card" style={styles.card}>
         <h2>Section A: Multiple-choice questions</h2>
 
         {mcqQuestions.map((item, index) => (
@@ -476,7 +476,7 @@ export default function MockExam({ subjectId, subjectTitle, attemptKey, examStar
         ))}
       </section>
 
-      <section style={styles.card}>
+      <section className="periak-mock-card" style={styles.card}>
         <h2>Section B: Short-answer questions</h2>
         <p>Answer all six questions. Each carries 5 marks.</p>
 
@@ -500,7 +500,7 @@ export default function MockExam({ subjectId, subjectTitle, attemptKey, examStar
         ))}
       </section>
 
-      <section style={styles.card}>
+      <section className="periak-mock-card" style={styles.card}>
         <h2>Section C: Clinical application questions</h2>
         <p>Answer both questions. Each carries 15 marks.</p>
 

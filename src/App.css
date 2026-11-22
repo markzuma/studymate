@@ -1388,3 +1388,312 @@ footer,
 
 /* PERIAK loading fallback */
 .app-loading { padding: 32px 16px; text-align: center; opacity: 0.7; }
+
+/* PERIAK readable lesson cards */
+.periak-notes-panel {
+  counter-reset: periak-topic;
+}
+
+.periak-notes-panel .note-topic {
+  counter-increment: periak-topic;
+  position: relative;
+  background: var(--surface-secondary);
+  border: 1px solid var(--border);
+  border-radius: 15px;
+  padding: 20px 22px 20px 62px;
+  margin: 15px 0;
+  box-shadow: 0 2px 10px rgba(0,0,0,.035);
+}
+
+.periak-notes-panel .note-topic::before {
+  content: counter(periak-topic, decimal-leading-zero);
+  position: absolute;
+  top: 19px;
+  left: 16px;
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.periak-notes-panel .note-topic h3 {
+  color: var(--text-primary);
+  font-size: 17px;
+  line-height: 1.5;
+  margin: 0 0 13px;
+}
+
+.periak-study-text {
+  color: var(--text-primary);
+  overflow-wrap: anywhere;
+}
+
+.periak-study-text p {
+  color: var(--text-primary);
+  white-space: pre-line;
+  line-height: 1.85;
+  margin: 0 0 15px;
+}
+
+.periak-study-text p:last-child {
+  margin-bottom: 0;
+}
+
+.periak-study-text ul,
+.periak-study-text ol {
+  padding-left: 22px;
+  margin: 12px 0;
+}
+
+.periak-study-text li {
+  color: var(--text-primary);
+  line-height: 1.75;
+  margin: 8px 0;
+}
+
+.periak-study-text strong {
+  color: var(--text-primary);
+}
+
+@media (max-width: 560px) {
+  .periak-notes-panel .note-topic {
+    padding: 17px;
+  }
+
+  .periak-notes-panel .note-topic::before {
+    position: static;
+    margin-bottom: 12px;
+  }
+}
+
+/* PERIAK NOTES POLISH V2 — colourful, spacious academic reading */
+.periak-notes-panel .note-topic {
+  margin: 25px 0;
+  padding: 27px 27px 26px 80px;
+  background: var(--surface-secondary);
+  border: 1px solid var(--border);
+  border-left: 4px solid #0d9488;
+  border-radius: 17px;
+  box-shadow: 0 6px 24px rgba(0,0,0,.06);
+}
+
+.periak-notes-panel .note-topic:nth-of-type(4n+2) {
+  border-left-color: #3b82f6;
+}
+
+.periak-notes-panel .note-topic:nth-of-type(4n+3) {
+  border-left-color: #8b5cf6;
+}
+
+.periak-notes-panel .note-topic:nth-of-type(4n+4) {
+  border-left-color: #d97706;
+}
+
+.periak-notes-panel .note-topic::before {
+  top: 25px;
+  left: 20px;
+  width: 39px;
+  height: 37px;
+  font-size: 13px;
+  border: 1px solid var(--border);
+}
+
+.periak-notes-panel .note-topic h3 {
+  font-size: clamp(16px, 2vw, 19px);
+  line-height: 1.5;
+  font-weight: 800;
+  letter-spacing: -.2px;
+  margin: 0 0 19px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-primary);
+}
+
+.periak-study-text-v2 .periak-study-paragraph {
+  margin: 0 0 17px;
+  line-height: 1.95;
+  font-size: 15px;
+  color: var(--text-primary);
+}
+
+.periak-study-text-v2 .periak-study-paragraph + .periak-study-paragraph {
+  margin-top: 15px;
+  padding-top: 13px;
+  border-top: 1px dashed var(--border);
+}
+
+.periak-study-text-v2 .periak-key-term {
+  font-weight: 800;
+  color: var(--accent);
+}
+
+.periak-study-text-v2 .periak-study-list {
+  margin: 19px 0;
+  padding-left: 25px;
+}
+
+.periak-study-text-v2 .periak-study-list li {
+  margin: 11px 0;
+  line-height: 1.85;
+  color: var(--text-primary);
+}
+
+.periak-study-text-v2 .periak-study-subheading {
+  color: var(--accent);
+  font-size: 15px;
+  font-weight: 800;
+  margin: 23px 0 12px;
+}
+
+@media (max-width: 600px) {
+  .periak-notes-panel .note-topic {
+    margin: 20px 0;
+    padding: 20px 18px;
+  }
+
+  .periak-notes-panel .note-topic::before {
+    position: static;
+    margin-bottom: 15px;
+  }
+
+  .periak-study-text-v2 .periak-study-paragraph {
+    font-size: 14px;
+    line-height: 1.85;
+  }
+}
+
+
+/* PERIAK WIDE SCREEN READING V1 */
+
+/* Spacious learning experience on laptops and Chromebooks */
+@media (min-width: 761px) {
+
+  .lesson-page,
+  .course-detail {
+    width: min(96%, 1440px);
+    max-width: 1440px;
+    margin-inline: auto;
+    padding: 32px clamp(12px, 2vw, 32px) 90px;
+  }
+
+  .lesson-page .lesson-panel,
+  .lesson-page .periak-notes-panel {
+    width: 100%;
+    max-width: none;
+  }
+
+  .periak-notes-panel .note-topic {
+    width: 100%;
+  }
+
+  .periak-study-text-v2 {
+    width: 100%;
+  }
+
+  .periak-study-text-v2 .periak-study-paragraph {
+    font-size: 15.5px;
+    line-height: 1.9;
+  }
+
+}
+
+/* Keep compact, comfortable reading on phones */
+@media (max-width: 760px) {
+
+  .lesson-page,
+  .course-detail {
+    width: 100%;
+    padding: 22px 4% 65px;
+  }
+
+  .periak-notes-panel .note-topic {
+    width: 100%;
+  }
+
+}
+
+
+/* PERIAK COMFORTABLE READING V1 */
+
+/* Clear, larger academic reading text */
+.lesson-page .periak-study-text-v2 .periak-study-paragraph {
+  font-size: clamp(17px, 1.35vw, 19px);
+  line-height: 1.85;
+  letter-spacing: 0.08px;
+  margin-bottom: 22px;
+}
+
+/* Larger study section headings */
+.lesson-page .periak-notes-panel .note-topic h3 {
+  font-size: clamp(20px, 1.65vw, 24px);
+  line-height: 1.45;
+  margin-bottom: 23px;
+}
+
+/* Subheadings within teaching notes */
+.lesson-page .periak-study-text-v2 .periak-study-subheading {
+  font-size: clamp(18px, 1.4vw, 21px);
+  line-height: 1.5;
+  margin: 26px 0 15px;
+}
+
+/* Lists and nursing points */
+.lesson-page .periak-study-text-v2 li {
+  font-size: clamp(17px, 1.3vw, 19px);
+  line-height: 1.8;
+  margin-bottom: 13px;
+}
+
+/* Main lesson section headings */
+.lesson-page .lesson-panel > h2 {
+  font-size: clamp(23px, 2vw, 28px);
+  line-height: 1.35;
+  margin-bottom: 23px;
+}
+
+/* Learning objectives, clinical content and examination points */
+.lesson-page .lesson-panel > p,
+.lesson-page .lesson-panel > ul > li,
+.lesson-page .lesson-panel > ol > li,
+.lesson-page .lesson-panel .note-topic > p {
+  font-size: clamp(16.5px, 1.25vw, 18px);
+  line-height: 1.85;
+}
+
+/* Practice questions */
+.lesson-page .practice-question h3 {
+  font-size: clamp(18px, 1.5vw, 21px);
+  line-height: 1.6;
+}
+
+.lesson-page .question-option {
+  font-size: clamp(16.5px, 1.3vw, 18px);
+  line-height: 1.7;
+  padding: 14px 17px;
+}
+
+/* Mobile: readable without excessive zooming */
+@media (max-width: 600px) {
+  .lesson-page .periak-study-text-v2 .periak-study-paragraph,
+  .lesson-page .periak-study-text-v2 li {
+    font-size: 16.5px;
+    line-height: 1.8;
+  }
+
+  .lesson-page .periak-notes-panel .note-topic h3 {
+    font-size: 19px;
+  }
+
+  .lesson-page .lesson-panel > h2 {
+    font-size: 22px;
+  }
+
+  .lesson-page .practice-question h3 {
+    font-size: 17px;
+  }
+}
