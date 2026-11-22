@@ -1042,21 +1042,21 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
           <div><strong>03</strong><span>Grow clinically</span></div>
         </section>
 
-        <section className="student-dashboard">
+        <section className="student-dashboard" data-periak-tour="learning-dashboard">
           <div className="dashboard-heading">
             <div>
               <div className="eyebrow">YOUR PERSONAL STUDY SPACE</div>
               <h2>Your learning dashboard</h2>
               <p>Pick up where you left off and keep track of your progress.</p>
             </div>
-            <button className="dashboard-exam-button" onClick={() => setShowExams(true)}>
+            <button className="dashboard-exam-button" data-periak-tour="examinations" onClick={() => setShowExams(true)}>
               Open examination centre →
             </button>
           </div>
 
 
 
-          <section className="dashboard-premium-ad">
+          <section className="dashboard-premium-ad" data-periak-tour="pastpapers">
             <div className="dashboard-premium-ad-copy">
               <span className="dashboard-premium-ad-label">PERIAK PREMIUM · FLAGSHIP</span>
               <h2>Past Papers &amp; Exam Practice</h2>
@@ -1081,7 +1081,7 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
                 { id: 'hub', icon: '📚', title: 'Nursing Knowledge Hub', short: 'Knowledge Hub', tag: 'Browse subjects' },
                 { id: 'planner', icon: '📅', title: 'Study Planner', short: 'Planner', tag: 'Plan CATs and exams' }
               ].map(tool => (
-                <button type="button" key={tool.id} className="dashboard-premium-tool"
+                <button type="button" key={tool.id} className="dashboard-premium-tool" data-periak-tour={tool.id}
                   aria-label={tool.title} onClick={() => onOpenPremiumFeature(tool.id)}>
                   <span className="tool-icon">{tool.icon}</span>
                   <strong>
@@ -1201,7 +1201,7 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
           </section>
         </section>
 
-        <section className="courses-section" id="courses">
+        <section className="courses-section" id="courses" data-periak-tour="courses">
           <div className="section-heading">
             <div>
               <div className="eyebrow">YOUR LEARNING STARTS HERE</div>

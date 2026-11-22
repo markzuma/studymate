@@ -9,6 +9,7 @@ const PremiumPage = lazy(loadPremiumPage)
 const ControlCentre = lazy(() => import('./ControlCentre'))
 import ThemeSettings from './ThemeSettings'
 import ProfileSettings from './ProfileSettings'
+import WelcomeTour from './WelcomeTour'
 import { useBackHandler } from '../context/NavigationProvider'
 
 export default function AuthGate({ children }) {
@@ -37,6 +38,49 @@ export default function AuthGate({ children }) {
   const [premiumModuleReturn, setPremiumModuleReturn] = useState(false)
   const [showAppearance, setShowAppearance] = useState(false)
   const [showProfile, setShowProfile] = useState(false)
+  const [showWelcomeTour, setShowWelcomeTour] = useState(false)
+
+  // v1 is new for EVERY account, including students who registered previously.
+  // The user ID prevents a skipped/completed tour leaking between accounts.
+  useEffect(() => {
+    const userId = session?.user?.id
+    if (!userId || !profile?.role || (profile?.id && profile.id !== userId)) return
+    try {
+      if (window.localStorage.getItem(`periak_app_tour_v1_${userId}`) === 'seen') return
+    } catch (error) {
+      console.warn('Could not check app tour preference:', error)
+    }
+    setShowControlCentre(false)
+    setShowPremium(false)
+    setShowAppearance(false)
+    setShowProfile(false)
+    setShowWelcomeTour(true)
+  }, [session?.user?.id, profile?.id, profile?.role])
+
+  function closeWelcomeTour() {
+    if (session?.user?.id) {
+      try {
+        window.localStorage.setItem(`periak_app_tour_v1_${session.user.id}`, 'seen')
+      } catch (error) {
+        console.warn('Could not store app tour preference:', error)
+      }
+    }
+    setShowWelcomeTour(false)
+  }
+
+  function replayWelcomeTour() {
+    setShowControlCentre(false)
+    setShowPremium(false)
+    setShowAppearance(false)
+    setShowProfile(false)
+    setShowWelcomeTour(true)
+  }
+
+  useBackHandler(() => {
+    if (!showWelcomeTour) return false
+    closeWelcomeTour()
+    return true
+  }, showWelcomeTour, 200)
 
   const handleAccountBack = () => {
     if (showProfile) {
@@ -294,6 +338,7 @@ export default function AuthGate({ children }) {
     return (
       <>
         <UserActivityMonitor userId={session.user.id} />
+        <WelcomeTour open={showWelcomeTour} onClose={closeWelcomeTour} />
         <div className="auth-userbar">
           <span>
             Signed in as <strong>{session.user.email}</strong>
@@ -308,7 +353,7 @@ export default function AuthGate({ children }) {
           )}
 
           {(profile?.role === 'student' || profile?.role === 'admin') && (
-            <button onClick={() => {
+            <button data-periak-tour="premium" onClick={() => {
               if (showPremium) {
                 setShowPremium(false)
               } else {
@@ -320,8 +365,9 @@ export default function AuthGate({ children }) {
             </button>
           )}
 
-          <button onClick={() => setShowProfile(true)}>Profile &amp; Security</button>
-          <button onClick={() => setShowAppearance(true)}>Appearance</button>
+          <button data-periak-tour="profile" onClick={() => setShowProfile(true)}>Profile &amp; Security</button>
+          <button data-periak-tour="appearance" onClick={() => setShowAppearance(true)}>Appearance</button>
+          <button type="button" onClick={replayWelcomeTour}>Take App Tour</button>
           <button onClick={handleLogout}>Log out</button>
         </div>
 

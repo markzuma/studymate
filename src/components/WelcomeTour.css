@@ -1,0 +1,30 @@
+.periak-tour-root{position:fixed;inset:0;z-index:2147483000;isolation:isolate;pointer-events:auto;font-family:inherit}
+.periak-tour-shade{position:fixed;inset:0;background:rgba(6,16,31,.78);backdrop-filter:blur(2px)}
+.periak-tour-root.has-focus .periak-tour-shade{background:transparent;backdrop-filter:none}
+.periak-tour-spotlight{position:fixed;z-index:1;box-sizing:border-box;pointer-events:none;border:2px solid #96ecaa;border-radius:14px;box-shadow:0 0 0 150vmax rgba(6,16,31,.76),0 0 0 4px rgba(150,236,170,.25);transition:border-radius .15s}
+.periak-tour-card{position:fixed;z-index:3;bottom:max(18px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:min(420px,calc(100vw - 26px));max-height:calc(100dvh - 26px);overflow-y:auto;box-sizing:border-box;background:#f8fbff;color:#122337;border:1px solid #d8e5ea;border-radius:22px;box-shadow:0 22px 80px rgba(0,0,0,.4);outline:none}
+.periak-tour-header{display:flex;justify-content:space-between;align-items:center;padding:17px 20px 14px;gap:8px}
+.periak-tour-brand{font-size:13px;letter-spacing:.035em;font-weight:900;color:#116c46;white-space:nowrap}
+.periak-tour-brand span{font-weight:600;font-size:10px;color:#668094;margin-left:6px}
+.periak-tour-skip{border:0;background:transparent;color:#52647c;cursor:pointer;font-size:13px;font-weight:700;padding:5px;white-space:nowrap}
+.periak-tour-skip span{margin-left:4px;font-size:18px;vertical-align:-1px}
+.periak-tour-progress-track{height:4px;background:#dce9e8;margin:0 20px;overflow:hidden;border-radius:999px}
+.periak-tour-progress-track>div{height:100%;background:linear-gradient(90deg,#147d56,#37bd7a);transition:width .2s}
+.periak-tour-content{padding:22px 23px 14px}
+.periak-tour-emoji{display:grid;place-items:center;font-size:32px;width:60px;height:60px;background:#e2f4eb;border-radius:18px;margin-bottom:18px}
+.periak-tour-count{font-size:10px;font-weight:900;color:#11724c;letter-spacing:.13em;margin:0 0 8px}
+.periak-tour-content h2{font-size:23px;line-height:1.2;letter-spacing:-.025em;margin:0 0 12px;color:#10283d;font-weight:800}
+.periak-tour-description{font-size:14px;line-height:1.62;color:#334960;margin:0 0 19px}
+.periak-tour-tip{display:flex;align-items:flex-start;gap:9px;padding:12px;background:#edf6f7;border:1px solid #d9eaee;border-radius:12px}
+.periak-tour-tip span{flex:none;font-size:18px}
+.periak-tour-tip p{font-size:12px;line-height:1.5;color:#405b66;margin:1px 0 0}
+.periak-tour-footer{display:flex;justify-content:space-between;gap:12px;padding:0 23px 22px}
+.periak-tour-footer button{min-height:44px;padding:10px 17px;border-radius:12px;font-weight:800;font-size:13px;cursor:pointer}
+.periak-tour-back{border:1px solid #cbd9e1;background:#fff;color:#375168}
+.periak-tour-back:disabled{opacity:.35;cursor:not-allowed}
+.periak-tour-next{border:1px solid #137e50;background:#137e50;color:white;flex:1;max-width:190px}
+.periak-tour-next:hover{background:#0d6340}
+.periak-tour-card button:focus-visible{outline:3px solid #3b82f6;outline-offset:2px}
+@media(max-width:759px){.periak-tour-card{bottom:max(10px,env(safe-area-inset-bottom));border-radius:19px}.periak-tour-content{padding:16px 20px 12px}.periak-tour-content h2{font-size:21px}.periak-tour-header{padding:13px 18px}.periak-tour-footer{padding:0 20px 18px}.periak-tour-emoji{width:51px;height:51px;font-size:27px;margin-bottom:12px}}
+@media(max-height:580px){.periak-tour-content{padding-top:9px}.periak-tour-emoji{display:none}.periak-tour-description{margin-bottom:10px}}
+@media(prefers-reduced-motion:reduce){.periak-tour-progress-track>div,.periak-tour-spotlight{transition:none}}
