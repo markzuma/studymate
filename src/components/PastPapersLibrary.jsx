@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import useContentRefresh from '../hooks/useContentRefresh.js'
 import { supabase } from '../lib/supabase'
 import './PastPapers.css'
 
@@ -9,6 +10,8 @@ export default function PastPapersLibrary({
   onBack,
   onUpgrade
 }) {
+  // PERIAK CONTENT AUTO-SYNC V2
+  const contentRefreshVersion = useContentRefresh()
   const [papers, setPapers] = useState([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
@@ -67,7 +70,7 @@ export default function PastPapersLibrary({
 
     load()
     return () => { alive = false }
-  }, [isAdmin, hasPremiumAccess])
+  }, [isAdmin, hasPremiumAccess, contentRefreshVersion])
 
   const institutions = useMemo(() =>
     [...new Set(papers.map(p => p.institution).filter(Boolean))].sort(),

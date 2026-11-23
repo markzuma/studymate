@@ -1,4 +1,5 @@
 import { lazy, Suspense, useEffect, useRef, useState } from 'react'
+import useContentRefresh from './hooks/useContentRefresh.js'
 import { useBackHandler } from './context/NavigationProvider'
 import { supabase } from './lib/supabase'
 import './App.css'
@@ -365,6 +366,8 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
     ? matchingCatalogueCourses
     : matchingCatalogueCourses.slice(0, 8)
   const [catalogueUnits, setCatalogueUnits] = useState(legacyUnitCatalogue)
+  // PERIAK CONTENT AUTO-SYNC V2
+  const contentRefreshVersion = useContentRefresh()
   const [catalogueLessons, setCatalogueLessons] = useState({})
   const [isBookmarked, setIsBookmarked] = useState(false)
   const [bookmarkBusy, setBookmarkBusy] = useState(false)
@@ -585,7 +588,7 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
       active = false
       subscription.unsubscribe()
     }
-  }, [])
+  }, [contentRefreshVersion])
 
   useEffect(() => {
     let active = true

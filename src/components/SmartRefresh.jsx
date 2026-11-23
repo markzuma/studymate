@@ -11,6 +11,24 @@ export default function SmartRefresh() {
     let lastCheck = 0
     let checking = false
 
+    // PERIAK CONTENT AUTO-SYNC V2
+    let lastContentSync = Date.now()
+
+    const refreshContent = (force = false) => {
+      if (
+        !active ||
+        !navigator.onLine ||
+        document.visibilityState !== 'visible'
+      ) return
+
+      const now = Date.now()
+
+      if (!force && now - lastContentSync < 30000) return
+
+      lastContentSync = now
+      window.dispatchEvent(new Event('periak:content-refresh'))
+    }
+
     const updateSW = registerSW({
       immediate: true,
       onNeedRefresh() {
@@ -49,16 +67,23 @@ export default function SmartRefresh() {
 
     const onVisibility = () => {
       if (document.visibilityState === 'visible') {
+        refreshContent()
         void checkForUpdates()
       }
     }
 
     const onReturn = () => {
+      refreshContent()
+      void checkForUpdates()
+    }
+
+    const onReconnect = () => {
+      refreshContent(true)
       void checkForUpdates()
     }
 
     document.addEventListener('visibilitychange', onVisibility)
-    window.addEventListener('online', onReturn)
+    window.addEventListener('online', onReconnect)
     window.addEventListener('focus', onReturn)
     window.addEventListener('pageshow', onReturn)
 
@@ -66,7 +91,7 @@ export default function SmartRefresh() {
       active = false
       updateRef.current = null
       document.removeEventListener('visibilitychange', onVisibility)
-      window.removeEventListener('online', onReturn)
+      window.removeEventListener('online', onReconnect)
       window.removeEventListener('focus', onReturn)
       window.removeEventListener('pageshow', onReturn)
     }

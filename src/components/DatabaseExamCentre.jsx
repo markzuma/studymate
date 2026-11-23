@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import useContentRefresh from '../hooks/useContentRefresh.js'
 import { useBackHandler } from '../context/NavigationProvider'
 import { supabase } from '../lib/supabase'
 
@@ -46,6 +47,8 @@ const panel = {
 }
 
 export default function DatabaseExamCentre({ onBack }) {
+  // PERIAK CONTENT AUTO-SYNC V2
+  const contentRefreshVersion = useContentRefresh()
   const [exams, setExams] = useState([])
   const [selectedExam, setSelectedExam] = useState(null)
   const [questions, setQuestions] = useState([])
@@ -78,7 +81,7 @@ export default function DatabaseExamCentre({ onBack }) {
     }
     load()
     return () => { alive = false }
-  }, [])
+  }, [contentRefreshVersion])
 
   // Identify the signed-in student before using local drafts.
   useEffect(() => {
