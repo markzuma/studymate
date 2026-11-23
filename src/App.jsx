@@ -290,6 +290,22 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
   const [selectedCourse, setSelectedCourse] = useState(null)
   const [selectedUnit, setSelectedUnit] = useState(null)
   const [catalogueCourses, setCatalogueCourses] = useState(legacyCourseCatalogue)
+
+  // PERIAK COMPACT COURSE CATALOGUE V1
+  const [courseSearch, setCourseSearch] = useState('')
+  const [showAllCourses, setShowAllCourses] = useState(false)
+
+  const courseQuery = courseSearch.trim().toLowerCase()
+
+  const matchingCatalogueCourses = catalogueCourses.filter(course =>
+    `${course.title} ${course.level || ''} ${course.desc || ''}`
+      .toLowerCase()
+      .includes(courseQuery)
+  )
+
+  const visibleCatalogueCourses = courseQuery || showAllCourses
+    ? matchingCatalogueCourses
+    : matchingCatalogueCourses.slice(0, 8)
   const [catalogueUnits, setCatalogueUnits] = useState(legacyUnitCatalogue)
   const [catalogueLessons, setCatalogueLessons] = useState({})
   const [isBookmarked, setIsBookmarked] = useState(false)
@@ -1409,8 +1425,21 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
             </div>
             <a className="text-link" href="#features">Explore resources →</a>
           </div>
+          <div className="periak-course-toolbar">
+            <input
+              type="search"
+              aria-label="Search nursing courses"
+              placeholder="Search nursing courses..."
+              value={courseSearch}
+              onChange={event => setCourseSearch(event.target.value)}
+            />
+            <span>
+              {matchingCatalogueCourses.length} subjects
+            </span>
+          </div>
+
           <div className="course-grid">
-            {catalogueCourses.map((course) => (
+            {visibleCatalogueCourses.map((course) => (
               <article className="course-card" key={course.title}>
                 <div className="course-icon">{course.icon}</div>
                 <div className="course-level">{course.level}</div>
@@ -1429,6 +1458,24 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
               </article>
             ))}
           </div>
+
+          {matchingCatalogueCourses.length === 0 && (
+            <p className="periak-course-empty">
+              No courses match your search.
+            </p>
+          )}
+
+          {!courseQuery && matchingCatalogueCourses.length > 8 && (
+            <button
+              type="button"
+              className="periak-course-more"
+              onClick={() => setShowAllCourses(value => !value)}
+            >
+              {showAllCourses
+                ? 'Show fewer subjects ↑'
+                : `Show all ${matchingCatalogueCourses.length} subjects ↓`}
+            </button>
+          )}
         </section>
 
         <section className="features-section" id="features">

@@ -2430,3 +2430,400 @@ body.periak-focus-active .periak-reader-floating-dock {
     padding: 13px 15px;
   }
 }
+
+
+/* PERIAK BALANCED DASHBOARD SHORTCUTS V1 */
+
+/* Seven shortcuts: four on top, three evenly spaced below */
+@media (min-width: 801px) {
+  .dashboard-premium-ad .dashboard-premium-tools {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
+    gap: 12px !important;
+  }
+
+  .dashboard-premium-ad .dashboard-premium-tools .dashboard-premium-tool {
+    grid-column: span 3 !important;
+  }
+
+  .dashboard-premium-ad .dashboard-premium-tools
+  .dashboard-premium-tool:nth-child(n+5) {
+    grid-column: span 4 !important;
+  }
+}
+
+/* Consistent card appearance */
+.dashboard-premium-ad .dashboard-premium-tools .dashboard-premium-tool {
+  min-width: 0;
+  padding: 13px !important;
+  border-radius: 11px;
+  text-align: left;
+  transition:
+    border-color .18s ease,
+    background-color .18s ease;
+}
+
+.dashboard-premium-ad .dashboard-premium-tools
+.dashboard-premium-tool strong {
+  font-size: 15px !important;
+  line-height: 1.35 !important;
+}
+
+.dashboard-premium-ad .dashboard-premium-tools
+.dashboard-premium-tool small {
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+/* Tablet and phone: two balanced columns */
+@media (max-width: 800px) {
+  .dashboard-premium-ad .dashboard-premium-tools {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+  }
+
+  .dashboard-premium-ad .dashboard-premium-tools
+  .dashboard-premium-tool {
+    grid-column: auto !important;
+  }
+}
+
+/* Small screens retain readable titles */
+@media (max-width: 480px) {
+  .dashboard-premium-ad .dashboard-premium-tools
+  .dashboard-premium-tool {
+    padding: 11px !important;
+  }
+
+  .dashboard-premium-ad .dashboard-premium-tools
+  .dashboard-premium-tool strong {
+    font-size: 14px !important;
+    line-height: 1.35 !important;
+  }
+}
+
+/* PERIAK COMPACT COURSE CATALOGUE V1 */
+
+.courses-section {
+  padding-top: 45px;
+  padding-bottom: 45px;
+}
+
+.courses-section .course-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+/* Compact course cards */
+.courses-section .course-card {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr);
+  grid-template-areas:
+    "icon title"
+    "progress progress"
+    "action action";
+  column-gap: 10px;
+  row-gap: 10px;
+  align-content: start;
+  padding: 15px;
+  min-width: 0;
+  min-height: 155px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: none;
+}
+
+.courses-section .course-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+}
+
+.courses-section .course-icon {
+  grid-area: icon;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  margin: 0;
+  display: grid;
+  place-items: center;
+  font-size: 19px;
+}
+
+.courses-section .course-level,
+.courses-section .course-card > p {
+  display: none;
+}
+
+.courses-section .course-card h3 {
+  grid-area: title;
+  margin: 0;
+  align-self: center;
+  font-size: 15px;
+  line-height: 1.35;
+  color: var(--text-primary);
+  overflow-wrap: anywhere;
+}
+
+.courses-section .course-card-progress {
+  grid-area: progress;
+  margin: 0;
+  min-width: 0;
+}
+
+.courses-section .course-card-progress > div:first-child {
+  font-size: 12px;
+  margin-bottom: 5px;
+}
+
+.courses-section .course-card-progress small {
+  display: block;
+  margin-top: 5px;
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.courses-section .course-card .subject-progress-track {
+  height: 5px;
+  margin: 0;
+  border-radius: 99px;
+  overflow: hidden;
+}
+
+.courses-section .course-open-button {
+  grid-area: action;
+  justify-self: start;
+  align-self: end;
+  width: auto;
+  min-height: 34px;
+  margin: 0;
+  padding: 8px 11px;
+  font-size: 13px;
+  line-height: 1.25;
+  border-radius: 8px;
+}
+
+/* Course discovery */
+.periak-course-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 15px 0;
+}
+
+.periak-course-toolbar input {
+  flex: 1;
+  max-width: 390px;
+  min-width: 0;
+  padding: 11px 13px;
+  color: var(--text-primary);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  font: inherit;
+  font-size: 15px;
+}
+
+.periak-course-toolbar input:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.periak-course-toolbar span {
+  color: var(--text-muted);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.periak-course-more {
+  display: block;
+  margin: 19px auto 0;
+  padding: 11px 20px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--surface);
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.periak-course-more:hover {
+  border-color: var(--accent);
+  background: var(--surface-secondary);
+}
+
+.periak-course-empty {
+  padding: 20px;
+  color: var(--text-muted);
+  text-align: center;
+}
+
+.periak-course-more:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+
+@media (max-width: 1100px) {
+  .courses-section .course-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .courses-section .course-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .courses-section .course-card {
+    padding: 12px;
+    min-height: 150px;
+  }
+
+  .courses-section .course-card h3 {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 420px) {
+  .courses-section .course-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .courses-section .course-card {
+    min-height: 0;
+  }
+
+  .periak-course-toolbar {
+    flex-wrap: wrap;
+  }
+
+  .periak-course-toolbar input {
+    max-width: 100%;
+  }
+}
+
+
+/* PERIAK HOMEPAGE COMPACT DENSITY V1 */
+
+/* Personalised welcome */
+.authenticated-app-shell .periak-home-welcome {
+  padding: clamp(17px, 2.3vw, 23px);
+  margin-bottom: 16px;
+  gap: 16px;
+}
+
+.authenticated-app-shell .periak-home-welcome p {
+  line-height: 1.55;
+}
+
+/* Main dashboard feature area */
+.authenticated-app-shell .dashboard-premium-ad {
+  padding: clamp(15px, 2vw, 22px) !important;
+  border-radius: 13px;
+}
+
+.authenticated-app-shell
+.dashboard-premium-ad .dashboard-premium-tools {
+  margin-top: 12px;
+}
+
+/* Reduce unnecessary section whitespace */
+.authenticated-app-shell .courses-section,
+.authenticated-app-shell .features-section {
+  padding-top: clamp(24px, 3.5vw, 44px);
+  padding-bottom: clamp(24px, 3.5vw, 44px);
+}
+
+/* Tighter, clearer section headings */
+.authenticated-app-shell .section-heading {
+  margin-bottom: 16px;
+  gap: 12px;
+}
+
+.authenticated-app-shell .section-heading h2 {
+  margin: 5px 0 7px;
+  font-size: clamp(23px, 2.7vw, 29px);
+  line-height: 1.3;
+}
+
+.authenticated-app-shell .section-heading p {
+  margin: 0;
+  line-height: 1.55;
+}
+
+/* Compact learning resource cards */
+.authenticated-app-shell .features-section > h2 {
+  font-size: clamp(22px, 3vw, 29px);
+  line-height: 1.3;
+  margin-bottom: 17px;
+}
+
+.authenticated-app-shell .features-section .feature-grid {
+  gap: 12px;
+}
+
+.authenticated-app-shell .features-section .feature {
+  padding: 17px;
+  min-height: 0;
+  border-radius: 12px;
+}
+
+.authenticated-app-shell .features-section .feature h3 {
+  margin: 8px 0;
+  font-size: 17px;
+  line-height: 1.4;
+}
+
+.authenticated-app-shell .features-section .feature p {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* Less oversized bottom promotional section */
+.authenticated-app-shell .cta-section {
+  padding: clamp(23px, 3vw, 39px);
+  margin-top: 22px;
+  margin-bottom: 25px;
+  gap: 18px;
+}
+
+.authenticated-app-shell .cta-section h2 {
+  font-size: clamp(25px, 3vw, 34px);
+  line-height: 1.3;
+  margin: 8px 0 12px;
+}
+
+.authenticated-app-shell .cta-section p {
+  font-size: 15px;
+  line-height: 1.6;
+  margin-bottom: 10px;
+}
+
+/* Maintain breathing room on smaller devices */
+@media (max-width: 700px) {
+  .authenticated-app-shell .periak-home-welcome {
+    padding: 16px;
+    margin-bottom: 13px;
+  }
+
+  .authenticated-app-shell .courses-section,
+  .authenticated-app-shell .features-section {
+    padding-top: 24px;
+    padding-bottom: 24px;
+  }
+
+  .authenticated-app-shell .features-section .feature {
+    padding: 15px;
+  }
+
+  .authenticated-app-shell .cta-section {
+    padding: 21px;
+    margin-block: 18px;
+  }
+}
