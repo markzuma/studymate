@@ -128,3 +128,56 @@
   border-color: #fca5a5;
   background: #fef2f2;
 }
+
+/* PERIAK REVENUE DASHBOARD V2 */
+
+.monetization .mon-metrics {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit,
+    minmax(min(100%, 175px), 1fr)
+  );
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.monetization .mon-metrics article {
+  min-width: 0;
+  padding: 14px;
+}
+
+.monetization .mon-metrics article strong {
+  overflow-wrap: anywhere;
+  font-size: clamp(18px, 2vw, 24px);
+  line-height: 1.25;
+}
+
+.monetization .mon-metrics article small {
+  display: block;
+  margin-top: 7px;
+  color: var(--text-muted, #64748b);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.monetization .mon-data-note {
+  margin: 0 0 16px;
+  color: var(--text-muted, #64748b);
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+@media (max-width: 600px) {
+  .monetization .mon-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+  }
+
+  .monetization .mon-metrics article {
+    padding: 11px;
+  }
+
+  .monetization .mon-metrics article strong {
+    font-size: 18px;
+  }
+}

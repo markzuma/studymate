@@ -144,13 +144,81 @@ export default function Monetization() {
     setReviewing(null)
   }
 
-  const activeSubscriptions = subscriptions.filter(item => item.status === 'active')
-  const pendingSubscriptions = subscriptions.filter(item => item.status === 'pending')
-  const expiredSubscriptions = subscriptions.filter(item => item.status === 'expired')
+  // PERIAK Revenue Dashboard V2
+  // Apply the same date-aware access rules as Supabase is_premium().
+  const now = Date.now()
+  const sevenDaysFromNow = now + 7 * 86400000
+  const thirtyDaysAgo = now - 30 * 86400000
 
-  const verifiedRevenue = payments
-    .filter(item => item.status === 'completed' && item.verified_at)
-    .reduce((total, item) => total + Number(item.amount_kes || 0), 0)
+  const eligibleSubscriptions = subscriptions.filter(item => {
+    if (item.status !== 'active') return false
+
+    const plan = plans.find(plan => plan.id === item.plan_id)
+    if (!plan?.is_active) return false
+
+    const start = item.starts_at
+      ? Date.parse(item.starts_at)
+      : null
+
+    const end = item.ends_at
+      ? Date.parse(item.ends_at)
+      : null
+
+    if (start !== null && (!Number.isFinite(start) || start > now)) {
+      return false
+    }
+
+    if (end !== null && (!Number.isFinite(end) || end <= now)) {
+      return false
+    }
+
+    return true
+  })
+
+  const activeSubscriberCount = new Set(
+    eligibleSubscriptions.map(item => item.student_id)
+  ).size
+
+  const pendingSubscriptions = subscriptions.filter(
+    item => item.status === 'pending'
+  )
+
+  const expiredSubscriptions = subscriptions.filter(item => {
+    if (item.status === 'expired') return true
+
+    if (item.status !== 'active' || !item.ends_at) {
+      return false
+    }
+
+    const end = Date.parse(item.ends_at)
+    return Number.isFinite(end) && end <= now
+  })
+
+  const expiringSoon = eligibleSubscriptions.filter(item => {
+    if (!item.ends_at) return false
+    const end = Date.parse(item.ends_at)
+    return Number.isFinite(end) &&
+      end > now &&
+      end <= sevenDaysFromNow
+  })
+
+  const verifiedPayments = payments.filter(item =>
+    item.status === 'completed' &&
+    item.verified_at &&
+    Number.isFinite(Date.parse(item.verified_at))
+  )
+
+  const verifiedRevenue = verifiedPayments.reduce(
+    (total, item) => total + Number(item.amount_kes || 0),
+    0
+  )
+
+  const recentRevenue = verifiedPayments
+    .filter(item => Date.parse(item.verified_at) >= thirtyDaysAgo)
+    .reduce(
+      (total, item) => total + Number(item.amount_kes || 0),
+      0
+    )
 
   const pendingManualPayments = payments.filter(
     item => item.provider === 'pochi_manual' && item.status === 'pending'
@@ -188,24 +256,49 @@ export default function Monetization() {
 
       {message && <p className="mon-message">{message}</p>}
 
-      <div className="cc-stats">
+      <div className="cc-stats mon-metrics">
         <article>
           <span>Active Subscribers</span>
-          <strong>{activeSubscriptions.length}</strong>
+          <strong>{activeSubscriberCount}</strong>
+          <small>Currently eligible for Premium</small>
         </article>
+
         <article>
           <span>Pending Subscriptions</span>
           <strong>{pendingSubscriptions.length}</strong>
+          <small>Awaiting payment verification</small>
         </article>
+
         <article>
           <span>Expired Subscriptions</span>
           <strong>{expiredSubscriptions.length}</strong>
+          <small>Including expired-by-date records</small>
         </article>
+
+        <article>
+          <span>Expiring Within 7 Days</span>
+          <strong>{expiringSoon.length}</strong>
+          <small>Potential renewal opportunities</small>
+        </article>
+
         <article>
           <span>Verified Revenue</span>
           <strong>KSh {verifiedRevenue.toLocaleString()}</strong>
+          <small>Completed and verified payments</small>
+        </article>
+
+        <article>
+          <span>Verified Revenue · 30 Days</span>
+          <strong>KSh {recentRevenue.toLocaleString()}</strong>
+          <small>Last 30 rolling days</small>
         </article>
       </div>
+
+      <p className="mon-data-note">
+        Revenue and subscription totals are based on the records
+        loaded into this dashboard. Large databases may require
+        server-side reporting to include every record.
+      </p>
 
       <div className="cc-panel mon-panel">
         <h3>Manual M-Pesa Payment Settings</h3>
