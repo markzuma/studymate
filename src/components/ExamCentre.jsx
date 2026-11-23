@@ -1609,7 +1609,7 @@ export default function ExamCentre({ onHome, hasPremiumAccess = false, premiumLo
 
       {!started ? (
         <section className="exam-card">
-          <button
+          <button className="periak-exam-action periak-exam-browse"
             type="button"
             onClick={() => setShowDatabaseExams(true)}
             style={{
@@ -1627,7 +1627,7 @@ export default function ExamCentre({ onHome, hasPremiumAccess = false, premiumLo
             📝 Browse published examinations
           </button>
 
-          <button
+          <button className="periak-exam-action periak-exam-history"
             type="button"
             onClick={() => setShowHistory(true)}
             style={{
@@ -1652,6 +1652,8 @@ export default function ExamCentre({ onHome, hasPremiumAccess = false, premiumLo
               <button
                 key={subject.id}
                 type="button"
+                className={`periak-exam-selector periak-exam-subject ${selectedSubject === subject.id ? 'is-selected' : ''}`}
+                aria-pressed={selectedSubject === subject.id}
                 onClick={() => setSelectedSubject(subject.id)}
                 style={{
                   padding: '16px',
@@ -1678,14 +1680,14 @@ export default function ExamCentre({ onHome, hasPremiumAccess = false, premiumLo
           <h2>2. Choose examination mode</h2>
 
           {!hasPremiumAccess && !isAdmin && (
-            <p style={{ background: '#eff6ff', padding: '12px', borderRadius: '10px', color: '#1e40af' }}>
+            <p className="periak-exam-access-note" style={{ background: '#eff6ff', padding: '12px', borderRadius: '10px', color: '#1e40af' }}>
               Free plan: 10 practice answers daily and one mock examination per course.
               CAT Mode and the published examination collection require Premium.
             </p>
           )}
 
           {accessMessage && (
-            <p role="alert" style={{ background: '#fff7ed', padding: '12px', borderRadius: '10px', color: '#9a3412' }}>
+            <p role="alert" className="periak-exam-access-error" style={{ background: '#fff7ed', padding: '12px', borderRadius: '10px', color: '#9a3412' }}>
               {accessMessage}
               {' '}
               {!hasPremiumAccess && <button type="button" onClick={onUpgrade}>Upgrade to Premium</button>}
@@ -1697,6 +1699,8 @@ export default function ExamCentre({ onHome, hasPremiumAccess = false, premiumLo
               <button
                 key={item.id}
                 type="button"
+                className={`periak-exam-selector periak-exam-mode ${mode === item.id ? 'is-selected' : ''}`}
+                aria-pressed={mode === item.id}
                 onClick={() => {
                   if (item.id === 'cat' && !hasPremiumAccess && !isAdmin) {
                     setAccessMessage('CAT Mode is available with Premium.')
@@ -1742,6 +1746,8 @@ export default function ExamCentre({ onHome, hasPremiumAccess = false, premiumLo
                   <button
                     key={item.seconds}
                     type="button"
+                    className={`periak-exam-selector periak-exam-duration ${catDuration === item.seconds ? 'is-selected' : ''}`}
+                    aria-pressed={catDuration === item.seconds}
                     onClick={() => setCatDuration(item.seconds)}
                     style={{
                       padding: '14px 10px',

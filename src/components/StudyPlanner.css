@@ -18,7 +18,7 @@
 .sp-eyebrow {
   display: block;
   color: #2b9275;
-  font-size: 10px;
+  font-size: var(--periak-type-kicker);
   font-weight: 800;
   letter-spacing: 1.5px;
 }
@@ -35,13 +35,13 @@
 .sp-welcome p {
   margin: 0;
   color: #e0f4ed;
-  font-size: 14px;
+  font-size: var(--periak-type-body);
 }
 
 .sp-date {
   margin-top: 17px;
   color: #bce9d9;
-  font-size: 12px;
+  font-size: var(--periak-type-caption);
   font-weight: 600;
 }
 
@@ -95,7 +95,7 @@
 .sp-stat small {
   margin-top: 4px;
   color: var(--text-secondary, #718087);
-  font-size: 11px;
+  font-size: var(--periak-type-label);
 }
 
 .sp-content {
@@ -125,7 +125,7 @@
 .sp-section-heading p {
   margin: 0;
   color: var(--text-secondary, #718087);
-  font-size: 13px;
+  font-size: var(--periak-type-small);
 }
 
 .sp-add-button {
@@ -134,7 +134,7 @@
   padding: 11px 16px;
   background: #176b58;
   color: #fff;
-  font-size: 13px;
+  font-size: var(--periak-type-small);
   font-weight: 750;
   cursor: pointer;
   transition: background .2s, transform .2s;
@@ -177,7 +177,7 @@
   flex-direction: column;
   gap: 7px;
   color: #344b43;
-  font-size: 12px;
+  font-size: var(--periak-type-caption);
   font-weight: 700;
 }
 
@@ -245,7 +245,7 @@
   border-radius: 7px;
   background: transparent;
   color: #66766e;
-  font-size: 11px;
+  font-size: var(--periak-type-label);
   font-weight: 700;
   cursor: pointer;
 }
@@ -299,7 +299,7 @@
   border-radius: 20px;
   background: #edf5f1;
   color: #376b58;
-  font-size: 10px;
+  font-size: var(--periak-type-kicker);
   font-weight: 750;
 }
 
@@ -309,14 +309,14 @@
 
 .sp-task h4 {
   margin: 8px 0 4px;
-  font-size: 14px;
+  font-size: var(--periak-type-body);
   overflow-wrap: anywhere;
 }
 
 .sp-task p {
   margin: 4px 0 8px;
   color: var(--text-secondary, #718087);
-  font-size: 12px;
+  font-size: var(--periak-type-caption);
   line-height: 1.5;
   white-space: pre-wrap;
 }
@@ -326,7 +326,7 @@
   flex-wrap: wrap;
   gap: 8px 14px;
   color: var(--text-secondary, #718087);
-  font-size: 11px;
+  font-size: var(--periak-type-label);
 }
 
 .sp-task-actions {
@@ -340,7 +340,7 @@
   border-radius: 7px;
   background: #f1f5f3;
   color: #496258;
-  font-size: 10px;
+  font-size: var(--periak-type-kicker);
   font-weight: 700;
   cursor: pointer;
 }
@@ -367,12 +367,12 @@
 }
 
 .sp-empty > span { font-size: 30px; }
-.sp-empty strong { font-size: 14px; }
+.sp-empty strong { font-size: var(--periak-type-body); }
 .sp-empty p {
   max-width: 390px;
   margin: 0 0 7px;
   color: #718087;
-  font-size: 12px;
+  font-size: var(--periak-type-caption);
   line-height: 1.5;
 }
 
@@ -380,7 +380,7 @@
   margin: 0 0 14px;
   padding: 11px 13px;
   border-radius: 9px;
-  font-size: 12px;
+  font-size: var(--periak-type-caption);
 }
 
 .sp-message.error { background: #fff0ed; color: #a43c31; }
@@ -570,3 +570,5 @@
   color: #a7f3c2;
 }
 
+
+/* PERIAK SHARED TYPOGRAPHY SCALE V1 */

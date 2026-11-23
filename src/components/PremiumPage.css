@@ -36,7 +36,7 @@
 
 .premium-eyebrow {
   color: #2457a6;
-  font-size: 12px;
+  font-size: var(--periak-type-caption);
   font-weight: 800;
   letter-spacing: 2px;
 }
@@ -160,7 +160,7 @@
 
 .premium-note {
   color: #64748b;
-  font-size: 13px;
+  font-size: var(--periak-type-small);
   line-height: 1.6;
 }
 
@@ -184,7 +184,7 @@
   padding: 30px 0;
   text-align: center;
   color: #64748b;
-  font-size: 13px;
+  font-size: var(--periak-type-small);
 }
 
 @media (max-width: 600px) {
@@ -314,39 +314,39 @@
   color: var(--text-primary);
 }
 .premium-header { max-width: 1120px; margin: 0 auto 25px; }
-.premium-header button { color: var(--accent); font-size: 13px; }
+.premium-header button { color: var(--accent); font-size: var(--periak-type-small); }
 .premium-hero { max-width: 720px; margin-bottom: 30px; }
-.premium-eyebrow { font-size: 10px; letter-spacing: 1.5px; }
+.premium-eyebrow { font-size: var(--periak-type-kicker); letter-spacing: 1.5px; }
 .premium-hero h1 { margin: 9px 0; font-size: clamp(27px, 4vw, 40px); letter-spacing: -1px; }
-.premium-hero p { color: var(--text-muted); font-size: 14px; line-height: 1.65; }
+.premium-hero p { color: var(--text-muted); font-size: var(--periak-type-body); line-height: 1.65; }
 .premium-plans, .premium-checkout, .premium-status, .premium-error { max-width: 1050px; }
 .premium-plans, .premium-checkout { margin-bottom: 25px; }
 .premium-plans h2, .premium-checkout h2 { font-size: 19px; letter-spacing: -.35px; }
-.premium-plans > p, .premium-checkout > p { color: var(--text-muted); font-size: 13px; }
+.premium-plans > p, .premium-checkout > p { color: var(--text-muted); font-size: var(--periak-type-small); }
 .premium-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)); gap: 12px; margin-top: 16px; }
 .premium-card { padding: 18px; border: 1px solid var(--border); border-radius: var(--card-radius); background: var(--surface); box-shadow: none; }
 .premium-card.selected { border: 2px solid var(--accent); background: var(--accent-soft); }
 .premium-card h3 { font-size: 15px; }
 .premium-price { margin: 12px 0 5px; color: var(--accent); font-size: 27px; letter-spacing: -.5px; }
-.premium-card p { color: var(--text-muted); font-size: 13px; line-height: 1.5; }
-.premium-card button, .premium-pay { margin-top: 12px; padding: 11px 13px; border-radius: 9px; background: var(--accent); font-size: 13px; }
+.premium-card p { color: var(--text-muted); font-size: var(--periak-type-small); line-height: 1.5; }
+.premium-card button, .premium-pay { margin-top: 12px; padding: 11px 13px; border-radius: 9px; background: var(--accent); font-size: var(--periak-type-small); }
 .premium-checkout { padding: 19px; border: 1px solid var(--border); border-radius: var(--card-radius); background: var(--surface); }
 .premium-methods { gap: 9px; margin-top: 14px; }
-.premium-methods label { padding: 12px; border-color: var(--border); border-radius: 9px; background: var(--surface); color: var(--text-primary); font-size: 13px; }
+.premium-methods label { padding: 12px; border-color: var(--border); border-radius: 9px; background: var(--surface); color: var(--text-primary); font-size: var(--periak-type-small); }
 .premium-methods label.chosen { border-color: var(--accent); background: var(--accent-soft); }
-.premium-methods small, .premium-phone-field small { color: var(--text-muted); font-size: 11px; }
+.premium-methods small, .premium-phone-field small { color: var(--text-muted); font-size: var(--periak-type-label); }
 .premium-phone-field { gap: 7px; margin: 15px 0; }
-.premium-phone-field label { font-size: 13px; }
+.premium-phone-field label { font-size: var(--periak-type-small); }
 .premium-phone-field input { padding: 11px 12px; border-color: var(--border); border-radius: 9px; background: var(--surface); color: var(--text-primary); }
-.premium-note { color: var(--text-muted); font-size: 12px; }
+.premium-note { color: var(--text-muted); font-size: var(--periak-type-caption); }
 .premium-manual-payment { padding: 15px; border-radius: 10px; background: var(--surface-secondary); }
 .premium-manual-payment h3 { font-size: 15px; }
-.premium-manual-payment ol { font-size: 13px; }
+.premium-manual-payment ol { font-size: var(--periak-type-small); }
 .premium-pochi-number { border-radius: 9px; background: var(--page-bg); }
 .premium-pochi-number span { font-size: 17px; }
-.premium-status { padding: 15px; border-radius: 10px; font-size: 13px; }
-.premium-error { font-size: 13px; }
-.premium-success, .premium-pending { padding: 12px; border-radius: 9px; font-size: 13px; }
+.premium-status { padding: 15px; border-radius: 10px; font-size: var(--periak-type-small); }
+.premium-error { font-size: var(--periak-type-small); }
+.premium-success, .premium-pending { padding: 12px; border-radius: 9px; font-size: var(--periak-type-small); }
 .premium-footer { padding: 22px 0; color: var(--text-muted); }
 @media (max-width: 600px) {
   .premium-page { padding: 14px 12px 25px; }
@@ -411,12 +411,12 @@
   flex: 1;
   margin: 0;
   color: var(--text-muted);
-  font-size: 13px;
+  font-size: var(--periak-type-small);
   line-height: 1.55;
 }
 .premium-feature-card strong {
   color: var(--accent);
-  font-size: 12px;
+  font-size: var(--periak-type-caption);
 }
 .premium-feature-preview {
   margin-top: 18px;
@@ -467,11 +467,11 @@
 }
 
 .premium-methods label strong {
-  font-size: 13px;
+  font-size: var(--periak-type-small);
 }
 
 .premium-methods label small {
-  font-size: 10px;
+  font-size: var(--periak-type-kicker);
   line-height: 1.35;
 }
 
@@ -492,7 +492,7 @@
   }
 
   .premium-card h3 {
-    font-size: 13px;
+    font-size: var(--periak-type-small);
   }
 
   .premium-price {
@@ -500,12 +500,12 @@
   }
 
   .premium-card p {
-    font-size: 11px;
+    font-size: var(--periak-type-label);
   }
 
   .premium-card button {
     padding: 10px 7px;
-    font-size: 12px;
+    font-size: var(--periak-type-caption);
   }
 
   .premium-checkout {
@@ -523,11 +523,11 @@
   }
 
   .premium-methods label strong {
-    font-size: 12px;
+    font-size: var(--periak-type-caption);
   }
 
   .premium-methods label small {
-    font-size: 9px;
+    font-size: var(--periak-type-tiny);
   }
 
   .premium-pay {
@@ -615,7 +615,7 @@
   position: relative;
 }
 .premium-feature-card:first-child strong {
-  font-size: 13px;
+  font-size: var(--periak-type-small);
 }
 
 /* PERIAK compact Premium page (phones) */
@@ -628,4 +628,67 @@
   .premium-page .premium-feature-card p { display: none; }
   .premium-page .premium-feature-card h3 { font-size: 0.85rem; margin: 4px 0; }
   .premium-page .premium-feature-card strong { font-size: 0.75rem; }
+}
+
+/* PERIAK SHARED TYPOGRAPHY SCALE V1 */
+
+
+/* PERIAK PREMIUM SELECTION CONTRAST V1 */
+
+/* Selected subscription plans in Dark Mode */
+:root[data-theme="dark"] .premium-page .premium-card.selected {
+  background: #263a55 !important;
+  border: 2px solid #60a5fa !important;
+  box-shadow: 0 0 0 1px rgba(96,165,250,.12);
+}
+
+:root[data-theme="dark"] .premium-page .premium-card.selected h3,
+:root[data-theme="dark"] .premium-page .premium-card.selected p {
+  color: #f1f5f9 !important;
+}
+
+:root[data-theme="dark"] .premium-page .premium-card.selected .premium-price {
+  color: #93c5fd !important;
+}
+
+/* Selected payment method */
+:root[data-theme="dark"] .premium-page .premium-methods label.chosen {
+  background: #263a55 !important;
+  border: 2px solid #60a5fa !important;
+  color: #f1f5f9 !important;
+}
+
+:root[data-theme="dark"] .premium-page .premium-methods label.chosen strong,
+:root[data-theme="dark"] .premium-page .premium-methods label.chosen small,
+:root[data-theme="dark"] .premium-page .premium-methods label.chosen span {
+  color: #f1f5f9 !important;
+}
+
+/* Unavailable options remain disabled but readable */
+:root[data-theme="dark"] .premium-page .premium-methods label.unavailable {
+  background: #1b2738;
+  color: #b4c1d1 !important;
+  border-color: #38475c;
+  opacity: .85;
+}
+
+:root[data-theme="dark"] .premium-page .premium-methods label.unavailable strong,
+:root[data-theme="dark"] .premium-page .premium-methods label.unavailable small,
+:root[data-theme="dark"] .premium-page .premium-methods label.unavailable span {
+  color: #b4c1d1 !important;
+}
+
+/* Accessible selection and keyboard focus */
+.premium-page .premium-card button:focus-visible,
+.premium-page .premium-methods label:focus-within {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
+
+/* Maintain a clean, minimal appearance in Light Mode */
+:root:not([data-theme="dark"]) .premium-page .premium-card.selected,
+:root:not([data-theme="dark"]) .premium-page .premium-methods label.chosen {
+  background: #edf5ff;
+  border-color: #2878d0;
+  color: #172b36;
 }

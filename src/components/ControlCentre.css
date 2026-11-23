@@ -16,7 +16,7 @@
 
 .cc-eyebrow {
   color: #2563eb;
-  font-size: 12px;
+  font-size: var(--periak-type-caption);
   font-weight: 800;
   letter-spacing: 1.5px;
 }
@@ -90,7 +90,7 @@
 .cc-stats article span {
   display: block;
   color: #64748b;
-  font-size: 14px;
+  font-size: var(--periak-type-body);
   margin-bottom: 12px;
 }
 
@@ -157,7 +157,7 @@
 
   .cc-navigation button {
     text-align: left;
-    font-size: 12px;
+    font-size: var(--periak-type-caption);
     padding: 11px 8px;
   }
 
@@ -266,7 +266,7 @@
   padding: 13px 15px;
   border-bottom: 1px solid #e2e8f0;
   white-space: nowrap;
-  font-size: 13px;
+  font-size: var(--periak-type-small);
 }
 
 .cc-table th {
@@ -320,7 +320,7 @@
 
 .cc-header p {
   color: var(--text-muted);
-  font-size: 14px;
+  font-size: var(--periak-type-body);
 }
 
 .cc-header button,
@@ -536,7 +536,7 @@
   display: grid;
   gap: 7px;
   color: var(--text-primary);
-  font-size: 14px;
+  font-size: var(--periak-type-body);
   font-weight: 650;
 }
 
@@ -559,7 +559,7 @@
   min-height: 380px;
   resize: vertical;
   font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 13px;
+  font-size: var(--periak-type-small);
   line-height: 1.55;
   tab-size: 2;
 }
@@ -612,7 +612,7 @@
   border-radius: 8px;
   background: var(--surface-secondary);
   color: var(--text-primary);
-  font-size: 12px;
+  font-size: var(--periak-type-caption);
 }
 
 @media (max-width: 640px) {
@@ -627,7 +627,7 @@
 
   .cc-material-json {
     min-height: 300px;
-    font-size: 12px;
+    font-size: var(--periak-type-caption);
   }
 
   .cc-material-actions {
@@ -690,3 +690,5 @@
   background: #20a45a;
   box-shadow: 0 0 0 3px rgba(32, 164, 90, 0.13);
 }
+
+/* PERIAK SHARED TYPOGRAPHY SCALE V1 */

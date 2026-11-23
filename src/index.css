@@ -315,3 +315,169 @@ button {
 .periak-outline-card .eyebrow {
   color: var(--accent) !important;
 }
+
+
+/* PERIAK SHARED TYPOGRAPHY SCALE V1 */
+:root {
+  --periak-type-tiny: 11px;
+  --periak-type-kicker: 12px;
+  --periak-type-label: 13px;
+  --periak-type-caption: 14px;
+  --periak-type-small: 15px;
+  --periak-type-body: 16px;
+}
+
+
+/* PERIAK MOCK EXAM REFINEMENT V3 */
+
+/* Responsive examination paper */
+.periak-mock-layout {
+  width: min(96%, 1100px) !important;
+  max-width: 1100px !important;
+  margin-inline: auto !important;
+}
+
+.periak-mock-layout .periak-mock-card {
+  padding: clamp(20px, 2.5vw, 32px) !important;
+  border-radius: 15px;
+}
+
+/* Examination headings and instructions */
+.periak-mock-layout .periak-mock-card > h1 {
+  font-size: clamp(28px, 3vw, 37px);
+  line-height: 1.35;
+}
+
+.periak-mock-layout .periak-mock-card > h2 {
+  font-size: clamp(20px, 2vw, 24px);
+  line-height: 1.45;
+}
+
+.periak-mock-layout .periak-mock-card > p {
+  font-size: 16px;
+  line-height: 1.75;
+}
+
+/* Questions and options */
+.periak-mock-layout .periak-mock-card h3 {
+  font-size: clamp(17px, 1.6vw, 20px);
+  line-height: 1.65;
+}
+
+.periak-mock-layout .periak-mock-card
+label:has(input[type="radio"]) {
+  font-size: 16px;
+  line-height: 1.65;
+  min-height: 48px;
+}
+
+.periak-mock-layout .periak-mock-card
+label:has(input[type="radio"]):hover {
+  border-color: var(--accent);
+}
+
+/* Countdown timer */
+.periak-mock-layout .periak-mock-timer {
+  background: #eaf3ff !important;
+  color: #1e40af !important;
+  border: 1px solid #bfdbfe;
+  border-radius: 12px;
+}
+
+.periak-mock-layout .periak-mock-timer > div:first-child {
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: .8px;
+}
+
+.periak-mock-layout .periak-mock-timer > div:nth-child(2) {
+  font-size: clamp(30px, 3vw, 38px) !important;
+  font-variant-numeric: tabular-nums;
+}
+
+.periak-mock-layout .periak-mock-timer small {
+  display: block;
+  margin-top: 8px;
+  font-size: 14px;
+  color: inherit !important;
+}
+
+/* Final five minutes */
+.periak-mock-layout .periak-mock-timer.is-urgent {
+  background: #fee2e2 !important;
+  color: #991b1b !important;
+  border-color: #f87171;
+}
+
+/* Dark Mode examination timer */
+:root[data-theme="dark"]
+.periak-mock-layout .periak-mock-timer {
+  background: #203d5b !important;
+  color: #dbeafe !important;
+  border-color: #5788c4;
+}
+
+:root[data-theme="dark"]
+.periak-mock-layout .periak-mock-timer.is-urgent {
+  background: #48252b !important;
+  color: #fecaca !important;
+  border-color: #f87171;
+}
+
+/* Result summary */
+.periak-mock-layout .periak-mock-score {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+:root[data-theme="dark"]
+.periak-mock-layout .periak-mock-score {
+  background: #263a55 !important;
+  color: #f1f5f9 !important;
+  border-color: #52647c;
+}
+
+:root[data-theme="dark"]
+.periak-mock-layout .periak-mock-score h1,
+:root[data-theme="dark"]
+.periak-mock-layout .periak-mock-score h2,
+:root[data-theme="dark"]
+.periak-mock-layout .periak-mock-score p,
+:root[data-theme="dark"]
+.periak-mock-layout .periak-mock-score small {
+  color: #f1f5f9 !important;
+}
+
+/* Written-answer fields */
+:root[data-theme="dark"]
+.periak-mock-layout textarea {
+  background: #263449 !important;
+  color: #f1f5f9 !important;
+  border: 1px solid #52647c !important;
+}
+
+.periak-mock-layout textarea {
+  font-size: 16px !important;
+  line-height: 1.7;
+}
+
+/* Mobile examination layout */
+@media (max-width: 760px) {
+  .periak-mock-layout {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .periak-mock-layout .periak-mock-card {
+    padding: 18px !important;
+  }
+
+  .periak-mock-layout .periak-mock-card
+  label:has(input[type="radio"]) {
+    font-size: 15.5px;
+  }
+
+  .periak-mock-layout .periak-mock-card > p {
+    font-size: 15px;
+  }
+}

@@ -1,3 +1,4 @@
+// PERIAK MOCK EXAM REFINEMENT V3
 import { useState, useEffect, useRef } from 'react'
 import { useBackHandler } from '../context/NavigationProvider'
 import { supabase } from '../lib/supabase'
@@ -250,7 +251,7 @@ export default function MockExam({ subjectId, subjectTitle, attemptKey, examStar
 
   if (submitted) {
     return (
-      <main style={{ maxWidth: '900px', width: '100%', boxSizing: 'border-box', margin: 'auto', padding: 'clamp(12px, 3vw, 20px)' }}>
+      <main className="periak-mock-layout" style={{ maxWidth: '1100px', width: '100%', boxSizing: 'border-box', margin: 'auto', padding: 'clamp(12px, 3vw, 20px)' }}>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '16px' }}>
           <button type="button" onClick={leaveToExamCentre} style={{ ...styles.button, background: '#475569' }}>
             ← Back to Exam Centre
@@ -372,7 +373,7 @@ export default function MockExam({ subjectId, subjectTitle, attemptKey, examStar
             </div>
           ))}
 
-          <div style={{
+          <div className="periak-mock-score" style={{
             background: '#eaf3ff',
             padding: '20px',
             borderRadius: '12px',
@@ -397,7 +398,7 @@ export default function MockExam({ subjectId, subjectTitle, attemptKey, examStar
   }
 
   return (
-    <main style={{ maxWidth: '900px', width: '100%', boxSizing: 'border-box', margin: 'auto', padding: 'clamp(12px, 3vw, 20px)' }}>
+    <main className="periak-mock-layout" style={{ maxWidth: '1100px', width: '100%', boxSizing: 'border-box', margin: 'auto', padding: 'clamp(12px, 3vw, 20px)' }}>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginBottom: '16px' }}>
           <button type="button" onClick={leaveToExamCentre} style={{ ...styles.button, background: '#475569' }}>
             ← Back to Exam Centre
@@ -418,6 +419,7 @@ export default function MockExam({ subjectId, subjectTitle, attemptKey, examStar
         <div
           role="timer"
           aria-live="off"
+          className={`periak-mock-timer ${secondsLeft <= 300 ? 'is-urgent' : ''}`}
           style={{
             padding: '15px',
             marginTop: '15px',

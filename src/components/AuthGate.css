@@ -116,7 +116,7 @@
   padding: 12px;
   margin: 15px 0;
   border-radius: 8px;
-  font-size: 14px;
+  font-size: var(--periak-type-body);
 }
 
 .auth-error {
@@ -145,7 +145,7 @@
   padding: 10px 20px;
   background: #e8f5ef;
   color: #173b32;
-  font-size: 14px;
+  font-size: var(--periak-type-body);
 }
 
 .auth-userbar button {
@@ -235,7 +235,7 @@
   margin-right: auto;
   min-width: 0;
   overflow-wrap: anywhere;
-  font-size: 12px;
+  font-size: var(--periak-type-caption);
   color: var(--text-muted);
 }
 
@@ -246,7 +246,7 @@
   border-radius: 9px;
   background: var(--surface-secondary);
   color: var(--text-primary);
-  font-size: 12px;
+  font-size: var(--periak-type-caption);
   font-weight: 650;
   cursor: pointer;
 }
@@ -298,7 +298,7 @@
     min-width: 0;
     min-height: 40px;
     padding: 8px 7px;
-    font-size: 11px;
+    font-size: var(--periak-type-label);
   }
 
   .auth-card {
@@ -310,3 +310,5 @@
   }
 }
 
+
+/* PERIAK SHARED TYPOGRAPHY SCALE V1 */
