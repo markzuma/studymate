@@ -181,3 +181,108 @@
     font-size: 18px;
   }
 }
+
+
+/* PERIAK REVENUE ANALYTICS V3 */
+
+.monetization .mon-revenue-trends {
+  margin-top: 16px;
+  padding: 18px;
+}
+
+.monetization .mon-revenue-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.monetization .mon-revenue-heading h3 {
+  margin: 0 0 5px;
+  color: var(--text-primary, #172b36);
+  font-size: 17px;
+}
+
+.monetization .mon-revenue-heading p {
+  margin: 0;
+  color: var(--text-muted, #64748b);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.monetization .mon-revenue-heading > span {
+  flex-shrink: 0;
+  color: var(--text-muted, #64748b);
+  font-size: 11px;
+}
+
+.monetization .mon-revenue-chart {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 12px;
+  align-items: end;
+  margin-top: 18px;
+  min-height: 175px;
+}
+
+.monetization .mon-revenue-month {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 0;
+  gap: 7px;
+}
+
+.monetization .mon-revenue-month > strong {
+  color: var(--text-primary, #172b36);
+  font-size: 11px;
+  font-weight: 700;
+  overflow-wrap: anywhere;
+  text-align: center;
+}
+
+.monetization .mon-revenue-month > span {
+  color: var(--text-muted, #64748b);
+  font-size: 10px;
+  text-align: center;
+}
+
+.monetization .mon-revenue-track {
+  height: 112px;
+  width: 100%;
+  max-width: 72px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  border-bottom: 1px solid var(--border, #e2e8f0);
+}
+
+.monetization .mon-revenue-bar {
+  width: 100%;
+  min-height: 2px;
+  border-radius: 6px 6px 0 0;
+  background: var(--accent, #2878d0);
+}
+
+@media (max-width: 600px) {
+  .monetization .mon-revenue-trends {
+    padding: 12px;
+  }
+
+  .monetization .mon-revenue-chart {
+    gap: 5px;
+  }
+
+  .monetization .mon-revenue-track {
+    height: 85px;
+  }
+
+  .monetization .mon-revenue-month > strong,
+  .monetization .mon-revenue-month > span {
+    font-size: 9px;
+  }
+
+  .monetization .mon-revenue-heading {
+    flex-wrap: wrap;
+  }
+}

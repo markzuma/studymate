@@ -6,6 +6,7 @@ export default function Monetization() {
   const [plans, setPlans] = useState([])
   const [subscriptions, setSubscriptions] = useState([])
   const [payments, setPayments] = useState([])
+  const [revenueReport, setRevenueReport] = useState(null)
   const [profiles, setProfiles] = useState([])
   const [pochiPhone, setPochiPhone] = useState('')
   const [loading, setLoading] = useState(true)
@@ -17,6 +18,7 @@ export default function Monetization() {
   async function loadData() {
     setLoading(true)
     setMessage('')
+    setRevenueReport(null)
 
     const results = await Promise.all([
       supabase.from('subscription_plans').select('*').order('price_kes'),
@@ -27,10 +29,13 @@ export default function Monetization() {
         .from('manual_payment_settings')
         .select('id, pochi_phone_number')
         .eq('id', 1)
-        .maybeSingle()
+        .maybeSingle(),
+      supabase.rpc('admin_revenue_summary')
     ])
 
-    const failed = results.find(result => result.error)
+    const failed = results
+      .slice(0, 5)
+      .find(result => result.error)
 
     if (failed) {
       setMessage(`Unable to load monetization data: ${failed.error.message}`)
@@ -40,6 +45,18 @@ export default function Monetization() {
       setPayments(results[2].data || [])
       setProfiles(results[3].data || [])
       setPochiPhone(results[4].data?.pochi_phone_number || '')
+    }
+
+    const reportResult = results[5]
+
+    if (reportResult.error) {
+      setRevenueReport(null)
+      setMessage(previous =>
+        previous ||
+        `Revenue analytics unavailable: ${reportResult.error.message}`
+      )
+    } else {
+      setRevenueReport(reportResult.data || null)
     }
 
     setLoading(false)
@@ -144,81 +161,24 @@ export default function Monetization() {
     setReviewing(null)
   }
 
-  // PERIAK Revenue Dashboard V2
-  // Apply the same date-aware access rules as Supabase is_premium().
-  const now = Date.now()
-  const sevenDaysFromNow = now + 7 * 86400000
-  const thirtyDaysAgo = now - 30 * 86400000
+  // Financial reporting is calculated by the administrator-only RPC.
+  const reportValue = key =>
+    revenueReport === null
+      ? '—'
+      : Number(revenueReport[key] ?? 0).toLocaleString('en-KE')
 
-  const eligibleSubscriptions = subscriptions.filter(item => {
-    if (item.status !== 'active') return false
-
-    const plan = plans.find(plan => plan.id === item.plan_id)
-    if (!plan?.is_active) return false
-
-    const start = item.starts_at
-      ? Date.parse(item.starts_at)
-      : null
-
-    const end = item.ends_at
-      ? Date.parse(item.ends_at)
-      : null
-
-    if (start !== null && (!Number.isFinite(start) || start > now)) {
-      return false
-    }
-
-    if (end !== null && (!Number.isFinite(end) || end <= now)) {
-      return false
-    }
-
-    return true
-  })
-
-  const activeSubscriberCount = new Set(
-    eligibleSubscriptions.map(item => item.student_id)
-  ).size
-
-  const pendingSubscriptions = subscriptions.filter(
-    item => item.status === 'pending'
+  const monthlyRevenue = Array.isArray(
+    revenueReport?.monthly_revenue
   )
+    ? revenueReport.monthly_revenue
+    : []
 
-  const expiredSubscriptions = subscriptions.filter(item => {
-    if (item.status === 'expired') return true
-
-    if (item.status !== 'active' || !item.ends_at) {
-      return false
-    }
-
-    const end = Date.parse(item.ends_at)
-    return Number.isFinite(end) && end <= now
-  })
-
-  const expiringSoon = eligibleSubscriptions.filter(item => {
-    if (!item.ends_at) return false
-    const end = Date.parse(item.ends_at)
-    return Number.isFinite(end) &&
-      end > now &&
-      end <= sevenDaysFromNow
-  })
-
-  const verifiedPayments = payments.filter(item =>
-    item.status === 'completed' &&
-    item.verified_at &&
-    Number.isFinite(Date.parse(item.verified_at))
-  )
-
-  const verifiedRevenue = verifiedPayments.reduce(
-    (total, item) => total + Number(item.amount_kes || 0),
-    0
-  )
-
-  const recentRevenue = verifiedPayments
-    .filter(item => Date.parse(item.verified_at) >= thirtyDaysAgo)
-    .reduce(
-      (total, item) => total + Number(item.amount_kes || 0),
-      0
+  const maximumMonthlyRevenue = Math.max(
+    1,
+    ...monthlyRevenue.map(
+      item => Number(item.revenue_kes || 0)
     )
+  )
 
   const pendingManualPayments = payments.filter(
     item => item.provider === 'pochi_manual' && item.status === 'pending'
@@ -259,45 +219,114 @@ export default function Monetization() {
       <div className="cc-stats mon-metrics">
         <article>
           <span>Active Subscribers</span>
-          <strong>{activeSubscriberCount}</strong>
+          <strong>{reportValue('active_subscribers')}</strong>
           <small>Currently eligible for Premium</small>
         </article>
 
         <article>
           <span>Pending Subscriptions</span>
-          <strong>{pendingSubscriptions.length}</strong>
-          <small>Awaiting payment verification</small>
+          <strong>{reportValue('pending_subscriptions')}</strong>
+          <small>Awaiting verification</small>
         </article>
 
         <article>
           <span>Expired Subscriptions</span>
-          <strong>{expiredSubscriptions.length}</strong>
-          <small>Including expired-by-date records</small>
+          <strong>{reportValue('expired_subscriptions')}</strong>
+          <small>Includes expired-by-date records</small>
         </article>
 
         <article>
           <span>Expiring Within 7 Days</span>
-          <strong>{expiringSoon.length}</strong>
+          <strong>{reportValue('expiring_7d')}</strong>
           <small>Potential renewal opportunities</small>
         </article>
 
         <article>
           <span>Verified Revenue</span>
-          <strong>KSh {verifiedRevenue.toLocaleString()}</strong>
+          <strong>
+            {revenueReport
+              ? `KSh ${reportValue('verified_revenue_kes')}`
+              : '—'}
+          </strong>
           <small>Completed and verified payments</small>
         </article>
 
         <article>
           <span>Verified Revenue · 30 Days</span>
-          <strong>KSh {recentRevenue.toLocaleString()}</strong>
+          <strong>
+            {revenueReport
+              ? `KSh ${reportValue('revenue_30d_kes')}`
+              : '—'}
+          </strong>
           <small>Last 30 rolling days</small>
         </article>
       </div>
 
+      <section
+        className="cc-panel mon-panel mon-revenue-trends"
+        aria-label="Monthly verified revenue"
+      >
+        <div className="mon-revenue-heading">
+          <div>
+            <h3>Verified Revenue Trends</h3>
+            <p>Monthly payments verified over the last six months.</p>
+          </div>
+          <span>Amounts in KSh</span>
+        </div>
+
+        {revenueReport === null ? (
+          <p className="mon-data-note">
+            Revenue analytics are unavailable. Refresh to try again.
+          </p>
+        ) : monthlyRevenue.length === 0 ? (
+          <p className="mon-data-note">
+            No monthly revenue data is available.
+          </p>
+        ) : (
+          <div className="mon-revenue-chart">
+            {monthlyRevenue.map(item => {
+              const amount = Math.max(
+                0,
+                Number(item.revenue_kes || 0)
+              )
+
+              const height = maximumMonthlyRevenue > 0
+                ? amount / maximumMonthlyRevenue * 100
+                : 0
+
+              return (
+                <div
+                  className="mon-revenue-month"
+                  key={item.month}
+                >
+                  <strong>
+                    {amount.toLocaleString('en-KE')}
+                  </strong>
+                  <div className="mon-revenue-track">
+                    <div
+                      className="mon-revenue-bar"
+                      style={{
+                        height: `${height}%`
+                      }}
+                      role="img"
+                      aria-label={
+                        `${item.month}: KSh ` +
+                        amount.toLocaleString('en-KE')
+                      }
+                    />
+                  </div>
+                  <span>{item.month}</span>
+                </div>
+              )
+            })}
+          </div>
+        )}
+      </section>
+
       <p className="mon-data-note">
-        Revenue and subscription totals are based on the records
-        loaded into this dashboard. Large databases may require
-        server-side reporting to include every record.
+        Financial summaries are calculated by Supabase from
+        verified payment and subscription records.
+        Pending payments are excluded from revenue.
       </p>
 
       <div className="cc-panel mon-panel">
