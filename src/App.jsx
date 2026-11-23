@@ -152,6 +152,52 @@ function StudyText({ value }) {
   )
 }
 
+
+// PERIAK PERSONAL HOMEPAGE V2
+function HomeWelcome({ name, completedCount = 0 }) {
+  const firstName = String(name || '')
+    .trim()
+    .split(/\s+/)[0]
+
+  const hour = new Date().getHours()
+
+  const greeting =
+    hour < 12 ? 'Good morning' :
+    hour < 17 ? 'Good afternoon' :
+    'Good evening'
+
+  return (
+    <section
+      className="periak-home-welcome"
+      aria-label="Personalised study welcome"
+    >
+      <div className="periak-home-copy">
+        <span className="periak-home-label">
+          YOUR STUDY SPACE
+        </span>
+
+        <h2>
+          {greeting}{firstName ? `, ${firstName}` : ''} 👋
+        </h2>
+
+        <p>
+          Welcome back! Continue learning, explore your
+          nursing subjects and make progress at your pace.
+        </p>
+      </div>
+
+      <div className="periak-home-stat">
+        <strong>{completedCount}</strong>
+        <span>
+          {completedCount === 1
+            ? 'Lesson completed'
+            : 'Lessons completed'}
+        </span>
+      </div>
+    </section>
+  )
+}
+
 const legacyCourseCatalogue = [
   { icon: '🫀', title: 'Anatomy & Physiology', desc: 'Understand the structure and functions of the human body.', level: 'FOUNDATION' },
   { icon: '🩺', title: 'Medical-Surgical Nursing', desc: 'Learn to assess, manage and care for patients with diseases.', level: 'CORE NURSING' },
@@ -206,7 +252,7 @@ function mergeLearningData(localData, cloudData) {
   return { completed, recent }
 }
 
-function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, onOpenPremium = () => {}, onOpenPremiumFeature = () => {}, premiumLaunch = null, onPremiumLaunchHandled = () => {}, onPremiumModuleBack = () => {} }) {
+function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, welcomeName = '', onOpenPremium = () => {}, onOpenPremiumFeature = () => {}, premiumLaunch = null, onPremiumLaunchHandled = () => {}, onPremiumModuleBack = () => {} }) {
   const [learningData, setLearningData] = useState(readLearningData)
   const [activeLearningUser, setActiveLearningUser] = useState(null)
   const [learningCloudReady, setLearningCloudReady] = useState(false)
@@ -1192,6 +1238,10 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
         </section>
 
         <section className="student-dashboard" data-periak-tour="learning-dashboard">
+          <HomeWelcome
+            name={welcomeName}
+            completedCount={learningData?.completed?.length ?? 0}
+          />
           <div className="dashboard-heading">
             <div>
               <div className="eyebrow">YOUR PERSONAL STUDY SPACE</div>

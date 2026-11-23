@@ -404,6 +404,15 @@ export default function AuthGate({ children }) {
               isPremium: premiumAccess,
               premiumLoading,
               isAdmin: profile?.role === 'admin',
+              welcomeName:
+                profile?.full_name ||
+                profile?.first_name ||
+                profile?.display_name ||
+                profile?.name ||
+                profile?.username ||
+                session?.user?.user_metadata?.full_name ||
+                session?.user?.user_metadata?.name ||
+                '',
               onOpenPremium: () => setShowPremium(true),
               premiumLaunch,
               onPremiumLaunchHandled: () => setPremiumLaunch(null),

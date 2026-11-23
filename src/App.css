@@ -2341,3 +2341,92 @@ body.periak-focus-active .periak-reader-floating-dock {
 }
 
 /* PERIAK SHARED TYPOGRAPHY SCALE V1 */
+
+
+/* PERIAK PERSONAL HOMEPAGE V2 */
+.periak-home-welcome {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+  padding: 23px 26px;
+  margin-bottom: 20px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent);
+  border-radius: 15px;
+  color: var(--text-primary);
+}
+
+.periak-home-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+.periak-home-label {
+  display: block;
+  margin-bottom: 9px;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 1.1px;
+}
+
+.periak-home-welcome h2 {
+  margin: 0 0 9px;
+  color: var(--text-primary);
+  font-size: clamp(24px, 2.5vw, 30px);
+  line-height: 1.3;
+}
+
+.periak-home-welcome p {
+  max-width: 610px;
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 16px;
+  line-height: 1.65;
+}
+
+.periak-home-stat {
+  flex-shrink: 0;
+  min-width: 130px;
+  padding: 16px;
+  text-align: center;
+  background: var(--surface-secondary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.periak-home-stat strong {
+  display: block;
+  color: var(--accent);
+  font-size: 30px;
+  line-height: 1.2;
+}
+
+.periak-home-stat span {
+  display: block;
+  margin-top: 5px;
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+@media (max-width: 600px) {
+  .periak-home-welcome {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+    padding: 18px;
+  }
+
+  .periak-home-welcome h2 {
+    font-size: 24px;
+  }
+
+  .periak-home-stat {
+    text-align: left;
+    padding: 13px 15px;
+  }
+}
