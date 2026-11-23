@@ -7,7 +7,7 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg'],
+      includeAssets: ['periak-icon.svg'],
       manifest: {
         name: 'PERIAK',
         short_name: 'PERIAK',
