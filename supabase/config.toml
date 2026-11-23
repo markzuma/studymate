@@ -24,3 +24,13 @@ entrypoint = "./functions/mpesa-callback/index.ts"
 [functions.username-login]
 enabled = true
 verify_jwt = false
+
+
+[functions.mpesa-reconcile]
+enabled = true
+verify_jwt = true
+import_map = "./functions/mpesa-reconcile/deno.json"
+entrypoint = "./functions/mpesa-reconcile/index.ts"
+
+[functions.mpesa-replay]
+verify_jwt = true

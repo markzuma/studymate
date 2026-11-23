@@ -1,5 +1,5 @@
-import "@supabase/functions-js/edge-runtime.d.ts";
-import { withSupabase } from "@supabase/server";
+import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+import { withSupabase } from "npm:@supabase/server@^1";
 
 function json(data: unknown, status = 200) {
   return Response.json(data, { status });
@@ -68,47 +68,44 @@ export default {
         return json({ error: "This Premium plan is unavailable." }, 404);
       }
 
-      // Create a pending subscription.
-      const { data: subscription, error: subscriptionError } =
-        await ctx.supabaseAdmin
-          .from("subscriptions")
-          .insert({
-            student_id: studentId,
-            plan_id: plan.id,
-            status: "pending",
-          })
-          .select("id")
-          .single();
+      // Atomically reserve the subscription and payment.
+      // The database serializes checkout attempts per student.
+      const { data: reservation, error: reservationError } =
+        await ctx.supabaseAdmin.rpc("reserve_mpesa_payment", {
+          p_student_id: studentId,
+          p_plan_id: plan.id,
+          p_phone: phone,
+        });
 
-      if (subscriptionError) throw subscriptionError;
-      subscriptionId = subscription.id;
+      if (reservationError) {
+        console.warn("STK payment reservation rejected", {
+          code: reservationError.code ?? null,
+        });
 
-      // Create its pending M-Pesa payment.
-      const { data: payment, error: paymentError } =
-        await ctx.supabaseAdmin
-          .from("payments")
-          .insert({
-            student_id: studentId,
-            subscription_id: subscription.id,
-            provider: "daraja",
-            payment_method: "mpesa",
-            amount_kes: plan.price_kes,
-            phone_number: phone,
-            status: "pending",
-          })
-          .select("id")
-          .single();
-
-      if (paymentError) {
-        await ctx.supabaseAdmin
-          .from("subscriptions")
-          .update({ status: "cancelled" })
-          .eq("id", subscription.id)
-          .eq("status", "pending");
-
-        throw paymentError;
+        return json({
+          error:
+            "Unable to start a new payment. Check whether you " +
+            "already have an active or pending Premium membership.",
+        }, 409);
       }
 
+      if (
+        reservation?.success !== true ||
+        !reservation.subscription_id ||
+        !reservation.payment_id
+      ) {
+        throw new Error("Invalid payment reservation response");
+      }
+
+      const subscription = {
+        id: String(reservation.subscription_id),
+      };
+
+      const payment = {
+        id: String(reservation.payment_id),
+      };
+
+      subscriptionId = subscription.id;
       paymentId = payment.id;
 
       const key = Deno.env.get("MPESA_CONSUMER_KEY");
@@ -143,11 +140,21 @@ export default {
 
       const timestamp = kenyaTimestamp();
       const password = btoa(`${shortcode}${passkey}${timestamp}`);
-      const callbackUrl =
-        `${Deno.env.get("SUPABASE_URL")}/functions/v1/mpesa-callback`;
+      // PERIAK CALLBACK TOKEN V1
+      // A callback token is required even in sandbox mode.
+      const callbackToken = Deno.env.get("MPESA_CALLBACK_TOKEN");
+      const supabaseUrl = Deno.env.get("SUPABASE_URL");
 
-      // Set the 60-second deadline before submitting STK Push.
-      const expiresAt = new Date(Date.now() + 60_000).toISOString();
+      if (!callbackToken || callbackToken.length < 32 || !supabaseUrl) {
+        throw new Error("Secure M-Pesa callback configuration is missing");
+      }
+
+      const callbackUrl =
+        `${supabaseUrl}/functions/v1/mpesa-callback` +
+        `?token=${encodeURIComponent(callbackToken)}`;
+
+      // Allow five minutes for STK processing before local expiry.
+      const expiresAt = new Date(Date.now() + 300_000).toISOString();
 
       const { data: expiryRow, error: expiryError } = await ctx.supabaseAdmin
         .from("payments")

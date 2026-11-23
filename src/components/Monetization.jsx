@@ -19,6 +19,10 @@ export default function Monetization() {
   const [savingPhone, setSavingPhone] = useState(false)
   const [reviewing, setReviewing] = useState(null)
 
+  // PERIAK SAFARICOM STATUS CHECK V1
+  const [checkingMpesaId, setCheckingMpesaId] = useState(null)
+  const [mpesaChecks, setMpesaChecks] = useState({})
+
   async function loadData() {
     setLoading(true)
     setMessage('')
@@ -209,6 +213,113 @@ export default function Monetization() {
   const pendingManualPayments = payments.filter(
     item => item.provider === 'pochi_manual' && item.status === 'pending'
   )
+
+  // PERIAK MPESA RECONCILIATION QUEUE V1
+  // PERIAK MPESA PENDING REVIEW V2
+  // Read-only. Local timeouts are not payment failures.
+  const unresolvedMpesa = payments.filter(payment => {
+    if (
+      payment.provider !== 'daraja' ||
+      payment.payment_method !== 'mpesa'
+    ) return false
+
+    const description = String(
+      payment.result_description || ''
+    )
+
+    const expiry = payment.expires_at
+      ? Date.parse(payment.expires_at)
+      : NaN
+
+    const created = payment.created_at
+      ? Date.parse(payment.created_at)
+      : NaN
+
+    const overduePending =
+      payment.status === 'pending' &&
+      (
+        Number.isFinite(expiry)
+          ? expiry <= Date.now()
+          : Number.isFinite(created) &&
+            created <= Date.now() - 300000
+      )
+
+    const historicalTimeout =
+      payment.status === 'failed' &&
+      (
+        payment.result_code === 'LOCAL_TIMEOUT' ||
+        description.includes(
+          'Late M-Pesa success verified'
+        )
+      )
+
+    return overduePending || historicalTimeout
+  })
+
+  const unresolvedMpesaTotal = unresolvedMpesa.reduce(
+    (total, payment) =>
+      total + Number(payment.amount_kes || 0),
+    0
+  )
+
+  async function checkWithSafaricom(payment) {
+    if (checkingMpesaId) return
+
+    setCheckingMpesaId(payment.id)
+
+    setMpesaChecks(previous => ({
+      ...previous,
+      [payment.id]: {
+        outcome: 'checking',
+        message: 'Checking Safaricom...'
+      }
+    }))
+
+    try {
+      const { data, error } = await supabase.functions.invoke(
+        'mpesa-reconcile',
+        {
+          body: { paymentId: payment.id }
+        }
+      )
+
+      if (error) {
+        throw new Error(
+          'Safaricom status check is unavailable. ' +
+          'Confirm the Edge Function is deployed and try again.'
+        )
+      }
+
+      if (!data || typeof data.outcome !== 'string') {
+        throw new Error(
+          'The reconciliation service returned no usable result.'
+        )
+      }
+
+      setMpesaChecks(previous => ({
+        ...previous,
+        [payment.id]: {
+          outcome: data.outcome,
+          message: String(
+            data.message || 'No explanation returned.'
+          )
+        }
+      }))
+
+    } catch (error) {
+      setMpesaChecks(previous => ({
+        ...previous,
+        [payment.id]: {
+          outcome: 'error',
+          message:
+            error.message ||
+            'Could not check Safaricom at this time.'
+        }
+      }))
+    } finally {
+      setCheckingMpesaId(null)
+    }
+  }
 
   const profileName = id =>
     profiles.find(profile => profile.id === id)?.full_name || 'Student'
@@ -458,6 +569,156 @@ export default function Monetization() {
           from the tracking deployment onward.
           Verified buyers are counted from confirmed
           payment records.
+        </p>
+      </section>
+
+      <section className="cc-panel mon-panel">
+        <h3>M-Pesa Reconciliation Queue</h3>
+
+        <p>
+          Daraja transactions requiring investigation
+          after a local timeout or verified late-payment
+          report. A timeout does not prove that money was
+          received or that a payment failed.
+        </p>
+
+        <div className="cc-stats mon-metrics">
+          <article>
+            <span>Transactions to Investigate</span>
+            <strong>{unresolvedMpesa.length}</strong>
+            <small>Overdue pending payments and historical timeouts</small>
+          </article>
+
+          <article>
+            <span>Face Value Under Review</span>
+            <strong>
+              KSh {unresolvedMpesaTotal.toLocaleString('en-KE')}
+            </strong>
+            <small>
+              Not confirmed revenue, refunds or money received
+            </small>
+          </article>
+        </div>
+
+        {unresolvedMpesa.length === 0 ? (
+          <p className="cc-empty">
+            No timeout-related M-Pesa records found
+            in the loaded payment data.
+          </p>
+        ) : (
+          <div className="cc-table-wrap">
+            <table className="cc-table">
+              <thead>
+                <tr>
+                  <th>Student</th>
+                  <th>Amount</th>
+                  <th>Created</th>
+                  <th>Checkout Reference</th>
+                  <th>Recorded Outcome</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {unresolvedMpesa
+                  .slice(0, 50)
+                  .map(payment => (
+                    <tr key={payment.id}>
+                      <td>
+                        {profileName(payment.student_id)}
+                      </td>
+
+                      <td>
+                        KSh {Number(
+                          payment.amount_kes || 0
+                        ).toLocaleString('en-KE')}
+                      </td>
+
+                      <td>
+                        {formatDate(payment.created_at)}
+                      </td>
+
+                      <td>
+                        <code>
+                          {payment.checkout_request_id || 'Missing'}
+                        </code>
+
+                        <div className="mon-review-actions"
+                          style={{ marginTop: 8 }}
+                        >
+                          <button
+                            type="button"
+                            className="mon-action"
+                            disabled={
+                              !payment.checkout_request_id ||
+                              checkingMpesaId !== null
+                            }
+                            onClick={() =>
+                              checkWithSafaricom(payment)
+                            }
+                          >
+                            {checkingMpesaId === payment.id
+                              ? 'Checking...'
+                              : 'Check with Safaricom'}
+                          </button>
+                        </div>
+
+                        {mpesaChecks[payment.id] && (
+                          <p
+                            className="mon-data-note"
+                            role="status"
+                          >
+                            <strong>
+                              {mpesaChecks[payment.id].outcome ===
+                                'provider_reports_success'
+                                ? 'Safaricom reports success'
+                                : mpesaChecks[payment.id].outcome ===
+                                    'provider_reports_unsuccessful'
+                                  ? 'Safaricom reports unsuccessful'
+                                  : mpesaChecks[payment.id].outcome ===
+                                      'checking'
+                                    ? 'Checking'
+                                    : 'Unresolved'}
+                            </strong>
+                            {' — '}
+                            {mpesaChecks[payment.id].message}
+                          </p>
+                        )}
+                      </td>
+
+                      <td>
+                        {String(
+                          payment.result_description || ''
+                        ).includes('Late M-Pesa success verified')
+                          ? 'Late success: review required'
+                          : payment.status === 'pending'
+                            ? 'Overdue pending: investigate'
+                            : 'Local timeout: unverified'}
+                      </td>
+                    </tr>
+                  ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {unresolvedMpesa.length > 50 && (
+          <p className="mon-data-note">
+            Showing the first 50 loaded records.
+            Additional records require review.
+          </p>
+        )}
+
+        <p className="mon-data-note">
+          Investigation only. Compare the checkout
+          reference against trusted Safaricom records
+          before resolving a transaction. Do not
+          approve, refund or activate Premium based
+          solely on this table.
+        </p>
+
+        <p className="mon-data-note">
+          This queue uses currently loaded payment records.
+          It may be incomplete if database query limits apply.
         </p>
       </section>
 
