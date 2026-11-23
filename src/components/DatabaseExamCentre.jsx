@@ -1,6 +1,40 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useBackHandler } from '../context/NavigationProvider'
 import { supabase } from '../lib/supabase'
+
+
+// PERIAK PUBLISHED EXAM RECOVERY V1
+const examDraftKey = (userId, examId) =>
+  `periak_published_exam_v1:${userId}:${examId}`
+
+function readExamDraft(userId, examId) {
+  if (!userId || !examId) return null
+
+  try {
+    const saved = JSON.parse(
+      window.localStorage.getItem(
+        examDraftKey(userId, examId)
+      ) || 'null'
+    )
+
+    if (
+      saved?.version !== 1 ||
+      String(saved.examId) !== String(examId) ||
+      !Number.isFinite(Date.parse(saved.startedAt)) ||
+      !saved.responses ||
+      typeof saved.responses !== 'object' ||
+      Array.isArray(saved.responses) ||
+      (
+        saved.deadlineAt !== null &&
+        !Number.isFinite(Date.parse(saved.deadlineAt))
+      )
+    ) return null
+
+    return saved
+  } catch {
+    return null
+  }
+}
 
 const panel = {
   background: '#fff',
@@ -22,6 +56,11 @@ export default function DatabaseExamCentre({ onBack }) {
   const [loading, setLoading] = useState(true)
   const [busy, setBusy] = useState(false)
   const [message, setMessage] = useState('')
+  const [userId, setUserId] = useState(null)
+  const [deadlineAt, setDeadlineAt] = useState(null)
+  const submittingRef = useRef(false)
+  const autoSubmitAttempted = useRef(false)
+  const draftWarningShown = useRef(false)
 
   useEffect(() => {
     let alive = true
@@ -41,19 +80,96 @@ export default function DatabaseExamCentre({ onBack }) {
     return () => { alive = false }
   }, [])
 
+  // Identify the signed-in student before using local drafts.
   useEffect(() => {
-    if (!selectedExam || result || secondsLeft === null) return
-    if (secondsLeft <= 0) {
-      submitExam()
-      return
+    let active = true
+
+    supabase.auth.getSession()
+      .then(({ data }) => {
+        if (active) setUserId(data.session?.user?.id || null)
+      })
+      .catch(() => {
+        if (active) setMessage('Unable to verify your session.')
+      })
+
+    return () => { active = false }
+  }, [])
+
+  // Save each answer under this user and examination.
+  useEffect(() => {
+    if (!userId || !selectedExam || !startedAt || result) return
+
+    try {
+      window.localStorage.setItem(
+        examDraftKey(userId, selectedExam.id),
+        JSON.stringify({
+          version: 1,
+          examId: selectedExam.id,
+          startedAt,
+          deadlineAt,
+          responses,
+          savedAt: new Date().toISOString()
+        })
+      )
+    } catch (error) {
+      console.warn('Exam draft could not be saved:', error)
+
+      if (!draftWarningShown.current) {
+        draftWarningShown.current = true
+        setMessage(
+          'This browser could not save your answers locally. Keep this tab open until submission.'
+        )
+      }
     }
-    const timer = window.setTimeout(() => {
-      setSecondsLeft(value => value - 1)
-    }, 1000)
-    return () => window.clearTimeout(timer)
+  }, [userId, selectedExam, startedAt, deadlineAt, responses, result])
+
+  // Calculate remaining time from the original deadline.
+  useEffect(() => {
+    if (!selectedExam || result || !deadlineAt) return
+
+    const updateTime = () => {
+      const remaining = Math.max(
+        0,
+        Math.ceil((Date.parse(deadlineAt) - Date.now()) / 1000)
+      )
+
+      setSecondsLeft(current =>
+        current === remaining ? current : remaining
+      )
+    }
+
+    updateTime()
+
+    const interval = window.setInterval(updateTime, 1000)
+    window.addEventListener('focus', updateTime)
+    document.addEventListener('visibilitychange', updateTime)
+
+    return () => {
+      window.clearInterval(interval)
+      window.removeEventListener('focus', updateTime)
+      document.removeEventListener('visibilitychange', updateTime)
+    }
+  }, [selectedExam, result, deadlineAt])
+
+  // Attempt automatic submission once when time expires.
+  useEffect(() => {
+    if (
+      !selectedExam ||
+      result ||
+      secondsLeft !== 0 ||
+      autoSubmitAttempted.current
+    ) return
+
+    autoSubmitAttempted.current = true
+    void submitExam()
   }, [selectedExam, result, secondsLeft])
 
   async function beginExam(exam) {
+    if (!userId) {
+      setMessage('Your account session is not ready. Please sign in again.')
+      return
+    }
+
     setBusy(true)
     setMessage('')
     setResult(null)
@@ -69,11 +185,46 @@ export default function DatabaseExamCentre({ onBack }) {
       if (!data?.length) throw new Error('This examination has no published questions yet.')
 
       const now = new Date()
+      const saved = readExamDraft(userId, exam.id)
+
+      const start = saved?.startedAt || now.toISOString()
+      const deadline = saved
+        ? saved.deadlineAt
+        : exam.duration_minutes
+          ? new Date(
+              now.getTime() + Number(exam.duration_minutes) * 60000
+            ).toISOString()
+          : null
+
+      const validIds = new Set(data.map(question => String(question.id)))
+      const recoveredResponses = Object.fromEntries(
+        Object.entries(saved?.responses || {}).filter(
+          ([id]) => validIds.has(String(id))
+        )
+      )
+
+      autoSubmitAttempted.current = false
+      draftWarningShown.current = false
+
       setSelectedExam(exam)
       setQuestions(data)
-      setResponses({})
-      setStartedAt(now.toISOString())
-      setSecondsLeft(exam.duration_minutes ? exam.duration_minutes * 60 : null)
+      setResponses(recoveredResponses)
+      setStartedAt(start)
+      setDeadlineAt(deadline)
+      setSecondsLeft(
+        deadline
+          ? Math.max(
+              0,
+              Math.ceil((Date.parse(deadline) - Date.now()) / 1000)
+            )
+          : null
+      )
+
+      if (saved) {
+        setMessage(
+          'Your saved examination answers have been restored. The original examination timer continues.'
+        )
+      }
     } catch (error) {
       setMessage(error.message)
     } finally {
@@ -82,31 +233,62 @@ export default function DatabaseExamCentre({ onBack }) {
   }
 
   async function submitExam() {
-    if (!selectedExam || busy || result) return
+    if (!selectedExam || submittingRef.current || result) return
+
+    submittingRef.current = true
     setBusy(true)
     setMessage('')
+
     try {
       const { data, error } = await supabase.rpc('submit_database_exam', {
         p_exam_id: selectedExam.id,
         p_responses: responses,
         p_started_at: startedAt
       })
+
       if (error) throw error
+
+      // Clear the saved draft only after confirmed RPC success.
+      if (userId) {
+        try {
+          window.localStorage.removeItem(
+            examDraftKey(userId, selectedExam.id)
+          )
+        } catch (storageError) {
+          console.warn('Could not clear submitted draft:', storageError)
+        }
+      }
+
       setResult(data)
       setMessage('Your examination has been submitted successfully.')
     } catch (error) {
-      setMessage(error.message)
+      setMessage(
+        error.message || 'Submission failed. Your local draft has been kept.'
+      )
     } finally {
+      submittingRef.current = false
       setBusy(false)
     }
   }
 
   function leaveExam() {
-    if (!result && !window.confirm('Leave this examination? Your unsent answers will be lost.')) return
+    if (submittingRef.current || busy) {
+      setMessage('Your examination is being submitted. Please wait for the result.')
+      return
+    }
+
+    if (
+      !result &&
+      !window.confirm(
+        'Exit this examination? Your answers will remain saved on this device, with the original timer and deadline.'
+      )
+    ) return
+
     setSelectedExam(null)
     setQuestions([])
     setResponses({})
     setStartedAt(null)
+    setDeadlineAt(null)
     setSecondsLeft(null)
     setResult(null)
     setMessage('')
@@ -153,12 +335,14 @@ export default function DatabaseExamCentre({ onBack }) {
               {' · '}{exam.duration_minutes || 'No'} minutes
               {' · '}{exam.attempts_allowed} attempt(s)
             </p>
-            <button disabled={busy} onClick={() => beginExam(exam)}
+            <button disabled={busy || !userId} onClick={() => beginExam(exam)}
               style={{
                 background: '#1d4ed8', color: '#fff', border: 0,
                 padding: '12px 18px', borderRadius: 8, cursor: 'pointer'
               }}>
-              Start examination
+              {readExamDraft(userId, exam.id)
+                ? 'Resume saved examination'
+                : 'Start examination'}
             </button>
           </section>
         ))}
@@ -195,6 +379,7 @@ export default function DatabaseExamCentre({ onBack }) {
                       }}>
                         <input
                           type="radio"
+                          disabled={busy || secondsLeft === 0}
                           name={question.id}
                           checked={responses[question.id] === option}
                           onChange={() => setResponses(previous => ({
@@ -207,6 +392,7 @@ export default function DatabaseExamCentre({ onBack }) {
                   </div>
                 ) : (
                   <textarea
+                    disabled={busy || secondsLeft === 0}
                     rows={question.question_type === 'essay' ? 7 : 3}
                     value={responses[question.id] || ''}
                     onChange={event => setResponses(previous => ({
@@ -228,7 +414,11 @@ export default function DatabaseExamCentre({ onBack }) {
                 padding: '13px 20px', borderRadius: 8, cursor: 'pointer',
                 fontWeight: 700
               }}>
-              {busy ? 'Submitting...' : 'Submit examination'}
+              {busy
+                ? 'Submitting...'
+                : secondsLeft === 0
+                  ? 'Retry submission'
+                  : 'Submit examination'}
             </button>
           </section>
         )}
