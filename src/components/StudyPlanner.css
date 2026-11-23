@@ -572,3 +572,205 @@
 
 
 /* PERIAK SHARED TYPOGRAPHY SCALE V1 */
+
+
+/* PERIAK STUDY PLANNER COMPACT V1 */
+
+/* Overall planner spacing */
+.sp-planner {
+  margin: 14px 0 22px;
+}
+
+/* Compact welcome section */
+.sp-planner .sp-welcome {
+  padding: 18px 22px;
+  gap: 14px;
+  border-radius: 15px;
+}
+
+.sp-planner .sp-welcome h2 {
+  font-size: clamp(21px, 2.3vw, 26px);
+  line-height: 1.3;
+  margin: 5px 0;
+}
+
+.sp-planner .sp-welcome-icon {
+  width: 58px;
+  height: 58px;
+  flex-basis: 58px;
+  border-radius: 13px;
+  font-size: 28px;
+}
+
+/* Four compact statistic cards */
+.sp-planner .sp-stat-grid {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin: 12px 0 16px;
+}
+
+.sp-planner .sp-stat {
+  padding: 12px;
+  border-radius: 12px;
+  column-gap: 9px;
+  row-gap: 5px;
+  min-width: 0;
+}
+
+.sp-planner .sp-stat-icon {
+  width: 35px;
+  height: 35px;
+  font-size: 19px;
+  border-radius: 9px;
+}
+
+/* Main planner workspace */
+.sp-planner .sp-content {
+  padding: 19px;
+  border-radius: 15px;
+}
+
+.sp-planner .sp-section-heading {
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.sp-planner .sp-section-heading h3 {
+  margin: 4px 0;
+  font-size: clamp(20px, 2vw, 24px);
+}
+
+.sp-planner .sp-add-button {
+  min-height: 40px;
+  padding: 9px 14px;
+  border-radius: 9px;
+  font-size: 14px;
+}
+
+/* Task filters */
+.sp-planner .sp-list-heading {
+  margin: 15px 0 11px;
+  gap: 10px;
+}
+
+.sp-planner .sp-filters {
+  gap: 4px;
+  padding: 4px;
+  border-radius: 9px;
+}
+
+.sp-planner .sp-filters button {
+  padding: 7px 10px;
+  min-height: 34px;
+  font-size: 14px;
+}
+
+/* Compact task rows */
+.sp-planner .sp-task-list {
+  gap: 8px;
+}
+
+.sp-planner .sp-task {
+  padding: 12px 13px;
+  gap: 10px;
+  border-radius: 11px;
+}
+
+.sp-planner .sp-task-main {
+  min-width: 0;
+}
+
+.sp-planner .sp-task-topline {
+  gap: 7px;
+}
+
+.sp-planner .sp-task-actions {
+  gap: 6px;
+}
+
+.sp-planner .sp-task-actions button {
+  min-height: 36px;
+}
+
+/* More efficient task form */
+.sp-planner .sp-form {
+  padding: 17px;
+  gap: 12px;
+  margin-bottom: 16px;
+  border-radius: 12px;
+}
+
+.sp-planner .sp-form-heading {
+  margin-bottom: 3px;
+}
+
+.sp-planner .sp-field {
+  gap: 6px;
+}
+
+.sp-planner .sp-field input,
+.sp-planner .sp-field select,
+.sp-planner .sp-field textarea {
+  font-size: 16px;
+}
+
+/* Empty-state screens */
+.sp-planner .sp-empty {
+  padding: 24px 16px;
+  border-radius: 11px;
+}
+
+/* Tablet */
+@media (max-width: 760px) {
+  .sp-planner .sp-stat-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+  }
+
+  .sp-planner .sp-welcome {
+    padding: 17px;
+  }
+
+  .sp-planner .sp-content {
+    padding: 16px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 520px) {
+  .sp-planner {
+    margin: 10px 0 16px;
+  }
+
+  .sp-planner .sp-welcome {
+    padding: 15px;
+    gap: 10px;
+  }
+
+  .sp-planner .sp-welcome-icon {
+    width: 44px;
+    height: 44px;
+    flex-basis: 44px;
+    font-size: 23px;
+  }
+
+  .sp-planner .sp-stat {
+    padding: 11px;
+  }
+
+  .sp-planner .sp-content {
+    padding: 14px;
+  }
+
+  .sp-planner .sp-form {
+    padding: 14px;
+  }
+
+  .sp-planner .sp-task {
+    padding: 11px;
+  }
+
+  .sp-planner .sp-list-heading {
+    flex-wrap: wrap;
+  }
+}
