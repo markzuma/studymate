@@ -692,3 +692,118 @@
   border-color: #2878d0;
   color: #172b36;
 }
+
+
+/* PERIAK PREMIUM CONVERSION V2 */
+
+.premium-page .premium-hero-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 12px;
+  min-height: 40px;
+  padding: 10px 16px;
+  border-radius: 9px;
+  background: var(--accent, #2878d0);
+  color: #ffffff;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.premium-page .premium-hero-cta:hover {
+  filter: brightness(1.08);
+}
+
+.premium-page .premium-pricing-explainer {
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-muted, #64748b);
+}
+
+.premium-page .premium-daily-equivalent {
+  display: block;
+  margin: 6px 0 12px;
+  color: var(--text-muted, #64748b);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
+.premium-page .premium-order-summary {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 5px 12px;
+  padding: 14px;
+  margin: 12px 0 18px;
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 11px;
+  background: var(--surface-secondary, #f1f5f9);
+  color: var(--text-primary, #172b36);
+}
+
+.premium-page .premium-order-summary > span {
+  grid-column: 1 / -1;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.7px;
+  color: var(--text-muted, #64748b);
+}
+
+.premium-page .premium-order-summary > strong {
+  font-size: 15px;
+  line-height: 1.35;
+}
+
+.premium-page .premium-order-summary > b {
+  font-size: 18px;
+  color: var(--accent, #2878d0);
+  text-align: right;
+}
+
+.premium-page .premium-order-summary > small {
+  grid-column: 1 / -1;
+  color: var(--text-muted, #64748b);
+  font-size: 12px;
+}
+
+.premium-page .premium-method-heading {
+  font-size: 15px;
+  margin: 0 0 10px;
+  color: var(--text-primary, #172b36);
+}
+
+.premium-page .premium-payment-unavailable {
+  padding: 11px 13px;
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 9px;
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--text-primary, #172b36);
+  background: var(--surface-secondary, #f1f5f9);
+}
+
+.premium-page .premium-hero-cta:focus-visible {
+  outline: 3px solid var(--accent, #2878d0);
+  outline-offset: 3px;
+}
+
+@media (max-width: 600px) {
+  .premium-page .premium-hero-cta {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .premium-page .premium-order-summary {
+    padding: 11px;
+    gap: 5px 8px;
+  }
+
+  .premium-page .premium-order-summary > strong {
+    font-size: 13px;
+  }
+
+  .premium-page .premium-order-summary > b {
+    font-size: 16px;
+  }
+}

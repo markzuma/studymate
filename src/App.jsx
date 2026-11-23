@@ -1362,6 +1362,30 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
               ))}
             </div>
           </section>
+
+          {!isPremium && !isAdmin && !premiumLoading && (
+            <aside
+              className="periak-course-upgrade"
+              aria-label="Explore PERIAK Premium"
+            >
+              <div className="periak-course-upgrade-copy">
+                <span className="periak-course-upgrade-label">
+                  PERIAK PREMIUM
+                </span>
+                <strong>Prepare with real nursing past papers</strong>
+                <p>
+                  Explore the searchable examination library,
+                  organised by course, year and exam type.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => onOpenPremiumFeature('pastpapers')}
+              >
+                Explore past papers →
+              </button>
+            </aside>
+          )}
         </main>
 
         <footer>

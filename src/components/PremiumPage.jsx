@@ -17,16 +17,16 @@ const PREMIUM_FEATURES = [
 
 const PAYMENT_METHODS = [
   {
-    id: 'mpesa',
-    name: 'M-Pesa STK Push',
-    description: 'Temporarily unavailable — setup pending',
-    available: false
-  },
-  {
     id: 'pochi_manual',
     name: 'M-Pesa (Pay manually)',
     description: 'Pay to PERIAK and submit your receipt',
     available: true
+  },
+  {
+    id: 'mpesa',
+    name: 'M-Pesa STK Push',
+    description: 'Temporarily unavailable — setup pending',
+    available: false
   },
   {
     id: 'airtel_money',
@@ -405,6 +405,9 @@ export default function PremiumPage({ user, onBack, onSubscriptionUpdated = () =
         <p className="premium-eyebrow">TAKE YOUR LEARNING FURTHER</p>
         <h1>Unlock your nursing potential.</h1>
         <p>Get more from your PERIAK learning experience with Premium.</p>
+        <a className="premium-hero-cta" href="#premium-plans">
+          View plans and pricing ↓
+        </a>
       </section>
 
       {error && <p className="premium-error" role="alert">{error}</p>}
@@ -437,7 +440,7 @@ export default function PremiumPage({ user, onBack, onSubscriptionUpdated = () =
       <section className="premium-feature-catalogue">
         <div className="premium-feature-heading">
           <span className="premium-eyebrow">YOUR PREMIUM TOOLKIT</span>
-          <h2>Explore the seven learning features</h2>
+          <h2>Explore {PREMIUM_FEATURES.length} learning tools</h2>
           <p>Browse each tool, see what it offers, and open it when you have access.</p>
         </div>
 
@@ -484,6 +487,10 @@ export default function PremiumPage({ user, onBack, onSubscriptionUpdated = () =
       <section className="premium-plans" id="premium-plans">
         <h2>Choose your plan</h2>
         <p>Affordable plans designed for nursing students.</p>
+        <p className="premium-pricing-explainer">
+          Prices are shown in Kenyan shillings.
+          Membership activates after payment verification.
+        </p>
 
         <div className="premium-grid">
           {plans.map(plan => (
@@ -496,6 +503,14 @@ export default function PremiumPage({ user, onBack, onSubscriptionUpdated = () =
                 KSh {Number(plan.price_kes).toLocaleString()}
               </div>
               <p>{plan.duration_days} days of Premium access</p>
+              {Number(plan.duration_days) > 0 &&
+                Number.isFinite(Number(plan.price_kes)) && (
+                  <small className="premium-daily-equivalent">
+                    About KSh {(Number(plan.price_kes) /
+                      Number(plan.duration_days)).toFixed(2)}
+                    /day equivalent · full price paid upfront
+                  </small>
+                )}
 
               <button
                 onClick={() => {
@@ -516,11 +531,19 @@ export default function PremiumPage({ user, onBack, onSubscriptionUpdated = () =
 
       {selectedPlan && !activeSubscription && !pendingSubscription && (!initialFeatureId || purchaseStep === 'payment') && (
         <section className="premium-checkout" id="premium-checkout">
-          <h2>Payment method</h2>
-          <p>
-            Selected: <strong>{selectedPlan.name}</strong> —
-            {' '}KSh {Number(selectedPlan.price_kes).toLocaleString()}
-          </p>
+          <h2>Complete your Premium purchase</h2>
+          <div className="premium-order-summary">
+            <span>YOUR SELECTED PLAN</span>
+            <strong>{selectedPlan.name}</strong>
+            <b>KSh {Number(selectedPlan.price_kes).toLocaleString()}</b>
+            <small>
+              {selectedPlan.duration_days} days of access ·
+              Activated after payment verification
+            </small>
+          </div>
+          <h3 className="premium-method-heading">
+            Choose a payment method
+          </h3>
 
           <div className="premium-methods">
             {PAYMENT_METHODS.map(method => {
@@ -562,6 +585,14 @@ export default function PremiumPage({ user, onBack, onSubscriptionUpdated = () =
               )
             })}
           </div>
+
+          {!pochiPhone && !MPESA_STK_ENABLED && (
+            <p className="premium-payment-unavailable" role="status">
+              Online payment is not configured yet.
+              Do not send money until an official payment
+              number is displayed here.
+            </p>
+          )}
 
           {paymentMethod === 'mpesa' && MPESA_STK_ENABLED && (
             <div className="premium-phone-field">

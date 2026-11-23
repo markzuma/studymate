@@ -2901,3 +2901,382 @@ body.periak-focus-active .periak-reader-floating-dock {
     padding: 13px;
   }
 }
+
+
+/* PERIAK COMPACT COURSE DETAIL V1
+   Shared across every course; existing theme colours preserved.
+*/
+
+.course-detail {
+  padding-top: 14px;
+  padding-bottom: 28px;
+}
+
+.course-detail .course-detail-hero {
+  padding: 18px 22px;
+  margin-top: 12px;
+  margin-bottom: 18px;
+}
+
+.course-detail .course-detail-icon {
+  width: 38px;
+  height: 38px;
+  font-size: 27px;
+  line-height: 1.15;
+  margin-bottom: 7px;
+}
+
+.course-detail .course-detail-hero h1 {
+  font-size: clamp(21px, 2.3vw, 26px);
+  line-height: 1.2;
+  letter-spacing: -0.5px;
+  margin: 4px 0 7px;
+}
+
+.course-detail .course-detail-hero p {
+  font-size: 13px;
+  line-height: 1.45;
+  margin: 0 0 9px;
+}
+
+.course-detail .course-level {
+  font-size: 11px;
+  letter-spacing: 0.8px;
+}
+
+.course-detail .unit-count {
+  font-size: 12px;
+  padding: 5px 10px;
+  border-radius: 999px;
+}
+
+.course-detail .unit-section {
+  margin-top: 12px;
+  margin-bottom: 14px;
+}
+
+.course-detail .unit-section h2 {
+  font-size: clamp(18px, 1.8vw, 21px);
+  line-height: 1.3;
+  margin-bottom: 5px;
+}
+
+.course-detail .unit-intro {
+  font-size: 13px;
+  line-height: 1.45;
+  margin-bottom: 12px;
+}
+
+.course-detail .unit-list {
+  gap: 9px;
+}
+
+.course-detail .unit-card {
+  padding: 12px 14px;
+  min-height: 0;
+  border-radius: 10px;
+}
+
+.course-detail .unit-info h3 {
+  font-size: 14px;
+  line-height: 1.4;
+  margin: 0 0 3px;
+}
+
+.course-detail .unit-info p {
+  font-size: 12px;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.course-detail .unit-arrow {
+  margin-left: auto;
+}
+
+/* Low-distraction Premium discovery beneath the course units. */
+.periak-course-upgrade {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: var(--surface, #ffffff);
+  color: var(--text-primary, #172b36);
+  border: 1px solid var(--border, #e2e8f0);
+  border-radius: 12px;
+  padding: 15px 18px;
+  margin: 16px 0 22px;
+}
+
+.periak-course-upgrade-copy {
+  min-width: 0;
+}
+
+.periak-course-upgrade-label {
+  display: block;
+  color: var(--accent, #2878d0);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.8px;
+  margin-bottom: 4px;
+}
+
+.periak-course-upgrade-copy strong {
+  display: block;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.periak-course-upgrade-copy p {
+  margin: 3px 0 0;
+  color: var(--text-muted, #64748b);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.periak-course-upgrade button {
+  flex-shrink: 0;
+  background: var(--accent, #2878d0);
+  color: #ffffff;
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 13px;
+  min-height: 40px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.periak-course-upgrade button:hover {
+  filter: brightness(1.08);
+}
+
+.periak-course-upgrade button:focus-visible {
+  outline: 3px solid var(--accent, #2878d0);
+  outline-offset: 3px;
+}
+
+@media (max-width: 620px) {
+  .course-detail {
+    padding-top: 8px;
+  }
+
+  .course-detail .course-detail-hero {
+    padding: 15px 14px;
+    margin: 8px 0 14px;
+  }
+
+  .course-detail .course-detail-hero h1 {
+    font-size: 21px;
+  }
+
+  .course-detail .unit-card {
+    padding: 12px 11px;
+  }
+
+  .periak-course-upgrade {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 13px;
+  }
+
+  .periak-course-upgrade button {
+    width: 100%;
+  }
+}
+
+
+/* PERIAK COMPACT LESSON CONTROLS V1 */
+
+/* Keep the lesson layout efficient without shrinking its study content. */
+.lesson-page {
+  padding-top: 12px;
+}
+
+.lesson-page .back-link {
+  margin: 12px 0;
+}
+
+.lesson-page .lesson-heading {
+  margin-top: 10px;
+  margin-bottom: 15px;
+}
+
+.lesson-page .lesson-heading h1 {
+  font-size: clamp(21px, 2.3vw, 27px);
+  line-height: 1.25;
+  margin: 5px 0 8px;
+}
+
+.lesson-page .lesson-heading > p {
+  margin: 0 0 11px;
+  line-height: 1.5;
+}
+
+.lesson-page .learning-completion {
+  gap: 9px;
+}
+
+/* Learning objectives: compact informational panel. */
+.lesson-page .lesson-panel:has(#periak-lesson-objectives) {
+  padding: 15px 18px;
+  margin-bottom: 16px;
+}
+
+.lesson-page .lesson-panel:has(#periak-lesson-objectives) h2 {
+  font-size: 19px;
+  line-height: 1.3;
+  margin: 0 0 7px;
+}
+
+.lesson-page .lesson-panel:has(#periak-lesson-objectives) p {
+  margin: 0 0 8px;
+  line-height: 1.45;
+}
+
+.lesson-page .lesson-panel:has(#periak-lesson-objectives) ul {
+  margin: 5px 0 0;
+  padding-left: 20px;
+}
+
+.lesson-page .lesson-panel:has(#periak-lesson-objectives) li {
+  margin: 3px 0;
+  line-height: 1.5;
+}
+
+/* Preserve comprehensive notes, clinical explanations and questions. */
+.lesson-page .periak-notes-panel,
+.lesson-page .note-topic,
+.lesson-page .practice-question {
+  line-height: 1.65;
+}
+
+@media (max-width: 620px) {
+  .lesson-page {
+    padding-top: 8px;
+  }
+
+  .lesson-page .lesson-heading h1 {
+    font-size: 21px;
+  }
+
+  .lesson-page .lesson-panel:has(#periak-lesson-objectives) {
+    padding: 13px;
+  }
+}
+
+
+/* PERIAK READER TOOLBAR COMPACT V1 */
+
+/* Compact navigation tools without altering learning material content. */
+.lesson-page .periak-reader-tools {
+  padding: 15px 18px;
+  margin: 8px 0 16px;
+  border-radius: 12px;
+}
+
+.lesson-page .periak-reader-header {
+  gap: 10px;
+  margin-bottom: 9px;
+}
+
+.lesson-page .periak-reader-header h2 {
+  font-size: 18px;
+  line-height: 1.3;
+  margin: 3px 0 5px;
+}
+
+.lesson-page .periak-reader-header p {
+  font-size: 12px;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.lesson-page .periak-reader-kicker {
+  font-size: 10px;
+  letter-spacing: 0.7px;
+}
+
+.lesson-page .periak-reader-focus-button {
+  min-height: 34px;
+  padding: 6px 10px;
+  font-size: 12px;
+}
+
+.lesson-page .periak-reader-size {
+  gap: 6px;
+  font-size: 12px;
+}
+
+.lesson-page .periak-reader-size button {
+  min-height: 30px;
+  min-width: 30px;
+  padding: 4px 7px;
+}
+
+.lesson-page .periak-reader-links {
+  gap: 6px;
+  margin: 8px 0;
+}
+
+.lesson-page .periak-reader-links button {
+  min-height: 34px;
+  padding: 7px 11px;
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+.lesson-page .periak-reader-actions {
+  gap: 9px;
+  margin: 8px 0;
+}
+
+.lesson-page .periak-reader-actions select {
+  min-height: 35px;
+  padding: 7px 10px;
+  font-size: 12px;
+}
+
+.lesson-page .periak-reader-revise {
+  min-height: 35px;
+  padding: 7px 12px;
+  font-size: 12px;
+}
+
+.lesson-page .periak-reader-progress-label {
+  margin: 8px 0 5px;
+  font-size: 11px;
+}
+
+.lesson-page .periak-reader-track {
+  height: 5px;
+  margin: 0;
+}
+
+@media (max-width: 650px) {
+  .lesson-page .periak-reader-tools {
+    padding: 12px;
+    margin: 5px 0 12px;
+  }
+
+  .lesson-page .periak-reader-header {
+    gap: 8px;
+  }
+
+  .lesson-page .periak-reader-header h2 {
+    font-size: 17px;
+  }
+
+  .lesson-page .periak-reader-links {
+    gap: 5px;
+  }
+
+  .lesson-page .periak-reader-links button {
+    min-height: 34px;
+    padding: 7px 9px;
+  }
+
+  .lesson-page .periak-reader-actions {
+    gap: 7px;
+  }
+}
