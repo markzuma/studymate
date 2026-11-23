@@ -77,3 +77,228 @@
 .xp-root button:focus-visible,.xp-root input:focus-visible,.xp-root select:focus-visible {outline:3px solid var(--accent);outline-offset:2px;}
 @media (max-width:600px) {.xp-root {font-size:14px;}.xp-story,.xp-patient-card,.xp-question,.xp-report,.xp-result,.xp-course-card {padding:14px;}.xp-filter-row {grid-template-columns:1fr;gap:0;}.xp-metrics {grid-template-columns:repeat(3,minmax(0,1fr));}.xp-metrics article {padding:11px;}.xp-metrics article strong {font-size:19px;}.xp-metrics article span {font-size:10px;}.xp-course-grid {grid-template-columns:1fr;}.xp-recent>div {align-items:flex-start;flex-direction:column;}}
 @media (prefers-reduced-motion:reduce) {.xp-meter-track > span {transition:none;}}
+
+
+/* PERIAK LEARNING TYPOGRAPHY V2 */
+
+/* Core text */
+.learning-suite .xp-root {
+  font-size: 17px;
+  line-height: 1.8;
+  color: var(--text-primary);
+}
+
+/* Section introductions */
+.learning-suite .xp-intro h3 {
+  font-size: clamp(23px, 2.2vw, 28px);
+  line-height: 1.4;
+  margin-bottom: 14px;
+}
+
+.learning-suite .xp-intro p {
+  font-size: 16.5px;
+  line-height: 1.85;
+  color: var(--text-primary);
+}
+
+.learning-suite .xp-intro small,
+.learning-suite .xp-question > small {
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Clinical case descriptions */
+.learning-suite .xp-story,
+.learning-suite .xp-patient-card,
+.learning-suite .xp-question,
+.learning-suite .xp-report,
+.learning-suite .xp-result {
+  padding: clamp(19px, 2.2vw, 26px);
+  margin-block: 21px;
+}
+
+.learning-suite .xp-story p,
+.learning-suite .xp-patient-card p,
+.learning-suite .xp-report p,
+.learning-suite .xp-result p,
+.learning-suite .xp-course-card p,
+.learning-suite .xp-handover {
+  font-size: 17px;
+  line-height: 1.85;
+  color: var(--text-primary);
+}
+
+/* Clinical questions */
+.learning-suite .xp-question h4 {
+  font-size: clamp(20px, 1.8vw, 23px);
+  line-height: 1.55;
+  margin-bottom: 20px;
+}
+
+/* Answer options */
+.learning-suite .xp-choice {
+  font-size: 17px;
+  line-height: 1.7;
+  padding: 16px 18px;
+  min-height: 55px;
+  color: var(--text-primary);
+}
+
+.learning-suite .xp-choice span {
+  font-size: 14px;
+  min-width: 30px;
+  height: 30px;
+}
+
+/* Clinical explanations */
+.learning-suite .xp-explanation strong {
+  font-size: 17px;
+}
+
+.learning-suite .xp-explanation p {
+  font-size: 16.5px;
+  line-height: 1.85;
+}
+
+/* Patient selector tabs */
+.learning-suite .xp-patient-picker button {
+  font-size: 16px;
+  padding: 15px 17px;
+  line-height: 1.5;
+}
+
+.learning-suite .xp-patient-picker small {
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Strong contrast for selected patient */
+.learning-suite .xp-patient-picker button.is-active {
+  background: #0b665f;
+  color: #ffffff;
+  border: 2px solid #0b665f;
+}
+
+.learning-suite .xp-patient-picker button.is-active small {
+  color: #ffffff;
+}
+
+:root[data-theme="dark"]
+.learning-suite .xp-patient-picker button.is-active {
+  background: #155e75;
+  color: #ffffff;
+  border-color: #67e8f9;
+}
+
+:root[data-theme="dark"]
+.learning-suite .xp-patient-picker button.is-active small {
+  color: #ffffff;
+}
+
+/* Patient observations */
+.learning-suite .xp-vitals span {
+  font-size: 15px;
+  line-height: 1.55;
+  padding: 10px 13px;
+}
+
+/* Section labels and disclaimers */
+.learning-suite .xp-tag,
+.learning-suite .xp-patient-card h5,
+.learning-suite .xp-case-number {
+  font-size: 13px;
+}
+
+.learning-suite .xp-disclaimer {
+  font-size: 14.5px;
+  line-height: 1.8;
+}
+
+.learning-suite .xp-meter-label,
+.learning-suite .xp-field,
+.learning-suite .xp-search-count {
+  font-size: 14px;
+}
+
+/* Interactive buttons */
+.learning-suite .xp-primary,
+.learning-suite .xp-result-title button,
+.learning-suite .xp-course-card button,
+.learning-suite .xp-recent button {
+  font-size: 15px;
+  min-height: 46px;
+  padding: 12px 18px;
+}
+
+/* Study Tutor */
+.learning-suite .xp-excerpt p,
+.learning-suite .xp-mini-quiz p,
+.learning-suite .xp-quiz-feedback {
+  font-size: 16px;
+  line-height: 1.8;
+}
+
+.learning-suite .xp-mini-quiz .xp-choice {
+  font-size: 16px;
+  padding: 13px 15px;
+}
+
+.learning-suite .xp-prompts button {
+  font-size: 14px;
+  padding: 9px 14px;
+}
+
+/* Dashboard and Knowledge Hub */
+.learning-suite .xp-metrics article strong {
+  font-size: 29px;
+}
+
+.learning-suite .xp-metrics article span {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.learning-suite .xp-course-card h4 {
+  font-size: 21px;
+}
+
+.learning-suite .xp-course-card b,
+.learning-suite .xp-recent h4 {
+  font-size: 17px;
+}
+
+.learning-suite .xp-course-card span,
+.learning-suite .xp-recent > div {
+  font-size: 15px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .learning-suite .xp-root {
+    font-size: 16px;
+  }
+
+  .learning-suite .xp-story p,
+  .learning-suite .xp-patient-card p,
+  .learning-suite .xp-report p,
+  .learning-suite .xp-result p {
+    font-size: 16px;
+  }
+
+  .learning-suite .xp-choice {
+    font-size: 16px;
+    padding: 14px;
+  }
+
+  .learning-suite .xp-question h4 {
+    font-size: 19px;
+  }
+
+  .learning-suite .xp-metrics article span {
+    font-size: 12px;
+  }
+
+  .learning-suite .xp-patient-picker button {
+    font-size: 15px;
+  }
+}

@@ -266,3 +266,103 @@
 .learning-suite .suite-heading p { color:var(--text-primary);font-size:13px; }
 .premium-module-page .learning-suite { max-width:1180px;width:min(96%,1180px); }
 @media(max-width:600px){.premium-module-page .learning-suite{width:100%;}.learning-suite .suite-card p{font-size:11.5px;}}
+
+
+/* PERIAK LEARNING TYPOGRAPHY V2 */
+
+/* Balanced width for laptops and Chromebooks */
+.premium-module-page .learning-suite,
+.learning-suite {
+  width: min(95%, 1080px);
+  max-width: 1080px;
+  margin-inline: auto;
+}
+
+/* Main learning suite */
+.learning-suite .suite-heading h1,
+.learning-suite .suite-heading h2 {
+  font-size: clamp(26px, 2.4vw, 30px);
+  line-height: 1.4;
+}
+
+.learning-suite .suite-heading p {
+  font-size: 16px;
+  line-height: 1.75;
+  color: var(--text-primary);
+}
+
+.learning-suite .suite-content {
+  font-size: 17px;
+  line-height: 1.8;
+  color: var(--text-primary);
+}
+
+/* Feature cards */
+.learning-suite .suite-card {
+  padding: 21px;
+}
+
+.learning-suite .suite-card strong {
+  font-size: 17px;
+  line-height: 1.5;
+}
+
+.learning-suite .suite-card p {
+  font-size: 15.5px;
+  line-height: 1.75;
+  color: var(--text-primary);
+}
+
+.learning-suite .suite-card small {
+  font-size: 13px;
+}
+
+/* Smaller section labels remain readable */
+.learning-suite .suite-eyebrow,
+.learning-suite .suite-kicker,
+.learning-suite .suite-label {
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+/* Responsive mobile layout */
+@media (max-width: 600px) {
+  .premium-module-page .learning-suite,
+  .learning-suite {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .learning-suite .suite-heading h1,
+  .learning-suite .suite-heading h2 {
+    font-size: 24px;
+  }
+
+  .learning-suite .suite-content {
+    font-size: 16px;
+  }
+
+  .learning-suite .suite-card p {
+    font-size: 15px;
+  }
+}
+
+/* PERIAK LEARNING CARD CONTRAST FIX */
+.learning-suite .suite-card:hover,
+.learning-suite .suite-card:focus-visible {
+  background: var(--surface-secondary) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--accent) !important;
+}
+
+.learning-suite .suite-card:hover strong,
+.learning-suite .suite-card:hover p,
+.learning-suite .suite-card:focus-visible strong,
+.learning-suite .suite-card:focus-visible p {
+  color: var(--text-primary) !important;
+}
+
+.learning-suite .suite-card:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: 3px;
+}
