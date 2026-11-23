@@ -4,6 +4,25 @@ import './PremiumPage.css'
 
 const MPESA_STK_ENABLED = false
 
+// PERIAK PREMIUM CONVERSION TRACKING V1
+// Analytics is optional and never controls payment processing.
+function recordPremiumConversion(eventType, planId = null) {
+  try {
+    Promise.resolve(
+      supabase.rpc('record_premium_funnel_event', {
+        p_event_type: eventType,
+        p_plan_id: planId
+      })
+    ).then(({ error }) => {
+      if (error && import.meta.env.DEV) {
+        console.warn('Premium analytics:', error.message)
+      }
+    }).catch(() => {})
+  } catch {
+    // Tracking failures must not block students.
+  }
+}
+
 const PREMIUM_FEATURES = [
   { id: 'pastpapers', icon: '📑', title: 'Real Past Papers Library', desc: 'Access authentic examination papers from different institutions, organized by course, unit, year, semester and exam type.' },
   { id: 'dashboard', icon: '📊', title: 'Learning Dashboard', desc: 'Monitor lesson completion, activity and progress across your subjects.' },
@@ -44,6 +63,14 @@ const PAYMENT_METHODS = [
 
 export default function PremiumPage({ user, onBack, onSubscriptionUpdated = () => {}, hasPremiumAccess = false, onOpenFeature = () => {}, onRegisterBackHandler = () => {}, initialFeatureId = null }) {
   const launchHandled = useRef(false)
+  const premiumViewRecorded = useRef(false)
+
+  useEffect(() => {
+    if (premiumViewRecorded.current || !user?.id) return
+
+    premiumViewRecorded.current = true
+    recordPremiumConversion('premium_view')
+  }, [user?.id])
   const [selectedPremiumFeature, setSelectedPremiumFeature] = useState(() => PREMIUM_FEATURES.find(feature => feature.id === initialFeatureId) || null)
   const [purchaseStep, setPurchaseStep] = useState(initialFeatureId ? 'feature' : 'catalogue')
   const [plans, setPlans] = useState([])
@@ -618,7 +645,12 @@ export default function PremiumPage({ user, onBack, onSubscriptionUpdated = () =
 
               <button
                 onClick={() => {
+                  if (selectedPlan?.id !== plan.id) {
+                    recordPremiumConversion('plan_select', plan.id)
+                  }
+
                   setSelectedPlan(plan)
+
                   if (initialFeatureId) {
                     setPaymentMethod('')
                     setPurchaseStep('payment')

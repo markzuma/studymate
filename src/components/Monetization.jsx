@@ -7,6 +7,10 @@ export default function Monetization() {
   const [subscriptions, setSubscriptions] = useState([])
   const [payments, setPayments] = useState([])
   const [revenueReport, setRevenueReport] = useState(null)
+
+  // PERIAK PREMIUM CONVERSION DASHBOARD V1
+  const [funnelReport, setFunnelReport] = useState(null)
+  const [funnelError, setFunnelError] = useState('')
   const [profiles, setProfiles] = useState([])
   const [pochiPhone, setPochiPhone] = useState('')
   const [loading, setLoading] = useState(true)
@@ -19,6 +23,8 @@ export default function Monetization() {
     setLoading(true)
     setMessage('')
     setRevenueReport(null)
+    setFunnelReport(null)
+    setFunnelError('')
 
     const results = await Promise.all([
       supabase.from('subscription_plans').select('*').order('price_kes'),
@@ -30,7 +36,10 @@ export default function Monetization() {
         .select('id, pochi_phone_number')
         .eq('id', 1)
         .maybeSingle(),
-      supabase.rpc('admin_revenue_summary')
+      supabase.rpc('admin_revenue_summary'),
+      supabase.rpc('admin_premium_funnel_summary', {
+        p_days: 30
+      })
     ])
 
     const failed = results
@@ -57,6 +66,23 @@ export default function Monetization() {
       )
     } else {
       setRevenueReport(reportResult.data || null)
+    }
+
+    const funnelResult = results[6]
+
+    if (funnelResult?.error) {
+      setFunnelReport(null)
+      setFunnelError(
+        'Conversion analytics could not be loaded. Refresh to retry.'
+      )
+    } else if (funnelResult?.data) {
+      setFunnelReport(funnelResult.data)
+      setFunnelError('')
+    } else {
+      setFunnelReport(null)
+      setFunnelError(
+        'No conversion analytics were returned.'
+      )
     }
 
     setLoading(false)
@@ -328,6 +354,112 @@ export default function Monetization() {
         verified payment and subscription records.
         Pending payments are excluded from revenue.
       </p>
+
+      <section className="cc-panel mon-panel">
+        <h3>Premium Conversion Analytics</h3>
+        <p>
+          Unique students at each purchasing stage
+          during the last 30 days.
+        </p>
+
+        {funnelError && (
+          <p className="mon-message" role="status">
+            {funnelError}
+          </p>
+        )}
+
+        <div className="cc-stats mon-metrics">
+          {[
+            {
+              label: 'Premium Visitors',
+              key: 'premium_visitors',
+              description: 'Opened the Premium page'
+            },
+            {
+              label: 'Plan Selectors',
+              key: 'plan_selectors',
+              description: 'Selected a subscription plan'
+            },
+            {
+              label: 'Payment Submitters',
+              key: 'payment_submitters',
+              description: 'Pending or completed payments'
+            },
+            {
+              label: 'Verified Buyers',
+              key: 'verified_buyers',
+              description: 'Verified payments'
+            }
+          ].map(metric => (
+            <article key={metric.key}>
+              <span>{metric.label}</span>
+              <strong>
+                {funnelReport
+                  ? Number(
+                      funnelReport[metric.key] ?? 0
+                    ).toLocaleString('en-KE')
+                  : '—'}
+              </strong>
+              <small>{metric.description}</small>
+            </article>
+          ))}
+        </div>
+
+        <h4>Subscription Plan Interest</h4>
+        <p>
+          Plans selected by students over the last 30 days.
+        </p>
+
+        {!funnelReport ? (
+          <p className="mon-data-note">
+            Conversion data is unavailable.
+          </p>
+        ) : !funnelReport.plan_interest?.length ? (
+          <p className="mon-data-note">
+            No plan selections recorded yet.
+          </p>
+        ) : (
+          <div className="cc-table-wrap">
+            <table className="cc-table">
+              <thead>
+                <tr>
+                  <th>Subscription Plan</th>
+                  <th>Students</th>
+                  <th>Selections</th>
+                </tr>
+              </thead>
+              <tbody>
+                {funnelReport.plan_interest.map(
+                  (item, index) => (
+                    <tr key={`${item.plan}-${index}`}>
+                      <td>{item.plan}</td>
+                      <td>
+                        {Number(
+                          item.students ?? 0
+                        ).toLocaleString('en-KE')}
+                      </td>
+                      <td>
+                        {Number(
+                          item.selections ?? 0
+                        ).toLocaleString('en-KE')}
+                      </td>
+                    </tr>
+                  )
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        <p className="mon-data-note">
+          These are independent period activity counts,
+          not a cohort conversion rate.
+          Premium visits and plan selections are collected
+          from the tracking deployment onward.
+          Verified buyers are counted from confirmed
+          payment records.
+        </p>
+      </section>
 
       <div className="cc-panel mon-panel">
         <h3>Manual M-Pesa Payment Settings</h3>
