@@ -7,10 +7,18 @@ import UserActivityMonitor from './UserActivityMonitor'
 const loadPremiumPage = () => import('./PremiumPage')
 const PremiumPage = lazy(loadPremiumPage)
 const ControlCentre = lazy(() => import('./ControlCentre'))
-import ThemeSettings from './ThemeSettings'
-import ProfileSettings from './ProfileSettings'
-import WelcomeTour from './WelcomeTour'
 import { useBackHandler } from '../context/NavigationProvider'
+
+// PERIAK ON-DEMAND LOADING V1
+const ThemeSettings = lazy(
+  () => import('./ThemeSettings')
+)
+const ProfileSettings = lazy(
+  () => import('./ProfileSettings')
+)
+const WelcomeTour = lazy(
+  () => import('./WelcomeTour')
+)
 
 export default function AuthGate({ children }) {
   const [session, setSession] = useState(null)
@@ -338,7 +346,14 @@ export default function AuthGate({ children }) {
     return (
       <>
         <UserActivityMonitor userId={session.user.id} />
-        <WelcomeTour open={showWelcomeTour} onClose={closeWelcomeTour} />
+        {showWelcomeTour && (
+          <Suspense fallback={null}>
+            <WelcomeTour
+              open={showWelcomeTour}
+              onClose={closeWelcomeTour}
+            />
+          </Suspense>
+        )}
         <div className="auth-userbar">
           <span>
             Signed in as <strong>{session.user.email}</strong>
@@ -371,8 +386,23 @@ export default function AuthGate({ children }) {
           <button onClick={handleLogout}>Log out</button>
         </div>
 
-        {showAppearance && <ThemeSettings onClose={() => setShowAppearance(false)} />}
-        {showProfile && <ProfileSettings user={session.user} onClose={() => setShowProfile(false)} />}
+        {(showAppearance || showProfile) && (
+          <Suspense
+            fallback={<div role="status" className="auth-loading">Opening account settings...</div>}
+          >
+            {showAppearance && (
+              <ThemeSettings
+                onClose={() => setShowAppearance(false)}
+              />
+            )}
+            {showProfile && (
+              <ProfileSettings
+                user={session.user}
+                onClose={() => setShowProfile(false)}
+              />
+            )}
+          </Suspense>
+        )}
 
         {profile?.role === 'admin' && showControlCentre ? (
           <Suspense fallback={<div className="premium-page">Loading Control Centre...</div>}><ControlCentre onClose={() => setShowControlCentre(false)} /></Suspense>

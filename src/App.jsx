@@ -1,8 +1,12 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
 import { useBackHandler } from './context/NavigationProvider'
 import { supabase } from './lib/supabase'
-import LessonReadingTools from './components/LessonReadingTools'
 import './App.css'
+
+// PERIAK ON-DEMAND LOADING V1
+const LessonReadingTools = lazy(
+  () => import('./components/LessonReadingTools')
+)
 
 // Heavy screens load on demand, then are warmed in the background (see AppInner).
 const loadExamCentre = () => import('./components/ExamCentre')
@@ -874,7 +878,8 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
 
         <main className="lesson-page">
       {catalogueLessons[selectedUnit] && (
-        <LessonReadingTools
+        <Suspense fallback={<div role="status">Preparing reading tools...</div>}>
+          <LessonReadingTools
           key={`${selectedCourse?.title}:${selectedUnit}`}
           unitKey={selectedUnit}
           topics={
@@ -882,7 +887,8 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
               ? catalogueLessons[selectedUnit].notes
               : []
           }
-        />
+          />
+        </Suspense>
       )}
 
           <button className="back-link" onClick={() => setSelectedUnit(null)}>
