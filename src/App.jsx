@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import { useBackHandler } from './context/NavigationProvider'
 import { supabase } from './lib/supabase'
 import './App.css'
@@ -233,33 +233,87 @@ function readLearningData() {
   }
 }
 
+
+// PERIAK LEARNING SYNC V2
+// A newer explicit completion action takes precedence over older data.
+function completionEvents(data) {
+  const events = {}
+
+  for (const key of Array.isArray(data?.completed) ? data.completed : []) {
+    if (typeof key === 'string') {
+      events[key] = { done: true, at: 0 }
+    }
+  }
+
+  const changes = data?.completionChanges
+
+  if (changes && typeof changes === 'object' && !Array.isArray(changes)) {
+    for (const [key, change] of Object.entries(changes)) {
+      if (!key || typeof change?.done !== 'boolean') continue
+
+      const time = Number(change.at)
+
+      events[key] = {
+        done: change.done,
+        at: Number.isFinite(time) && time >= 0 ? time : 0
+      }
+    }
+  }
+
+  return events
+}
+
 function mergeLearningData(localData, cloudData) {
-  const completed = [...new Set([
-    ...(localData.completed || []),
-    ...(cloudData.completed || [])
-  ])]
+  const events = completionEvents(cloudData)
+
+  for (const [key, change] of Object.entries(completionEvents(localData))) {
+    const previous = events[key]
+
+    if (
+      !previous ||
+      change.at > previous.at ||
+      (change.at === previous.at && !change.done)
+    ) {
+      events[key] = change
+    }
+  }
+
+  const completed = Object.entries(events)
+    .filter(([, change]) => change.done)
+    .map(([key]) => key)
 
   const recentMap = new Map()
-  for (const item of [...(localData.recent || []), ...(cloudData.recent || [])]) {
+
+  for (const item of [
+    ...(localData?.recent || []),
+    ...(cloudData?.recent || [])
+  ]) {
     if (!item?.courseTitle || !item?.unit) continue
+
     const key = `${item.courseTitle}::${item.unit}`
-    const existing = recentMap.get(key)
-    if (!existing || (item.studiedAt || 0) > (existing.studiedAt || 0)) {
+    const previous = recentMap.get(key)
+
+    if (!previous || (item.studiedAt || 0) > (previous.studiedAt || 0)) {
       recentMap.set(key, item)
     }
   }
 
-  const recent = [...recentMap.values()]
-    .sort((a, b) => (b.studiedAt || 0) - (a.studiedAt || 0))
-    .slice(0, 6)
-
-  return { completed, recent }
+  return {
+    completed,
+    completionChanges: events,
+    recent: [...recentMap.values()]
+      .sort((a, b) => (b.studiedAt || 0) - (a.studiedAt || 0))
+      .slice(0, 6)
+  }
 }
 
 function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, welcomeName = '', onOpenPremium = () => {}, onOpenPremiumFeature = () => {}, premiumLaunch = null, onPremiumLaunchHandled = () => {}, onPremiumModuleBack = () => {} }) {
   const [learningData, setLearningData] = useState(readLearningData)
   const [activeLearningUser, setActiveLearningUser] = useState(null)
   const [learningCloudReady, setLearningCloudReady] = useState(false)
+  const progressSessionRef = useRef(null)
+  const progressRetryRef = useRef(false)
+  const progressWriteQueueRef = useRef(Promise.resolve())
   const [showExams, setShowExams] = useState(false)
   const [activePremiumModule, setActivePremiumModule] = useState('')
 
@@ -535,140 +589,249 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
 
   useEffect(() => {
     let active = true
+    let generation = 0
 
-    const loadForSession = async (session) => {
+    const empty = { completed: [], recent: [] }
+
+    const readAccount = userId => {
+      try {
+        const saved = JSON.parse(
+          localStorage.getItem(
+            `periak_learning_progress_v1_${userId}`
+          ) || '{}'
+        )
+
+        return {
+          completed: Array.isArray(saved.completed) ? saved.completed : [],
+          recent: Array.isArray(saved.recent) ? saved.recent : [],
+          completionChanges:
+            saved.completionChanges &&
+            typeof saved.completionChanges === 'object' &&
+            !Array.isArray(saved.completionChanges)
+              ? saved.completionChanges
+              : {}
+        }
+      } catch {
+        return empty
+      }
+    }
+
+    const loadForSession = async session => {
       if (!active) return
-      setLearningCloudReady(false)
 
+      const version = ++generation
       const userId = session?.user?.id || null
+
+      progressSessionRef.current = userId
+      setLearningCloudReady(false)
 
       if (!userId) {
         setActiveLearningUser(null)
         setLearningData(readLearningData())
-        setLearningCloudReady(true)
         return
       }
 
       const localKey = `periak_learning_progress_v1_${userId}`
-      let localData = { completed: [], recent: [] }
 
-      // Import the original shared progress into the first account only.
-      const legacyData = readLearningData()
+      setActiveLearningUser(userId)
+      setLearningData(readAccount(userId))
+
+      let data
+      let error
 
       try {
-        const saved = JSON.parse(localStorage.getItem(localKey) || '{}')
-        localData = {
-          completed: Array.isArray(saved.completed) ? saved.completed : [],
-          recent: Array.isArray(saved.recent) ? saved.recent : []
-        }
-      } catch {
-        // Continue with an empty account-specific backup.
+        const response = await supabase
+          .from('user_learning_progress')
+          .select('progress')
+          .eq('user_id', userId)
+          .maybeSingle()
+
+        data = response.data
+        error = response.error
+      } catch (requestError) {
+        error = requestError
       }
 
-      const { data, error } = await supabase
-        .from('user_learning_progress')
-        .select('progress')
-        .eq('user_id', userId)
-        .maybeSingle()
+      if (!active || version !== generation) return
 
-      if (!active) return
+      // Read the local backup again: it might have changed
+      // while the cloud request was in progress.
+      const latestLocal = readAccount(userId)
 
       if (error) {
-        console.error('Could not load cloud learning progress:', error.message)
-
-        const localOnly = mergeLearningData(
-          mergeLearningData(localData, legacyData),
-          { completed: [], recent: [] }
-        )
-
-        setActiveLearningUser(userId)
-        setLearningData(localOnly)
-
-        try {
-          localStorage.setItem(localKey, JSON.stringify(localOnly))
-        } catch (storageError) {
-          console.warn('Local learning backup failed:', storageError)
-        }
-
-        // Keep cloud writes disabled until a successful cloud read.
+        progressRetryRef.current = true
+        setLearningData(mergeLearningData(latestLocal, empty))
+        console.warn('Cloud progress unavailable:', error.message)
         return
       }
 
-      const cloudData = data?.progress || {
-        completed: [],
-        recent: []
-      }
-
+      // Legacy shared data is imported only after a successful
+      // cloud read, reducing accidental cross-account migration.
       const merged = mergeLearningData(
-        mergeLearningData(localData, legacyData),
-        cloudData
+        mergeLearningData(latestLocal, readLearningData()),
+        data?.progress || empty
       )
 
-      setActiveLearningUser(userId)
       setLearningData(merged)
 
-      let accountBackupSaved = false
+      let backupSaved = false
+
       try {
         localStorage.setItem(localKey, JSON.stringify(merged))
-        accountBackupSaved = true
+        backupSaved = true
       } catch (storageError) {
-        console.warn('Local learning backup failed:', storageError)
+        console.warn('Local progress backup failed:', storageError)
       }
 
-      // Remove the old shared key only after the account backup succeeds.
-      if (accountBackupSaved) {
-        localStorage.removeItem('periak_learning_progress_v1')
+      if (backupSaved) {
+        try {
+          localStorage.removeItem('periak_learning_progress_v1')
+        } catch (storageError) {
+          console.warn('Legacy progress cleanup failed:', storageError)
+        }
       }
 
       setLearningCloudReady(true)
     }
 
-    supabase.auth.getSession().then(({ data }) => {
-      loadForSession(data?.session)
-    })
+    const retrySync = () => {
+      if (!active || !progressRetryRef.current) return
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        Promise.resolve().then(() => loadForSession(session))
+      supabase.auth.getSession()
+        .then(({ data }) => {
+          if (active) void loadForSession(data?.session)
+        })
+        .catch(error => {
+          console.warn('Progress retry unavailable:', error)
+        })
+    }
+
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        retrySync()
       }
-    )
+    }
+
+    supabase.auth.getSession()
+      .then(({ data }) => {
+        if (active) void loadForSession(data?.session)
+      })
+      .catch(error => {
+        progressRetryRef.current = true
+        console.warn('Could not restore progress session:', error)
+      })
+
+    const { data: { subscription } } =
+      supabase.auth.onAuthStateChange((_event, session) => {
+        Promise.resolve().then(() => {
+          if (active) void loadForSession(session)
+        })
+      })
+
+    window.addEventListener('online', retrySync)
+    document.addEventListener('visibilitychange', onVisibility)
 
     return () => {
       active = false
+      generation++
       subscription.unsubscribe()
+      window.removeEventListener('online', retrySync)
+      document.removeEventListener('visibilitychange', onVisibility)
     }
   }, [])
 
   useEffect(() => {
     if (!learningCloudReady) return
 
-    const storageKey = activeLearningUser
-      ? `periak_learning_progress_v1_${activeLearningUser}`
+    const userId = activeLearningUser
+    const snapshot = learningData
+
+    const storageKey = userId
+      ? `periak_learning_progress_v1_${userId}`
       : 'periak_learning_progress_v1'
 
     try {
-      localStorage.setItem(storageKey, JSON.stringify(learningData))
+      localStorage.setItem(storageKey, JSON.stringify(snapshot))
     } catch (error) {
       console.warn('Learning progress could not be saved locally:', error)
     }
 
-    if (!activeLearningUser) return
+    if (!userId) return
 
-    const saveToCloud = async () => {
-      const { error } = await supabase
-        .from('user_learning_progress')
-        .upsert({
-          user_id: activeLearningUser,
-          progress: learningData,
-          updated_at: new Date().toISOString()
-        }, { onConflict: 'user_id' })
+    // Serialize this browser's cloud writes to prevent an older
+    // request from finishing after its newer replacement.
+    progressWriteQueueRef.current = progressWriteQueueRef.current
+      .catch(() => {})
+      .then(async () => {
+        if (progressSessionRef.current !== userId) return
 
-      if (error) {
+        const { data: sessionData } = await supabase.auth.getSession()
+
+        if (sessionData?.session?.user?.id !== userId) return
+
+        const { data: remote, error: readError } = await supabase
+          .from('user_learning_progress')
+          .select('progress')
+          .eq('user_id', userId)
+          .maybeSingle()
+
+        if (readError) throw readError
+        if (progressSessionRef.current !== userId) return
+
+        let latestLocal = snapshot
+
+        try {
+          const saved = JSON.parse(
+            localStorage.getItem(storageKey) || 'null'
+          )
+          if (saved) {
+            latestLocal = mergeLearningData(snapshot, saved)
+          }
+        } catch {
+          // Use the snapshot when local storage is inaccessible.
+        }
+
+        const merged = mergeLearningData(
+          latestLocal,
+          remote?.progress || {}
+        )
+
+        const { error } = await supabase
+          .from('user_learning_progress')
+          .upsert({
+            user_id: userId,
+            progress: merged,
+            updated_at: new Date().toISOString()
+          }, { onConflict: 'user_id' })
+
+        if (error) throw error
+
+        if (progressSessionRef.current !== userId) return
+
+        progressRetryRef.current = false
+
+        setLearningData(current => {
+          if (progressSessionRef.current !== userId) return current
+
+          const next = mergeLearningData(current, merged)
+
+          if (JSON.stringify(next) === JSON.stringify(current)) {
+            return current
+          }
+
+          try {
+            localStorage.setItem(storageKey, JSON.stringify(next))
+          } catch (storageError) {
+            console.warn('Local progress backup failed:', storageError)
+          }
+
+          return next
+        })
+      })
+      .catch(error => {
+        progressRetryRef.current = true
         console.error('Learning progress cloud sync failed:', error.message)
-      }
-    }
-
-    saveToCloud()
+      })
   }, [learningData, activeLearningUser, learningCloudReady])
 
   const saveLearningData = (next) => {
@@ -704,10 +867,24 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
 
   const toggleLessonComplete = () => {
     const key = lessonKey(selectedCourse.title, selectedUnit)
-    const completed = learningData.completed.includes(key)
+    const wasCompleted = learningData.completed.includes(key)
+    const completed = wasCompleted
       ? learningData.completed.filter(item => item !== key)
       : [...learningData.completed, key]
-    saveLearningData({ ...learningData, completed })
+
+    const completionChanges = {
+      ...(learningData.completionChanges || {}),
+      [key]: {
+        done: !wasCompleted,
+        at: Date.now()
+      }
+    }
+
+    saveLearningData({
+      ...learningData,
+      completed,
+      completionChanges
+    })
   }
 
   const courseProgress = (course) => {
