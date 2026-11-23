@@ -955,7 +955,7 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
         <header className="navbar">
           <a className="brand" href="#" onClick={() => setShowExams(false)}>
             <span className="brand-icon">✚</span>
-            <span>Study<span className="brand-green">Mate</span></span>
+            <span>PERIAK</span>
           </a>
           <button type="button" className="mobile-menu-toggle"
             aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
@@ -999,7 +999,7 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
         <header className="navbar">
           <a className="brand" href="#" onClick={returnFromPremiumModule}>
             <span className="brand-icon">✚</span>
-            <span>Study<span className="brand-green">Mate</span></span>
+            <span>PERIAK</span>
           </a>
           <button type="button" className="nav-button" onClick={returnFromPremiumModule}>
             ← Back to Premium
@@ -1046,7 +1046,7 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
         <header className="navbar">
           <a className="brand" href="#" onClick={goHome}>
             <span className="brand-icon">✚</span>
-            <span>Study<span className="brand-green">Mate</span></span>
+            <span>PERIAK</span>
           </a>
           <button className="nav-button" onClick={() => setSelectedUnit(null)}>
             Course content ←
@@ -1304,7 +1304,7 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
         </main>
 
         <footer>
-          <a className="brand footer-brand" href="#" onClick={goHome}><span className="brand-icon">✚</span> Study<span className="brand-green">Mate</span></a>
+          <a className="brand footer-brand" href="#" onClick={goHome}><span className="brand-icon">✚</span> PERIAK</a>
           <p>Supporting nursing education in Kenya.</p>
           <span>© 2026 PERIAK. Learning made easier.</span>
         </footer>
@@ -1318,7 +1318,7 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
         <header className="navbar">
           <a className="brand" href="#" onClick={goHome}>
             <span className="brand-icon">✚</span>
-            <span>Study<span className="brand-green">Mate</span></span>
+            <span>PERIAK</span>
           </a>
           <button className="nav-button" onClick={goHome}>All courses ←</button>
         </header>
@@ -1389,7 +1389,7 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
         </main>
 
         <footer>
-          <a className="brand footer-brand" href="#" onClick={goHome}><span className="brand-icon">✚</span> Study<span className="brand-green">Mate</span></a>
+          <a className="brand footer-brand" href="#" onClick={goHome}><span className="brand-icon">✚</span> PERIAK</a>
           <p>Supporting nursing education in Kenya.</p>
           <span>© 2026 PERIAK. Learning made easier.</span>
         </footer>
@@ -1402,7 +1402,7 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
       <header className="navbar">
         <a className="brand" href="#">
           <span className="brand-icon">✚</span>
-          <span>Study<span className="brand-green">Mate</span></span>
+          <span>PERIAK</span>
         </a>
         <button type="button" className="mobile-menu-toggle"
           aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
@@ -1706,7 +1706,7 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
       </main>
 
       <footer>
-        <a className="brand footer-brand" href="#"><span className="brand-icon">✚</span> Study<span className="brand-green">Mate</span></a>
+        <a className="brand footer-brand" href="#"><span className="brand-icon">✚</span> PERIAK</a>
         <p>Supporting nursing education in Kenya.</p>
         <span>© 2026 PERIAK. Learning made easier.</span>
       </footer>
