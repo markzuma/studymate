@@ -369,6 +369,32 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
   // PERIAK CONTENT AUTO-SYNC V2
   const contentRefreshVersion = useContentRefresh()
   const [catalogueLessons, setCatalogueLessons] = useState({})
+
+  // PERIAK SAFE AUTO UPDATE V1
+  useEffect(() => {
+    window.__periakDashboardSafe = (
+      !showExams &&
+      !activePremiumModule &&
+      !selectedCourse &&
+      !selectedUnit &&
+      !mobileMenuOpen &&
+      !courseSearch.trim()
+    )
+
+    window.dispatchEvent(new Event('periak:update-safety'))
+
+    return () => {
+      window.__periakDashboardSafe = false
+      window.dispatchEvent(new Event('periak:update-safety'))
+    }
+  }, [
+    showExams,
+    activePremiumModule,
+    selectedCourse,
+    selectedUnit,
+    mobileMenuOpen,
+    courseSearch
+  ])
   const [isBookmarked, setIsBookmarked] = useState(false)
   const [bookmarkBusy, setBookmarkBusy] = useState(false)
 

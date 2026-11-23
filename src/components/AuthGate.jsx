@@ -48,6 +48,42 @@ export default function AuthGate({ children }) {
   const [showProfile, setShowProfile] = useState(false)
   const [showWelcomeTour, setShowWelcomeTour] = useState(false)
 
+  // PERIAK SAFE AUTO UPDATE V1
+  useEffect(() => {
+    window.__periakAuthSafe = Boolean(
+      session?.user?.id &&
+      profile?.role &&
+      !loading &&
+      !busy &&
+      !showControlCentre &&
+      !showPremium &&
+      !showWelcomeTour &&
+      !showAppearance &&
+      !showProfile &&
+      !premiumLaunch &&
+      !premiumFeatureIntent
+    )
+
+    window.dispatchEvent(new Event('periak:update-safety'))
+
+    return () => {
+      window.__periakAuthSafe = false
+      window.dispatchEvent(new Event('periak:update-safety'))
+    }
+  }, [
+    session?.user?.id,
+    profile?.role,
+    loading,
+    busy,
+    showControlCentre,
+    showPremium,
+    showWelcomeTour,
+    showAppearance,
+    showProfile,
+    premiumLaunch,
+    premiumFeatureIntent
+  ])
+
   // v1 is new for EVERY account, including students who registered previously.
   // The user ID prevents a skipped/completed tour leaking between accounts.
   useEffect(() => {
