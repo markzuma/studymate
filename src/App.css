@@ -2827,3 +2827,77 @@ body.periak-focus-active .periak-reader-floating-dock {
     margin-block: 18px;
   }
 }
+
+/* PERIAK COMPACT WORKSPACE BATCH V1 */
+
+/* Home learning dashboard */
+.authenticated-app-shell .student-dashboard {
+  min-width: 0;
+}
+
+.authenticated-app-shell .dashboard-heading {
+  gap: 12px;
+}
+
+.authenticated-app-shell .dashboard-heading h2 {
+  font-size: clamp(22px, 2.5vw, 28px);
+  line-height: 1.3;
+}
+
+.authenticated-app-shell .dashboard-stats {
+  gap: 10px;
+}
+
+.authenticated-app-shell .dashboard-stat {
+  padding: 13px 14px;
+  border-radius: 12px;
+}
+
+.authenticated-app-shell .dashboard-panels {
+  gap: 12px;
+}
+
+.authenticated-app-shell .dashboard-panel {
+  padding: 16px;
+  border-radius: 12px;
+}
+
+.authenticated-app-shell .dashboard-panel-heading {
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.authenticated-app-shell .dashboard-empty {
+  padding: 16px;
+}
+
+.authenticated-app-shell .dashboard-progress {
+  padding: 16px;
+  border-radius: 12px;
+}
+
+/* Consistent text spacing */
+.authenticated-app-shell .dashboard-panel p,
+.authenticated-app-shell .dashboard-stat p {
+  line-height: 1.55;
+}
+
+/* Mobile dashboard */
+@media (max-width: 700px) {
+  .authenticated-app-shell .dashboard-stats {
+    gap: 8px;
+  }
+
+  .authenticated-app-shell .dashboard-stat {
+    padding: 11px;
+  }
+
+  .authenticated-app-shell .dashboard-panels {
+    gap: 10px;
+  }
+
+  .authenticated-app-shell .dashboard-panel,
+  .authenticated-app-shell .dashboard-progress {
+    padding: 13px;
+  }
+}

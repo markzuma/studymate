@@ -302,3 +302,196 @@
     font-size: 15px;
   }
 }
+
+/* PERIAK COMPACT WORKSPACE BATCH V1 */
+
+/* Knowledge Hub and clinical learning */
+.xp-intro {
+  padding: 3px 0 11px;
+}
+
+.xp-intro h3 {
+  margin-bottom: 6px;
+  font-size: clamp(20px, 2vw, 25px);
+}
+
+.xp-intro p {
+  line-height: 1.6;
+}
+
+.xp-disclaimer {
+  padding: 11px 13px;
+  margin: 10px 0 14px;
+}
+
+.xp-course-grid {
+  grid-template-columns:
+    repeat(auto-fit, minmax(195px, 1fr));
+  gap: 10px;
+}
+
+.xp-course-card {
+  padding: 13px;
+  gap: 9px;
+  margin: 0;
+  border-radius: 11px;
+}
+
+.xp-course-card > div:first-child {
+  gap: 8px;
+}
+
+.xp-course-card h4 {
+  margin: 3px 0 6px;
+  line-height: 1.4;
+}
+
+/* Learning dashboard metrics */
+.xp-metrics {
+  gap: 9px;
+}
+
+.xp-metrics article {
+  padding: 13px;
+  border-radius: 11px;
+}
+
+.xp-recent {
+  padding: 13px;
+  margin: 11px 0;
+}
+
+.xp-recent > div {
+  padding: 8px 0;
+}
+
+/* Knowledge Hub search results */
+.xp-result {
+  padding: 13px;
+  margin: 10px 0;
+  border-radius: 11px;
+}
+
+.xp-result-title {
+  gap: 10px;
+}
+
+.xp-excerpt {
+  padding: 10px 12px;
+  margin: 9px 0;
+}
+
+.xp-filter-row {
+  gap: 10px;
+}
+
+/* Clinical cases and virtual patients */
+.xp-case-head,
+.xp-patient-head {
+  gap: 11px;
+}
+
+.xp-case-head h4,
+.xp-patient-head h4 {
+  margin: 5px 0 3px;
+}
+
+.xp-story,
+.xp-patient-card,
+.xp-question,
+.xp-report {
+  padding: clamp(13px, 1.8vw, 17px);
+  margin: 12px 0;
+  border-radius: 12px;
+}
+
+.xp-patient-picker {
+  gap: 8px;
+}
+
+.xp-patient-picker button {
+  padding: 10px 12px;
+  min-height: 44px;
+}
+
+.xp-vitals {
+  gap: 7px;
+}
+
+.xp-vitals span {
+  padding: 7px 9px;
+}
+
+.xp-meter {
+  margin: 13px 0;
+}
+
+.xp-question h4 {
+  margin: 4px 0 12px;
+  line-height: 1.55;
+}
+
+.xp-choices {
+  gap: 8px;
+}
+
+.xp-choice {
+  min-height: 44px;
+  padding: 11px 13px;
+  gap: 10px;
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.xp-explanation {
+  padding: 13px;
+  margin: 13px 0 8px;
+}
+
+.xp-primary,
+.xp-result-title button,
+.xp-course-card button,
+.xp-recent button {
+  min-height: 40px;
+  padding: 9px 13px;
+}
+
+/* Responsive clinical learning */
+@media (max-width: 700px) {
+  .xp-course-grid {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .xp-course-card {
+    padding: 11px;
+  }
+
+  .xp-filter-row {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .xp-metrics {
+    grid-template-columns:
+      repeat(2, minmax(0, 1fr));
+  }
+
+  .xp-metrics article {
+    padding: 11px;
+  }
+
+  .xp-story,
+  .xp-patient-card,
+  .xp-question,
+  .xp-report {
+    padding: 13px;
+  }
+}
+
+@media (max-width: 420px) {
+  .xp-course-grid {
+    grid-template-columns: 1fr;
+  }
+}
