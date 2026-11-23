@@ -208,6 +208,65 @@ export default function AuthGate({ children }) {
     refreshPremiumAccess()
   }, [refreshPremiumAccess])
 
+  // PERIAK SMART REFRESH V1
+  // Refresh Premium access on return without reloading the page.
+  useEffect(() => {
+    if (!session?.user?.id) return undefined
+
+    let active = true
+    let lastCheck = Date.now()
+    let checking = false
+
+    const refreshOnReturn = async () => {
+      if (
+        !active ||
+        checking ||
+        !navigator.onLine ||
+        document.visibilityState !== 'visible' ||
+        Date.now() - lastCheck < 5 * 60 * 1000
+      ) return
+
+      checking = true
+      lastCheck = Date.now()
+
+      try {
+        const { error } = await supabase.auth.getSession()
+        if (error) throw error
+
+        if (active) {
+          await refreshPremiumAccess()
+        }
+      } catch (error) {
+        console.warn('PERIAK resume check unavailable:', error)
+      } finally {
+        checking = false
+      }
+    }
+
+    const onVisibility = () => {
+      if (document.visibilityState === 'visible') {
+        void refreshOnReturn()
+      }
+    }
+
+    const onFocus = () => {
+      void refreshOnReturn()
+    }
+
+    document.addEventListener('visibilitychange', onVisibility)
+    window.addEventListener('focus', onFocus)
+    window.addEventListener('online', onFocus)
+    window.addEventListener('pageshow', onFocus)
+
+    return () => {
+      active = false
+      document.removeEventListener('visibilitychange', onVisibility)
+      window.removeEventListener('focus', onFocus)
+      window.removeEventListener('online', onFocus)
+      window.removeEventListener('pageshow', onFocus)
+    }
+  }, [session?.user?.id, refreshPremiumAccess])
+
   // Warm the Premium page once the browser is idle so it opens instantly.
   useEffect(() => {
     if (!session?.user?.id || navigator.connection?.saveData) return undefined
