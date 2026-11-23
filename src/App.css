@@ -2298,3 +2298,44 @@ body.periak-focus-active .periak-reader-floating-dock {
     width: calc(100vw - 20px);
   }
 }
+
+
+/* PERIAK PREMIUM LEARNING EXPERIENCE V1 — accessible lesson text */
+.lesson-page .lesson-panel .note-topic ul li,
+.lesson-page .lesson-panel .note-topic ol li,
+.lesson-page .lesson-panel .periak-study-list li,
+.lesson-page .lesson-panel > ul > li,
+.lesson-page .lesson-panel > ol > li {
+  color: var(--text-primary) !important;
+  opacity: 1 !important;
+  font-size: calc(19px * var(--reader-scale, 1)) !important;
+  line-height: 1.85;
+  letter-spacing: .08px;
+  font-weight: 500;
+  margin-block: 11px;
+}
+.lesson-page .lesson-panel .note-topic li::marker,
+.lesson-page .lesson-panel .periak-study-list li::marker {
+  color: var(--accent);
+  font-weight: 800;
+}
+.lesson-page .lesson-panel .note-topic p,
+.lesson-page .lesson-panel .note-topic strong,
+.lesson-page .lesson-panel .note-topic h3 {
+  color: var(--text-primary);
+}
+.lesson-page .lesson-panel .note-topic p {
+  font-size: calc(19px * var(--reader-scale, 1));
+  line-height: 1.86;
+}
+@media(max-width:760px){
+ .lesson-page .lesson-panel .note-topic ul li,
+ .lesson-page .lesson-panel .note-topic ol li,
+ .lesson-page .lesson-panel .periak-study-list li,
+ .lesson-page .lesson-panel > ul > li,
+ .lesson-page .lesson-panel > ol > li,
+ .lesson-page .lesson-panel .note-topic p {
+   font-size: calc(16.5px * var(--reader-scale, 1)) !important;
+   line-height: 1.8;
+ }
+}

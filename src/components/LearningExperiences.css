@@ -1,0 +1,79 @@
+/* PERIAK LEARNING EXPERIENCES V1 — compact, readable and theme-aware */
+.xp-root { color:var(--text-primary);font-size:15px;line-height:1.7;min-width:0; }
+.xp-intro { padding:4px 0 15px;border-bottom:1px solid var(--border);margin-bottom:17px; }
+.xp-intro small,.xp-question>small {display:block;color:var(--accent);font-size:11px;font-weight:800;letter-spacing:.09em;margin-bottom:7px;}
+.xp-intro h3 {font-size:clamp(21px,2.4vw,27px);line-height:1.25;margin:0 0 9px;color:var(--text-primary);}
+.xp-intro p {font-size:15px;color:var(--text-primary);margin:0;max-width:85ch;}
+.xp-disclaimer {background:var(--surface-secondary);border:1px solid var(--border);border-left:3px solid var(--accent);border-radius:9px;padding:12px 14px;margin:12px 0 19px;color:var(--text-primary)!important;font-size:13px;line-height:1.65;}
+.xp-field {display:grid;gap:7px;font-size:13px;font-weight:800;color:var(--text-primary);margin-bottom:14px;min-width:0;}
+.xp-field input,.xp-field select {width:100%;max-width:none;min-height:45px;padding:10px 13px;border:1px solid var(--border);border-radius:10px;color:var(--text-primary);background:var(--surface-secondary);font-size:15px;font-family:inherit;}
+.xp-case-head,.xp-patient-head,.xp-result-title {display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap;}
+.xp-case-head h4,.xp-patient-head h4 {font-size:21px;line-height:1.3;margin:9px 0 3px;color:var(--text-primary);}
+.xp-case-head p,.xp-patient-head p {font-size:13px;margin:0;color:var(--text-primary);}
+.xp-tag {display:inline-block;background:var(--accent-soft);color:var(--accent);border:1px solid var(--border);border-radius:99px;font-size:11px;padding:4px 9px;font-weight:800;margin:0 5px 5px 0;}
+.xp-case-number {font-size:12px;font-weight:800;color:var(--text-primary);}
+.xp-story,.xp-patient-card,.xp-question,.xp-report,.xp-result,.xp-recent,.xp-course-card {background:var(--surface-secondary);border:1px solid var(--border);border-radius:14px;padding:18px;margin:17px 0;}
+.xp-story {border-left:4px solid var(--accent);}
+.xp-story b {font-size:13px;color:var(--accent);}
+.xp-story p,.xp-patient-card p,.xp-report p,.xp-result p,.xp-course-card p {color:var(--text-primary)!important;font-size:15px;line-height:1.75;margin:8px 0;}
+.xp-meter {margin:19px 0;}
+.xp-meter-label {display:flex;justify-content:space-between;gap:12px;color:var(--text-primary);font-size:13px;font-weight:700;}
+.xp-meter-track {height:8px;background:var(--border);border-radius:99px;overflow:hidden;margin-top:8px;}
+.xp-meter-track > span {display:block;height:100%;background:var(--accent);transition:width .15s ease;}
+.xp-question h4 {font-size:19px;color:var(--text-primary);line-height:1.45;margin:5px 0 17px;}
+.xp-choices {display:grid;gap:10px;}
+.xp-choice {display:flex;align-items:flex-start;gap:13px;width:100%;min-height:48px;border:1px solid var(--border);border-radius:10px;background:var(--surface);color:var(--text-primary);text-align:left;padding:13px 15px;font:inherit;font-size:15px;line-height:1.55;cursor:pointer;}
+.xp-choice:hover:not(:disabled),.xp-choice:focus-visible {border-color:var(--accent);background:var(--accent-soft);outline-offset:2px;}
+.xp-choice span {display:inline-grid;place-items:center;flex:0 0 27px;height:27px;background:var(--accent-soft);color:var(--accent);border-radius:7px;font-size:12px;font-weight:900;}
+.xp-choice.is-chosen {border:2px solid var(--accent);background:var(--accent-soft);}
+.xp-choice.is-answer {border-color:#2c9770;}
+.xp-choice:disabled {cursor:default;opacity:1;}
+.xp-explanation {background:var(--surface);border:1px solid var(--border);border-left:4px solid var(--accent);border-radius:11px;margin:18px 0 9px;padding:16px;color:var(--text-primary);}
+.xp-explanation strong {color:var(--accent);font-size:15px;}
+.xp-explanation p {font-size:14px;color:var(--text-primary)!important;margin:9px 0;}
+.xp-actions {margin-top:18px;display:flex;justify-content:flex-end;}
+.xp-primary,.xp-result-title button,.xp-course-card button,.xp-recent button {border:0;background:var(--accent);color:#fff;cursor:pointer;font-size:13px;font-weight:800;min-height:40px;border-radius:10px;padding:10px 15px;}
+.xp-primary:disabled {opacity:.5;cursor:not-allowed;}
+.xp-score {display:block;color:var(--accent);font-size:32px;font-weight:900;margin:9px 0;}
+.xp-report h4 {font-size:22px;margin:0;color:var(--text-primary);}
+.xp-report h5 {font-size:15px;margin:15px 0 5px;color:var(--text-primary);}
+.xp-report li {color:var(--text-primary);margin:7px 0;}
+.xp-patient-picker {display:flex;gap:9px;flex-wrap:wrap;}
+.xp-patient-picker button {min-width:140px;text-align:left;background:var(--surface-secondary);border:1px solid var(--border);color:var(--text-primary);border-radius:10px;padding:12px;cursor:pointer;font-weight:800;}
+.xp-patient-picker button.is-active {border:2px solid var(--accent);background:var(--accent-soft);}
+.xp-patient-picker small {display:block;font-size:11px;font-weight:500;color:var(--text-primary);margin-top:4px;}
+.xp-patient-head>span {font-size:27px;}
+.xp-patient-card h5 {font-size:13px;letter-spacing:.04em;color:var(--accent);margin:17px 0 7px;}
+.xp-vitals {display:flex;flex-wrap:wrap;gap:8px;}
+.xp-vitals span {background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:8px 10px;font-size:13px;font-weight:700;color:var(--text-primary);}
+.xp-prompts {display:flex;gap:8px;flex-wrap:wrap;margin:-2px 0 15px;}
+.xp-prompts button {border:1px solid var(--border);background:var(--surface-secondary);color:var(--text-primary);padding:7px 11px;border-radius:999px;cursor:pointer;font-size:12px;}
+.xp-prompts button:hover {color:var(--accent);border-color:var(--accent);}
+.xp-empty {background:var(--surface-secondary);padding:22px;border-radius:12px;color:var(--text-primary)!important;border:1px solid var(--border);}
+.xp-search-count {font-size:12px;font-weight:800;color:var(--text-primary)!important;}
+.xp-result {margin:12px 0;}
+.xp-result-title small,.xp-course-card small {font-size:12px;color:var(--accent);font-weight:700;}
+.xp-result-title h4,.xp-course-card h4 {font-size:18px;color:var(--text-primary);margin:4px 0 9px;}
+.xp-excerpt {margin:12px 0;padding:11px 13px;background:var(--surface);border-left:3px solid var(--accent);border-radius:8px;}
+.xp-excerpt b {color:var(--accent);font-size:13px;}
+.xp-excerpt p {margin:5px 0;font-size:14px;}
+.xp-mini-quiz {padding-top:13px;border-top:1px solid var(--border);margin-top:14px;}
+.xp-mini-quiz b {color:var(--accent);font-size:14px;}
+.xp-mini-quiz .xp-choice {font-size:13px;padding:10px 12px;min-height:39px;}
+.xp-quiz-feedback {border:1px solid var(--border);border-radius:9px;padding:11px;background:var(--surface);}
+.xp-metrics {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;}
+.xp-metrics article {padding:18px;background:var(--surface-secondary);border:1px solid var(--border);border-radius:11px;}
+.xp-metrics article strong {display:block;font-size:25px;color:var(--accent);}
+.xp-metrics article span {display:block;font-size:12px;color:var(--text-primary);}
+.xp-recent h4 {margin:0 0 10px;font-size:17px;color:var(--text-primary);}
+.xp-recent>div {display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--border);font-size:14px;}
+.xp-course-grid {display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;}
+.xp-course-card {margin:0;display:flex;flex-direction:column;gap:12px;}
+.xp-course-card>div:first-child {display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;}
+.xp-course-card b {font-size:15px;color:var(--text-primary);}
+.xp-course-card span {font-size:12px;color:var(--text-primary);}
+.xp-course-card button {align-self:flex-start;margin-top:auto;}
+.xp-filter-row {display:grid;grid-template-columns:minmax(180px,2fr) minmax(140px,1fr);gap:14px;}
+.xp-root button:focus-visible,.xp-root input:focus-visible,.xp-root select:focus-visible {outline:3px solid var(--accent);outline-offset:2px;}
+@media (max-width:600px) {.xp-root {font-size:14px;}.xp-story,.xp-patient-card,.xp-question,.xp-report,.xp-result,.xp-course-card {padding:14px;}.xp-filter-row {grid-template-columns:1fr;gap:0;}.xp-metrics {grid-template-columns:repeat(3,minmax(0,1fr));}.xp-metrics article {padding:11px;}.xp-metrics article strong {font-size:19px;}.xp-metrics article span {font-size:10px;}.xp-course-grid {grid-template-columns:1fr;}.xp-recent>div {align-items:flex-start;flex-direction:column;}}
+@media (prefers-reduced-motion:reduce) {.xp-meter-track > span {transition:none;}}

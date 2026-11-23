@@ -256,3 +256,13 @@
 .premium-module-page .suite-heading {
   align-items: flex-start;
 }
+
+
+/* PERIAK PREMIUM LEARNING EXPERIENCE V1 */
+.learning-suite .suite-content { font-size:15px;line-height:1.75;color:var(--text-primary); }
+.learning-suite .suite-content > h3 { color:var(--text-primary); }
+.learning-suite .suite-card p { color:var(--text-primary);font-size:12px;line-height:1.5; }
+.learning-suite .suite-card strong { font-size:13.5px; }
+.learning-suite .suite-heading p { color:var(--text-primary);font-size:13px; }
+.premium-module-page .learning-suite { max-width:1180px;width:min(96%,1180px); }
+@media(max-width:600px){.premium-module-page .learning-suite{width:100%;}.learning-suite .suite-card p{font-size:11.5px;}}
