@@ -48,6 +48,15 @@ export default function PremiumPage({ user, onBack, onSubscriptionUpdated = () =
   const [purchaseStep, setPurchaseStep] = useState(initialFeatureId ? 'feature' : 'catalogue')
   const [plans, setPlans] = useState([])
   const [subscription, setSubscription] = useState(null)
+  const [membershipNow, setMembershipNow] = useState(() => Date.now())
+
+  useEffect(() => {
+    const timer = window.setInterval(
+      () => setMembershipNow(Date.now()),
+      60000
+    )
+    return () => window.clearInterval(timer)
+  }, [])
   const [selectedPlan, setSelectedPlan] = useState(null)
   const [paymentMethod, setPaymentMethod] = useState('')
   const [phoneNumber, setPhoneNumber] = useState('')
@@ -193,11 +202,45 @@ export default function PremiumPage({ user, onBack, onSubscriptionUpdated = () =
     })
   }, [selectedPlan, initialFeatureId])
 
+  const expiryTimestamp = subscription?.ends_at
+    ? Date.parse(subscription.ends_at)
+    : null
+
+  const validExpiry = Number.isFinite(expiryTimestamp)
+
   const activeSubscription =
     subscription?.status === 'active' &&
-    (!subscription.ends_at || new Date(subscription.ends_at) > new Date())
+    (
+      !subscription.ends_at ||
+      (validExpiry && expiryTimestamp > membershipNow)
+    )
 
   const pendingSubscription = subscription?.status === 'pending'
+
+  const expiredSubscription =
+    subscription?.status === 'active' &&
+    validExpiry &&
+    expiryTimestamp <= membershipNow
+
+  const membershipDaysLeft =
+    activeSubscription && validExpiry
+      ? Math.max(
+          1,
+          Math.ceil((expiryTimestamp - membershipNow) / 86400000)
+        )
+      : null
+
+  const membershipExpiringSoon =
+    membershipDaysLeft !== null &&
+    membershipDaysLeft <= 7
+
+  const membershipExpiryLabel = validExpiry
+    ? new Date(expiryTimestamp).toLocaleDateString('en-KE', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric'
+      })
+    : 'Not specified'
 
   function handlePremiumBack() {
     if (!initialFeatureId && selectedPlan) {
@@ -413,13 +456,74 @@ export default function PremiumPage({ user, onBack, onSubscriptionUpdated = () =
       {error && <p className="premium-error" role="alert">{error}</p>}
 
       {activeSubscription && (
-        <section className="premium-status">
-          <h2>Your Premium membership is active</h2>
-          <p>
-            Expiry date: {subscription.ends_at
-              ? new Date(subscription.ends_at).toLocaleDateString()
-              : 'Not specified'}
-          </p>
+        <section className="premium-status premium-membership-panel">
+          <div className="premium-membership-top">
+            <div>
+              <span className="premium-membership-eyebrow">
+                YOUR MEMBERSHIP
+              </span>
+              <h2>PERIAK Premium is active</h2>
+              <p>
+                You have access to your Premium learning features.
+              </p>
+            </div>
+            <span className="premium-membership-tag">
+              Active
+            </span>
+          </div>
+
+          <div className="premium-membership-details">
+            <div>
+              <small>Expiry date</small>
+              <strong>{membershipExpiryLabel}</strong>
+            </div>
+            <div>
+              <small>Time remaining</small>
+              <strong>
+                {membershipDaysLeft === null
+                  ? 'No expiry specified'
+                  : membershipDaysLeft === 1
+                    ? 'Less than 1 day'
+                    : `${membershipDaysLeft} days or less`}
+              </strong>
+            </div>
+          </div>
+
+          {membershipExpiringSoon && (
+            <p className="premium-membership-reminder" role="status">
+              Your membership is approaching its expiry date.
+              You can purchase a new plan after this subscription
+              expires. Existing access continues until then.
+            </p>
+          )}
+        </section>
+      )}
+
+      {expiredSubscription && !pendingSubscription && (
+        <section className="premium-membership-expired">
+          <div>
+            <span className="premium-membership-eyebrow">
+              MEMBERSHIP UPDATE
+            </span>
+            <h2>Your Premium membership has expired</h2>
+            <p>
+              Your previous membership ended on {membershipExpiryLabel}.
+              Choose an available plan to regain Premium access
+              after payment verification.
+            </p>
+          </div>
+          {initialFeatureId ? (
+            <button
+              type="button"
+              onClick={() => setPurchaseStep('plans')}
+            >
+              View renewal plans
+            </button>
+          ) : (
+            <a href="#premium-plans">
+              View renewal plans
+            </a>
+          )}
         </section>
       )}
 

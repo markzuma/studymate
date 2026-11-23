@@ -188,15 +188,6 @@ export default function AuthGate({ children }) {
       return false
     }
 
-    // UI hint only: the database still enforces Premium access on every request.
-    try {
-      const hint = JSON.parse(localStorage.getItem('periak_premium_hint') || 'null')
-      if (hint && hint.uid === session.user.id && hint.active === true && Date.now() - hint.ts < 86400000) {
-        setPremiumAccess(true)
-        setPremiumLoading(false)
-      }
-    } catch { /* ignore storage errors */ }
-
     const { data, error } = await supabase.rpc('is_premium')
 
     if (error) {
@@ -207,10 +198,6 @@ export default function AuthGate({ children }) {
     }
 
     const active = data === true
-    try {
-      localStorage.setItem('periak_premium_hint',
-        JSON.stringify({ uid: session.user.id, active, ts: Date.now() }))
-    } catch { /* ignore storage errors */ }
     setPremiumAccess(active)
     setPremiumLoading(false)
     return active
