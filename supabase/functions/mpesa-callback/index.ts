@@ -1,6 +1,7 @@
 
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { withSupabase } from "npm:@supabase/server@^1";
+import { validateMpesaSuccess } from "../_shared/mpesa-evidence.ts";
 
 function ack(message: string) {
   return Response.json({ ResultCode: 0, ResultDesc: message });
@@ -261,6 +262,27 @@ export default {
         return ack(
           "Unsuccessful transaction retained for reconciliation",
         );
+      }
+
+      // PERIAK STRICT SUCCESS EVIDENCE V1
+      // Additional match gate, not independent settlement proof.
+      const evidence = validateMpesaSuccess(
+        {
+          checkout_request_id: payment.checkout_request_id,
+          merchant_request_id: payment.merchant_request_id,
+          amount_kes: payment.amount_kes,
+          phone_number: payment.phone_number,
+        },
+        stk,
+        queryData,
+      );
+      if (!evidence.ok) {
+        console.warn("M-Pesa success evidence rejected", {
+          checkoutId,
+          reason: evidence.reason,
+        });
+        // Saved inbox remains available for administrator review.
+        return ack("Payment evidence requires manual review");
       }
 
       const items: Array<{ Name?: string; Value?: unknown }> =
