@@ -32,6 +32,27 @@ export default {
       return json({ error: "Authentication required" }, 401);
     }
 
+    // PERIAK ADMIN-ONLY SANDBOX GATE V1
+    // Hiding the frontend STK button is NOT access control.
+    // Until live business credentials and successful payment
+    // verification are ready, only admins may test this API.
+    const { data: callerProfile, error: roleError } =
+      await ctx.supabaseAdmin
+        .from("profiles")
+        .select("role")
+        .eq("id", studentId)
+        .maybeSingle();
+
+    if (
+      roleError ||
+      !callerProfile ||
+      callerProfile.role !== "admin"
+    ) {
+      return json({
+        error: "Automatic M-Pesa is not yet available to students."
+      }, 403);
+    }
+
     let subscriptionId: string | null = null;
     let paymentId: string | null = null;
     let stkRequestStarted = false;
