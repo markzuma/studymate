@@ -21,6 +21,13 @@ export default function PastPapersLibrary({
   const [year, setYear] = useState('')
   const [semester, setSemester] = useState('')
   const [type, setType] = useState('')
+
+  // PERIAK COMPACT PAPERS V2
+  const [filtersOpen, setFiltersOpen] = useState(false)
+
+  const activeFilterCount = [
+    institution, course, unit, year, semester, type
+  ].filter(Boolean).length
   const [message, setMessage] = useState('')
   const [opening, setOpening] = useState('')
   const [unlockedIds, setUnlockedIds] = useState([])
@@ -205,8 +212,8 @@ export default function PastPapersLibrary({
           <p>Authentic papers organized for focused examination revision.</p>
           {!hasPremiumAccess && !isAdmin && (
             <p className="papers-free-allowance">
-              Free access: {remainingUnlocks} of 2 lifetime PDF unlocks remaining.
-              Already unlocked papers can be reopened without using another unlock.
+              Free PDF unlocks: {remainingUnlocks}/2 left.
+              Reopen previously unlocked papers anytime.
               {' '}<button type="button" onClick={onUpgrade}>Explore Premium →</button>
             </p>
           )}
@@ -216,7 +223,27 @@ export default function PastPapersLibrary({
       <section className="papers-search-panel">
         <input value={search} onChange={e => setSearch(e.target.value)}
           placeholder="Search institution, course, unit, paper title…" />
-        <div className="papers-filter-grid">
+        <button
+          type="button"
+          className="papers-filter-toggle"
+          aria-controls="periak-paper-filters"
+          aria-expanded={filtersOpen}
+          onClick={() => setFiltersOpen(open => !open)}
+        >
+          <span>
+            ☷ Filters{activeFilterCount > 0
+              ? ` (${activeFilterCount})`
+              : ''}
+          </span>
+          <span aria-hidden="true">
+            {filtersOpen ? '−' : '+'}
+          </span>
+        </button>
+
+        <div
+          id="periak-paper-filters"
+          className={`papers-filter-grid${filtersOpen ? ' is-open' : ''}`}
+        >
           <select value={institution} onChange={e => setInstitution(e.target.value)}>
             <option value="">All institutions</option>
             {institutions.map(v => <option key={v}>{v}</option>)}
