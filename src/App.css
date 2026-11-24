@@ -3636,3 +3636,98 @@ body.periak-focus-active .periak-reader-floating-dock {
     min-height: 0;
   }
 }
+
+
+/* PERIAK UNIFIED BLUE IDENTITY V1 */
+
+/* One brand accent, shared with the existing design tokens. */
+.app {
+  --periak-brand: var(--accent, #2878d0);
+  --periak-brand-soft: var(--accent-soft, #eaf3ff);
+}
+
+/* Identity and navigation */
+.app .brand-icon,
+.app .nav-button,
+.app .primary-button,
+.app .dashboard-exam-button,
+.app .dashboard-premium-ad-copy > button {
+  background: var(--periak-brand);
+  color: #fff;
+  box-shadow: none;
+}
+
+.app .navbar nav a:hover,
+.app .text-link,
+.app .eyebrow,
+.app .hero h1 span,
+.app .course-card a,
+.app .course-level,
+.app .dashboard-premium-ad-label,
+.app .dashboard-stat strong {
+  color: var(--periak-brand);
+}
+
+/* Feature links and educational progress */
+.app .progress-track div,
+.app .subject-progress-track > div,
+.app .course-card-progress > div:last-child {
+  background: var(--periak-brand);
+}
+
+.app .hero .eyebrow span,
+.app .live-dot {
+  background: var(--periak-brand);
+}
+
+.app .visual-symbol,
+.app .course-icon {
+  background: var(--periak-brand-soft);
+}
+
+/* Shared interaction language */
+.app .course-card:hover,
+.app .dashboard-premium-ad
+.dashboard-premium-tools .dashboard-premium-tool:hover {
+  border-color: var(--periak-brand);
+}
+
+.app .primary-button:hover,
+.app .nav-button:hover,
+.app .dashboard-exam-button:hover,
+.app .dashboard-premium-ad-copy > button:hover {
+  background: #1d5fa8;
+  color: #fff;
+}
+
+.app a:focus-visible,
+.app button:focus-visible {
+  outline: 2px solid var(--periak-brand);
+  outline-offset: 3px;
+}
+
+/* Preserve contrast in dark mode. */
+:root[data-theme="dark"] .app {
+  --periak-brand: #78b9ff;
+  --periak-brand-soft: rgba(120,185,255,.16);
+}
+
+:root[data-theme="dark"] .app .brand-icon,
+:root[data-theme="dark"] .app .nav-button,
+:root[data-theme="dark"] .app .primary-button,
+:root[data-theme="dark"] .app .dashboard-exam-button,
+:root[data-theme="dark"]
+.app .dashboard-premium-ad-copy > button {
+  background: #2878d0;
+  color: #fff;
+}
+
+:root[data-theme="dark"] .app .primary-button:hover,
+:root[data-theme="dark"] .app .nav-button:hover,
+:root[data-theme="dark"] .app .dashboard-exam-button:hover,
+:root[data-theme="dark"]
+.app .dashboard-premium-ad-copy > button:hover {
+  background: #1d5fa8;
+}
+
+/* Success states remain green intentionally. */
