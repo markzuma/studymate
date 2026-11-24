@@ -53,7 +53,7 @@ function StudyText({ value }) {
 
       return terms.test(part)
         ? <strong className="periak-key-term" key={index}>{part}</strong>
-        : part
+        : par
     })
 
   const paragraphElements = (content, key) => {
@@ -177,9 +177,7 @@ function HomeWelcome({ name, completedCount = 0 }) {
       aria-label="Personalised study welcome"
     >
       <div className="periak-home-copy">
-        <span className="periak-home-label">
-          YOUR STUDY SPACE
-        </span>
+
 
         <h2>
           {greeting}{firstName ? `, ${firstName}` : ''} 👋
@@ -493,7 +491,7 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
           .insert({
             user_id: authData.user.id,
             course_title: selectedCourse.title,
-            unit_title: selectedUnit
+            unit_title: selectedUni
           })
 
         if (error) throw error
@@ -829,7 +827,7 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
 
     // Serialize this browser's cloud writes to prevent an older
     // request from finishing after its newer replacement.
-    progressWriteQueueRef.current = progressWriteQueueRef.current
+    progressWriteQueueRef.current = progressWriteQueueRef.curren
       .catch(() => {})
       .then(async () => {
         if (progressSessionRef.current !== userId) return
@@ -847,7 +845,7 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
         if (readError) throw readError
         if (progressSessionRef.current !== userId) return
 
-        let latestLocal = snapshot
+        let latestLocal = snapsho
 
         try {
           const saved = JSON.parse(
@@ -880,12 +878,12 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
         progressRetryRef.current = false
 
         setLearningData(current => {
-          if (progressSessionRef.current !== userId) return current
+          if (progressSessionRef.current !== userId) return curren
 
           const next = mergeLearningData(current, merged)
 
           if (JSON.stringify(next) === JSON.stringify(current)) {
-            return current
+            return curren
           }
 
           try {
@@ -894,7 +892,7 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
             console.warn('Local progress backup failed:', storageError)
           }
 
-          return next
+          return nex
         })
       })
       .catch(error => {
@@ -947,6 +945,21 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
       setSelectedCourse(match)
     }
   }, [catalogueCourses, selectedCourse])
+
+
+  // PERIAK MOBILE REFINEMENT V9 FIXED
+  useEffect(() => {
+    document.body.classList.toggle(
+      'periak-reading-active',
+      Boolean(selectedUnit)
+    )
+
+    return () => {
+      document.body.classList.remove(
+        'periak-reading-active'
+      )
+    }
+  }, [selectedUnit])
 
   const lessonKey = (courseTitle, unit) => `${courseTitle}::${unit}`
 
@@ -1228,7 +1241,7 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
       )}
 
           <button className="back-link" onClick={() => setSelectedUnit(null)}>
-            ← Back to course content
+            ← Back to course conten
           </button>
 
           <div className="lesson-heading">
@@ -1626,7 +1639,7 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
           />
           <div className="dashboard-heading">
             <div>
-              <div className="eyebrow">YOUR PERSONAL STUDY SPACE</div>
+
               <h2>Your learning dashboard</h2>
               <p>Pick up where you left off and keep track of your progress.</p>
             </div>
@@ -1639,7 +1652,7 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
 
           <section className="dashboard-premium-ad" data-periak-tour="pastpapers">
             <div className="dashboard-premium-ad-copy">
-              <span className="dashboard-premium-ad-label">PERIAK PREMIUM · FLAGSHIP</span>
+
               <h2>Past Papers &amp; Exam Practice</h2>
               <p>Search past papers and exam-style practice papers by course, unit,
                 year, semester and exam type.</p>
@@ -1785,14 +1798,14 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
         <section className="courses-section" id="courses" data-periak-tour="courses">
           <div className="section-heading">
             <div>
-              <div className="eyebrow">YOUR LEARNING STARTS HERE</div>
+
               <h2>Explore nursing subjects</h2>
               <p>Build a strong foundation across essential areas of nursing.</p>
             </div>
             <a className="text-link" href="#features">Explore resources →</a>
           </div>
           <div className="periak-course-toolbar">
-            <input
+            <inpu
               type="search"
               aria-label="Search nursing courses"
               placeholder="Search nursing courses..."
