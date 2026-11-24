@@ -5043,3 +5043,96 @@ body.periak-focus-active .periak-reader-floating-dock {
     font-size: 11px;
   }
 }
+
+/* PERIAK BALANCED LEARNING ACTIVITY V15 */
+
+/* Both panels retain their natural content height. */
+.app .student-dashboard .dashboard-panels {
+  align-items: start;
+}
+
+.app .student-dashboard .continue-panel,
+.app .student-dashboard .recent-panel {
+  align-self: start;
+  height: auto;
+  min-height: 0;
+  min-width: 0;
+}
+
+/* Replace the four tall rows with one swipeable row. */
+.app .student-dashboard
+.recent-panel .recent-lesson-list {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  gap: 7px;
+  min-width: 0;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 3px 2px 8px;
+  scroll-snap-type: x proximity;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+}
+
+/* Compact cards: two visible on wider screens. */
+.app .student-dashboard
+.recent-panel .recent-lesson {
+  display: flex;
+  flex: 0 0 calc((100% - 7px) / 2);
+  box-sizing: border-box;
+  align-items: center;
+  gap: 6px;
+  width: auto;
+  min-width: 0;
+  min-height: 65px;
+  padding: 7px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  scroll-snap-align: start;
+  text-align: left;
+}
+
+/* Let long nursing unit titles wrap cleanly. */
+.app .student-dashboard
+.recent-panel .recent-lesson > span:nth-child(2) {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.app .student-dashboard
+.recent-panel .recent-lesson strong {
+  display: block;
+  line-height: 1.3;
+  white-space: normal;
+}
+
+.app .student-dashboard
+.recent-panel .recent-lesson small {
+  display: block;
+  line-height: 1.3;
+}
+
+/* Mobile: show one compact recent lesson at a time. */
+@media (max-width: 700px) {
+  .app .student-dashboard
+  .recent-panel .recent-lesson-list {
+    gap: 5px;
+    padding-bottom: 6px;
+  }
+
+  .app .student-dashboard
+  .recent-panel .recent-lesson {
+    flex: 0 0 92%;
+    min-height: 65px;
+    padding: 6px;
+  }
+
+  .app .student-dashboard
+  .continue-panel,
+  .app .student-dashboard
+  .recent-panel {
+    padding: 8px;
+  }
+}
