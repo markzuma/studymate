@@ -6,6 +6,7 @@ const STORAGE_KEY = 'periak_appearance_v1'
 
 export const DEFAULT_APPEARANCE = {
   mode: 'system',
+  palette: null,
   accent: 'ocean',
   density: 'comfortable',
   corners: 'rounded',
@@ -31,6 +32,26 @@ function readStoredAppearance() {
     return { ...DEFAULT_APPEARANCE, ...(saved || {}) }
   } catch {
     return DEFAULT_APPEARANCE
+  }
+}
+
+// PERIAK THEMES AND TOUR V19
+// Existing Light/Dark/System users retain their preferences.
+// An explicitly selected palette takes precedence.
+function resolvePalette(appearance, systemDark) {
+  const allowed = ['classic', 'midnight', 'sage', 'dusk']
+  const selected = allowed.includes(appearance.palette)
+    ? appearance.palette
+    : null
+
+  const dark = selected
+    ? selected === 'midnight' || selected === 'dusk'
+    : appearance.mode === 'dark' ||
+      (appearance.mode === 'system' && systemDark)
+
+  return {
+    dark,
+    palette: selected || (dark ? 'midnight' : 'classic')
   }
 }
 
@@ -91,13 +112,15 @@ export function ThemeProvider({ children }) {
   }, [])
 
   useEffect(() => {
-    const dark = appearance.mode === 'dark' ||
-      (appearance.mode === 'system' && systemDark)
+    const { dark, palette } = resolvePalette(
+      appearance, systemDark
+    )
 
     const accent = ACCENTS[appearance.accent] || ACCENTS.ocean
     const root = document.documentElement
 
     root.dataset.theme = dark ? 'dark' : 'light'
+    root.dataset.palette = palette
     root.dataset.density = appearance.density
     root.dataset.fontSize = appearance.fontSize
     root.dataset.corners = appearance.corners
@@ -147,8 +170,7 @@ export function ThemeProvider({ children }) {
     appearance,
     updateAppearance,
     resetAppearance,
-    isDark: appearance.mode === 'dark' ||
-      (appearance.mode === 'system' && systemDark),
+    isDark: resolvePalette(appearance, systemDark).dark,
   }), [appearance, systemDark])
 
   return (

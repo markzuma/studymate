@@ -1,6 +1,45 @@
 import { ACCENTS, useAppearance } from '../context/ThemeProvider'
 import './ThemeSettings.css'
 
+const THEME_CHOICES = [
+  {
+    id: 'classic',
+    name: 'Classic Light',
+    description: 'The original PERIAK light theme.',
+    icon: '☀️',
+    bg: '#f7f9fc',
+    card: '#ffffff',
+    accent: '#2878d0'
+  },
+  {
+    id: 'midnight',
+    name: 'Midnight Slate',
+    description: 'Clinical blue-grey for evening study.',
+    icon: '🌙',
+    bg: '#142236',
+    card: '#203149',
+    accent: '#4899e8'
+  },
+  {
+    id: 'sage',
+    name: 'Sage Clinical',
+    description: 'A calm, green-tinted reading space.',
+    icon: '🌿',
+    bg: '#ecf5f2',
+    card: '#ffffff',
+    accent: '#168576'
+  },
+  {
+    id: 'dusk',
+    name: 'Dusk Lavender',
+    description: 'Soft charcoal-violet with gentle contrast.',
+    icon: '✨',
+    bg: '#292a40',
+    card: '#36384f',
+    accent: '#a99bea'
+  }
+]
+
 export default function ThemeSettings({ onClose }) {
   const { appearance, updateAppearance, resetAppearance, isDark } = useAppearance()
 
@@ -33,28 +72,54 @@ export default function ThemeSettings({ onClose }) {
             </div>
           </div>
           <div className="preview-bottom">
-            <span>Study resources</span>
+            <span>Nursing subjects</span>
             <span>Exam practice</span>
           </div>
         </div>
 
         <div className="appearance-section">
-          <h3>Display mode</h3>
-          <p>Choose how PERIAK looks on your device.</p>
-          <div className="appearance-choice-grid">
-            {[
-              ['light', '☀️', 'Light'],
-              ['dark', '🌙', 'Dark'],
-              ['system', '💻', 'System'],
-            ].map(([value, icon, label]) => (
-              <button key={value}
-                className={`appearance-choice ${appearance.mode === value ? 'active' : ''}`}
-                onClick={() => updateAppearance('mode', value)}>
-                <span>{icon}</span>
-                <strong>{label}</strong>
-              </button>
-            ))}
+          {/* PERIAK THEMES AND TOUR V19 */}
+          <h3>Choose your theme</h3>
+          <p>Four carefully designed learning environments.</p>
+          <div className="periak-theme-gallery">
+            {THEME_CHOICES.map(theme => {
+              const selected = appearance.palette ||
+                (isDark ? 'midnight' : 'classic')
+              return (
+                <button type="button" key={theme.id}
+                  className={`periak-theme-card ${selected === theme.id ? 'active' : ''}`}
+                  aria-pressed={selected === theme.id}
+                  onClick={() => updateAppearance('palette', theme.id)}>
+                  <span className="periak-theme-swatch"
+                    style={{
+                      '--theme-bg': theme.bg,
+                      '--theme-card': theme.card,
+                      '--theme-accent': theme.accent
+                    }}>
+                    <span className="periak-theme-swatch-top" />
+                    <span className="periak-theme-swatch-panel">
+                      <i /><i /><i />
+                    </span>
+                  </span>
+                  <span className="periak-theme-card-info">
+                    <strong>{theme.icon} {theme.name}</strong>
+                    <small>{theme.description}</small>
+                  </span>
+                  {selected === theme.id && (
+                    <span className="periak-theme-selected">✓</span>
+                  )}
+                </button>
+              )
+            })}
           </div>
+          <button type="button"
+            className="periak-theme-system"
+            onClick={() => {
+              updateAppearance('palette', null)
+              updateAppearance('mode', 'system')
+            }}>
+            💻 Follow device light/dark setting
+          </button>
         </div>
 
         <div className="appearance-section">

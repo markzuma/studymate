@@ -2,48 +2,35 @@ import { useEffect, useRef, useState } from 'react'
 import './WelcomeTour.css'
 
 const STEPS = [
-  { icon: '👋', title: 'Welcome to PERIAK', target: null,
-    description: 'Your nursing learning space brings lessons, revision, practice exams and clinical tools together.',
-    tip: 'This guided tour works on your phone or computer. Use Next, Back or Skip at any time.' },
-  { icon: '📊', title: 'Your learning dashboard', target: 'learning-dashboard',
-    description: 'See recent learning activity, course progress and shortcuts to the tools you use most.',
-    tip: 'Your progress builds as you open lessons and mark learning units as complete.' },
-  { icon: '📚', title: 'Courses and detailed lessons', target: 'courses',
-    description: 'Choose your nursing programme courses, open a unit and work through its learning objectives, notes, clinical applications and revision questions.',
-    tip: 'Start with the course you are currently studying.' },
-  { icon: '📝', title: 'Smart Exam Centre', target: 'examinations',
-    description: 'Practise CATs, mock examinations and course questions to check understanding and prepare for assessments.',
-    tip: 'Use explanations and feedback to revise areas you missed.' },
-  { icon: '📄', title: 'Past Papers and exam practice', target: 'pastpapers',
-    description: 'Browse available past papers and exam-style materials by course, year, semester and assessment type.',
-    tip: 'Availability and access depend on the material and your account.' },
-  { icon: '📖', title: 'Nursing Knowledge Hub', target: 'hub',
-    description: 'Find organised nursing concepts and subject resources in one place.',
-    tip: 'Use it for quick refreshers before a class or clinical placement.' },
-  { icon: '🤖', title: 'AI Study Tutor', target: 'tutor',
-    description: 'Explore the study assistance available in PERIAK for revising nursing concepts and learning materials.',
-    tip: 'Always cross-check important clinical guidance against current teaching and protocols.' },
-  { icon: '🩺', title: 'Clinical Skills Lab', target: 'clinical',
-    description: 'Work through practical nursing situations and practise choosing safe clinical priorities.',
-    tip: 'Treat practice scenarios as learning activities, not instructions for real patient care.' },
-  { icon: '🏥', title: 'Virtual Patient Simulator', target: 'simulator',
-    description: 'Explore simulated patient scenarios to strengthen assessment and clinical reasoning.',
-    tip: 'Some advanced tools may require Premium access.' },
-  { icon: '📅', title: 'Your Study Planner', target: 'planner',
-    description: 'Organise revision tasks, CAT preparation, exam dates and study goals.',
-    tip: 'Break large topics into smaller study sessions.' },
-  { icon: '⭐', title: 'Explore Premium', target: 'premium',
-    description: 'Use Premium to see additional learning tools and subscription options. You can always explore what is free before deciding.',
-    tip: 'The Premium page explains the features and access rules; opening it does not make a purchase.' },
-  { icon: '🎨', title: 'Make PERIAK yours', target: 'appearance',
-    description: 'Open Appearance to customise the way PERIAK looks on your device.',
-    tip: 'You can change your appearance settings whenever you want.' },
-  { icon: '🔐', title: 'Profile and account security', target: 'profile',
-    description: 'Use Profile & Security to manage your account. The account bar also contains Log out and a permanent way to replay this tour.',
-    tip: 'Keep your login details private and use a strong password.' },
-  { icon: '🎉', title: 'You are ready to explore!', target: null,
-    description: 'You know where to find the essential learning, exam, clinical and account features in PERIAK.',
-    tip: 'Want another look later? Select “Take App Tour” in the top account bar.' }
+  // PERIAK THEMES AND TOUR V19
+  {
+    icon: '👋',
+    title: 'Welcome to PERIAK',
+    target: null,
+    description: 'Your nursing learning space for study notes, examination preparation and clinical practice.',
+    tip: 'This quick tour has just four steps. You can skip it anytime.'
+  },
+  {
+    icon: '📚',
+    title: 'Explore nursing subjects',
+    target: 'courses',
+    description: 'Open a nursing subject, choose a unit and study detailed learning materials.',
+    tip: 'Your completed units contribute to your course progress.'
+  },
+  {
+    icon: '📝',
+    title: 'Past Papers and Exams',
+    target: 'pastpapers',
+    description: 'Find available past papers and use the Smart Exam Centre to practise questions and mock exams.',
+    tip: 'Some examination features have free limits or require Premium.'
+  },
+  {
+    icon: '🩺',
+    title: 'Clinical tools and Premium',
+    target: 'clinical',
+    description: 'Explore the Clinical Lab, Patient Simulator, Study Tutor, Knowledge Hub and Study Planner.',
+    tip: 'Open Premium to review additional features. Your Account menu also has Appearance and Take App Tour.'
+  }
 ]
 
 export default function WelcomeTour({ open, onClose }) {

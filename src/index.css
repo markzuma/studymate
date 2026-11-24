@@ -537,3 +537,71 @@ label:has(input[type="radio"]):hover {
   background: #202b39;
   border-color: #405269;
 }
+
+/* PERIAK THEMES AND TOUR V19 */
+
+/* Classic Light deliberately uses existing PERIAK styling. */
+
+:root[data-palette="midnight"][data-theme="dark"] {
+  --page-bg: #142236;
+  --surface: #203149;
+  --surface-secondary: #293d55;
+  --text-primary: #eef5ff;
+  --text-muted: #b7c8da;
+  --border: #3a516d;
+  --shadow: 0 5px 18px rgba(6,14,28,.22);
+}
+
+:root[data-palette="sage"][data-theme="light"] {
+  --page-bg: #ecf5f2;
+  --surface: #ffffff;
+  --surface-secondary: #e1eee9;
+  --text-primary: #29433f;
+  --text-muted: #526f69;
+  --border: #c9ddd6;
+  --shadow: 0 5px 18px rgba(36,80,67,.07);
+}
+
+:root[data-palette="dusk"][data-theme="dark"] {
+  --page-bg: #292a40;
+  --surface: #36384f;
+  --surface-secondary: #41445e;
+  --text-primary: #f2f0fc;
+  --text-muted: #c6c3dd;
+  --border: #555874;
+  --shadow: 0 5px 18px rgba(18,17,35,.23);
+}
+
+/* Match native form controls to the chosen dark palette. */
+:root[data-palette="midnight"] input:not([type="checkbox"]):not([type="radio"]),
+:root[data-palette="midnight"] select,
+:root[data-palette="midnight"] textarea,
+:root[data-palette="dusk"] input:not([type="checkbox"]):not([type="radio"]),
+:root[data-palette="dusk"] select,
+:root[data-palette="dusk"] textarea {
+  background-color: var(--surface-secondary);
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+
+:root[data-palette="midnight"] select option,
+:root[data-palette="dusk"] select option {
+  background-color: var(--surface);
+  color: var(--text-primary);
+}
+
+/* Ensure examination surfaces use theme-aware colours. */
+:root[data-palette="midnight"] .periak-db-option,
+:root[data-palette="midnight"] .periak-mock-card,
+:root[data-palette="dusk"] .periak-db-option,
+:root[data-palette="dusk"] .periak-mock-card {
+  background: var(--surface) !important;
+  color: var(--text-primary) !important;
+  border-color: var(--border) !important;
+}
+
+:root[data-palette="midnight"] .periak-db-option:has(input:checked),
+:root[data-palette="dusk"] .periak-db-option:has(input:checked) {
+  background: var(--surface-secondary) !important;
+  border-color: var(--accent) !important;
+}
