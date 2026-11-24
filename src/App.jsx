@@ -3,7 +3,6 @@ import useContentRefresh from './hooks/useContentRefresh.js'
 import { useBackHandler } from './context/NavigationProvider'
 import { supabase } from './lib/supabase'
 import './App.css'
-import './WorkspaceDashboard.css'
 
 // PERIAK ON-DEMAND LOADING V1
 const LessonReadingTools = lazy(
@@ -307,33 +306,6 @@ function mergeLearningData(localData, cloudData) {
       .sort((a, b) => (b.studiedAt || 0) - (a.studiedAt || 0))
       .slice(0, 6)
   }
-}
-
-
-// PERIAK WORKSPACE V4
-function WorkspaceIcon({ name }) {
-  const paths = {
-    dashboard: 'M3 3h8v8H3z M13 3h8v6h-8z M13 11h8v10h-8z M3 13h8v8H3z',
-    exams: 'M8 4h8 M9 2h6v4H9z M6 4H5v17h14V4h-1 M9 11h6 M9 15h6',
-    clinical: 'M10 3h4v7h7v4h-7v7h-4v-7H3v-4h7z',
-    simulator: 'M3 9l9-6 9 6v11H3z M9 20v-7h6v7',
-    tutor: 'M4 5h16v12H8l-4 4z M8 10h8 M8 13h5',
-    hub: 'M4 5c3-1 6-1 8 1v14c-2-2-5-2-8-1z M20 5c-3-1-6-1-8 1v14c2-2 5-2 8-1z',
-    planner: 'M4 6h16v15H4z M4 10h16 M8 3v5 M16 3v5 M8 15l2 2 5-5',
-    papers: 'M7 3h9l4 4v14H7z M16 3v5h4 M10 12h7 M10 16h7',
-    book: 'M4 5c3-1 6-1 8 1v14c-2-2-5-2-8-1z M20 5c-3-1-6-1-8 1v14c2-2 5-2 8-1z',
-    recent: 'M12 3a9 9 0 1 0 9 9 M12 7v5l4 2',
-    completed: 'M4 12l5 5L20 6'
-  }
-
-  return (
-    <svg width="22" height="22" viewBox="0 0 24 24"
-      fill="none" stroke="currentColor" strokeWidth="1.7"
-      strokeLinecap="round" strokeLinejoin="round"
-      aria-hidden="true">
-      <path d={paths[name] || paths.dashboard} />
-    </svg>
-  )
 }
 
 function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, welcomeName = '', onOpenPremium = () => {}, onOpenPremiumFeature = () => {}, premiumLaunch = null, onPremiumLaunchHandled = () => {}, onPremiumModuleBack = () => {} }) {
@@ -1455,75 +1427,69 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
   }
 
   return (
-    <div className="app periak-workspace-page">
-
-      <aside className="workspace-sidebar">
-        <a className="workspace-brand" href="#learning-dashboard">
-          <span className="workspace-brand-mark">+</span>
-          <strong>PERIAK</strong>
+    <div className="app">
+      <header className="navbar">
+        <a className="brand" href="#">
+          <span className="brand-icon">✚</span>
+          <span>PERIAK</span>
         </a>
-
-        <div className="workspace-nav-title">WORKSPACE</div>
-
-        <nav className="workspace-navigation" aria-label="Student navigation">
-          <a href="#learning-dashboard" className="active">
-            <WorkspaceIcon name="dashboard" /> Overview
-          </a>
-          <a href="#courses">
-            <WorkspaceIcon name="book" /> My learning
-          </a>
-          <button type="button"
-            onClick={() => onOpenPremiumFeature('pastpapers')}>
-            <WorkspaceIcon name="papers" /> Past papers
-          </button>
-          <button type="button" onClick={() => setShowExams(true)}>
-            <WorkspaceIcon name="exams" /> Examinations
-          </button>
-          <button type="button"
-            onClick={() => onOpenPremiumFeature('clinical')}>
-            <WorkspaceIcon name="clinical" /> Clinical Lab
-          </button>
-          <button type="button"
-            onClick={() => onOpenPremiumFeature('planner')}>
-            <WorkspaceIcon name="planner" /> Study Planner
-          </button>
+        <button type="button" className="mobile-menu-toggle"
+          aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+          aria-expanded={mobileMenuOpen}
+          onClick={() => setMobileMenuOpen(open => !open)}>
+          {mobileMenuOpen ? '✕' : '☰'}
+        </button>
+        <nav className={mobileMenuOpen ? 'mobile-open' : ''}>
+          <a href="#courses" onClick={() => setMobileMenuOpen(false)}>Courses</a>
+          <a href="#examinations" onClick={(e) => { e.preventDefault(); setMobileMenuOpen(false); setShowExams(true) }}>Examinations</a>
+          <a href="#features" onClick={() => setMobileMenuOpen(false)}>Study resources</a>
+          <a href="#about" onClick={() => setMobileMenuOpen(false)}>About</a>
         </nav>
-
-        <div className="workspace-premium">
-          <strong>PERIAK Premium</strong>
-          <p>Additional examination and clinical learning tools.</p>
-          <button type="button" onClick={onOpenPremium}>
-            Explore Premium →
-          </button>
-        </div>
-      </aside>
-
-      <header className="workspace-topbar">
-        <label className="workspace-search">
-          <WorkspaceIcon name="book" />
-          <input
-            type="search"
-            placeholder="Search nursing subjects..."
-            aria-label="Search nursing subjects"
-            value={courseSearch}
-            onChange={event => setCourseSearch(event.target.value)}
-            onKeyDown={event => {
-              if (event.key === 'Enter')
-                document.getElementById('courses')?.scrollIntoView({
-                  behavior: 'smooth'
-                })
-            }}
-          />
-        </label>
-        <div className="workspace-account">
-          <span className="workspace-avatar">
-            {String(welcomeName || 'S').trim().charAt(0).toUpperCase()}
-          </span>
-          <strong>{welcomeName || 'Student'}</strong>
-        </div>
+        <a className="nav-button" href="#courses">Start learning <span>→</span></a>
       </header>
-      <main className="periak-workspace-main">
-        <section className="student-dashboard" id="learning-dashboard" data-periak-tour="learning-dashboard">
+
+      <main>
+        <section className="hero">
+          <div className="hero-content">
+            <div className="eyebrow"><span></span> BUILT FOR NURSING STUDENTS IN KENYA</div>
+            <h1>Your nursing journey.<br /><span>Made easier.</span></h1>
+            <p className="hero-text">
+              Learn with confidence. Access organised nursing notes,
+              practise exam questions and strengthen your clinical knowledge
+              — all in one place.
+            </p>
+            <div className="hero-actions">
+              <a className="primary-button" href="#courses">Explore courses <span>→</span></a>
+              <a className="secondary-button" href="#features">Discover resources</a>
+            </div>
+            <div className="hero-note">
+              <span>✓</span> For certificate, diploma and degree nursing students
+            </div>
+          </div>
+          <div className="hero-visual">
+            <div className="visual-card main-card">
+              <div className="visual-top"><span>YOUR LEARNING SPACE</span><span className="live-dot"></span></div>
+              <div className="visual-symbol">🩺</div>
+              <h3>Learn. Practise. Excel.</h3>
+              <p>Build knowledge for the classroom and the clinical setting.</p>
+              <div className="progress-label"><span>Your learning journey</span><strong>Start today</strong></div>
+              <div className="progress-track"><div></div></div>
+              <div className="visual-bottom"><span>📚 Study resources</span><span>✍️ Practice quizzes</span></div>
+            </div>
+            <div className="floating-card float-one">📖 <span><strong>Study notes</strong><small>Learn at your pace</small></span></div>
+            <div className="floating-card float-two">🎯 <span><strong>Exam practice</strong><small>Test your knowledge</small></span></div>
+            <div className="decor decor-one"></div>
+            <div className="decor decor-two"></div>
+          </div>
+        </section>
+
+        <section className="trust-strip">
+          <div><strong>01</strong><span>Learn systematically</span></div>
+          <div><strong>02</strong><span>Practise confidently</span></div>
+          <div><strong>03</strong><span>Grow clinically</span></div>
+        </section>
+
+        <section className="student-dashboard" data-periak-tour="learning-dashboard">
           <HomeWelcome
             name={welcomeName}
             completedCount={learningData?.completed?.length ?? 0}
@@ -1541,19 +1507,57 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
 
 
 
+          <section className="dashboard-premium-ad" data-periak-tour="pastpapers">
+            <div className="dashboard-premium-ad-copy">
+              <span className="dashboard-premium-ad-label">PERIAK PREMIUM · FLAGSHIP</span>
+              <h2>Past Papers &amp; Exam Practice</h2>
+              <p>Search past papers and exam-style practice papers by course, unit,
+                year, semester and exam type.</p>
+              <div className="dashboard-premium-ad-features">
+                <span>🔎 Searchable library</span>
+                <span>📚 Course &amp; unit filters</span>
+                <span>📄 Secure PDF access</span>
+              </div>
+              <button type="button" onClick={() => onOpenPremiumFeature('pastpapers')}>
+                {isPremium || isAdmin ? 'Open Past Papers →' : 'Explore Past Papers →'}
+              </button>
+            </div>
+            <div className="dashboard-premium-tools">
+              {[
+                { id: 'dashboard', icon: '📊', title: 'Learning Dashboard', short: 'Dashboard', tag: 'Track your progress' },
+                { id: 'exams', icon: '📝', title: 'Smart Exam Centre', short: 'Exams', tag: 'CATs and mock exams' },
+                { id: 'clinical', icon: '🩺', title: 'Clinical Skills Lab', short: 'Clinical Lab', tag: 'Interactive scenarios' },
+                { id: 'simulator', icon: '🏥', title: 'Virtual Patient Simulator', short: 'Patient Sim', tag: 'Clinical simulations' },
+                { id: 'tutor', icon: '🤖', title: 'Study Tutor', short: 'Tutor', tag: 'Search lesson materials' },
+                { id: 'hub', icon: '📚', title: 'Nursing Knowledge Hub', short: 'Knowledge Hub', tag: 'Browse subjects' },
+                { id: 'planner', icon: '📅', title: 'Study Planner', short: 'Planner', tag: 'Plan CATs and exams' }
+              ].map(tool => (
+                <button type="button" key={tool.id} className="dashboard-premium-tool" data-periak-tour={tool.id}
+                  aria-label={tool.title} onClick={() => onOpenPremiumFeature(tool.id)}>
+                  <span className="tool-icon">{tool.icon}</span>
+                  <strong>
+                    <span className="tool-full">{tool.title}</span>
+                    <span className="tool-short">{tool.short}</span>
+                  </strong>
+                  <small>{tool.tag}</small>
+                </button>
+              ))}
+            </div>
+          </section>
+
           <div className="dashboard-stats">
             <article className="dashboard-stat">
-              <span><WorkspaceIcon name="book" /></span>
+              <span>📚</span>
               <strong>{learningData.completed.length}</strong>
               <small>Lessons completed</small>
             </article>
             <article className="dashboard-stat">
-              <span><WorkspaceIcon name="recent" /></span>
+              <span>📖</span>
               <strong>{learningData.recent.length}</strong>
               <small>Recently studied</small>
             </article>
             <article className="dashboard-stat">
-              <span><WorkspaceIcon name="completed" /></span>
+              <span>🎓</span>
               <strong>{catalogueCourses.filter(course => courseProgress(course).percent === 100).length}</strong>
               <small>Subjects completed</small>
             </article>
@@ -1619,44 +1623,6 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
               )}
             </section>
           </div>
-
-          <section className="dashboard-premium-ad" data-periak-tour="pastpapers">
-            <div className="dashboard-premium-ad-copy">
-              <span className="dashboard-premium-ad-label">LEARNING RESOURCES</span>
-              <h2>Past Papers &amp; Exam Practice</h2>
-              <p>Search past papers and exam-style practice papers by course, unit,
-                year, semester and exam type.</p>
-              <div className="dashboard-premium-ad-features">
-                <span>🔎 Searchable library</span>
-                <span>📚 Course &amp; unit filters</span>
-                <span>📄 Secure PDF access</span>
-              </div>
-              <button type="button" onClick={() => onOpenPremiumFeature('pastpapers')}>
-                {isPremium || isAdmin ? 'Open Past Papers →' : 'Explore Past Papers →'}
-              </button>
-            </div>
-            <div className="dashboard-premium-tools">
-              {[
-                { id: 'dashboard', icon: '📊', title: 'Learning Dashboard', short: 'Dashboard', tag: 'Track your progress' },
-                { id: 'exams', icon: '📝', title: 'Smart Exam Centre', short: 'Exams', tag: 'CATs and mock exams' },
-                { id: 'clinical', icon: '🩺', title: 'Clinical Skills Lab', short: 'Clinical Lab', tag: 'Interactive scenarios' },
-                { id: 'simulator', icon: '🏥', title: 'Virtual Patient Simulator', short: 'Patient Sim', tag: 'Clinical simulations' },
-                { id: 'tutor', icon: '🤖', title: 'Study Tutor', short: 'Tutor', tag: 'Search lesson materials' },
-                { id: 'hub', icon: '📚', title: 'Nursing Knowledge Hub', short: 'Knowledge Hub', tag: 'Browse subjects' },
-                { id: 'planner', icon: '📅', title: 'Study Planner', short: 'Planner', tag: 'Plan CATs and exams' }
-              ].map(tool => (
-                <button type="button" key={tool.id} className="dashboard-premium-tool" data-periak-tour={tool.id}
-                  aria-label={tool.title} onClick={() => onOpenPremiumFeature(tool.id)}>
-                  <span className="tool-icon"><WorkspaceIcon name={tool.id} /></span>
-                  <strong>
-                    <span className="tool-full">{tool.title}</span>
-                    <span className="tool-short">{tool.short}</span>
-                  </strong>
-                  <small>{tool.tag}</small>
-                </button>
-              ))}
-            </div>
-          </section>
 
           <section className="dashboard-progress">
             <div className="dashboard-panel-heading">
