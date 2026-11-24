@@ -5445,3 +5445,191 @@ body.periak-focus-active .periak-reader-floating-dock {
     margin-bottom: 9px;
   }
 }
+
+/* PERIAK PROFESSIONAL THEME POLISH V20B */
+
+/*
+ * Palette-specific styling only.
+ * Classic Light is intentionally excluded.
+ * Accent colour remains under student control.
+ */
+
+:root[data-palette="midnight"] {
+  --v20-hover: #2b415c;
+  --v20-ring: rgba(110, 173, 245, .24);
+}
+
+:root[data-palette="dusk"] {
+  --v20-hover: #484a67;
+  --v20-ring: rgba(184, 164, 244, .22);
+}
+
+:root[data-palette="sage"] {
+  --v20-hover: #e1f0ea;
+  --v20-ring: rgba(49, 136, 111, .16);
+}
+
+/* Dashboard, lessons, examinations and study cards. */
+:root[data-palette="midnight"] .app
+:is(
+  .dashboard-premium-ad,
+  .dashboard-stat,
+  .dashboard-panel,
+  .dashboard-premium-tool,
+  .recent-lesson,
+  .course-card,
+  .periak-home-welcome,
+  .lesson-panel,
+  .practice-question,
+  .unit-card,
+  .exam-card
+),
+:root[data-palette="dusk"] .app
+:is(
+  .dashboard-premium-ad,
+  .dashboard-stat,
+  .dashboard-panel,
+  .dashboard-premium-tool,
+  .recent-lesson,
+  .course-card,
+  .periak-home-welcome,
+  .lesson-panel,
+  .practice-question,
+  .unit-card,
+  .exam-card
+),
+:root[data-palette="sage"] .app
+:is(
+  .dashboard-premium-ad,
+  .dashboard-stat,
+  .dashboard-panel,
+  .dashboard-premium-tool,
+  .recent-lesson,
+  .course-card,
+  .periak-home-welcome,
+  .lesson-panel,
+  .practice-question,
+  .unit-card,
+  .exam-card
+) {
+  background-color: var(--surface);
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+
+/* Subtle interaction feedback for all three new palettes. */
+:root[data-palette="midnight"]
+:is(.dashboard-premium-tool, .recent-lesson, .course-card),
+:root[data-palette="dusk"]
+:is(.dashboard-premium-tool, .recent-lesson, .course-card),
+:root[data-palette="sage"]
+:is(.dashboard-premium-tool, .recent-lesson, .course-card) {
+  transition:
+    background-color .16s ease,
+    border-color .16s ease;
+}
+
+:root[data-palette="midnight"] .app
+:is(.dashboard-premium-tool, .recent-lesson):hover,
+:root[data-palette="dusk"] .app
+:is(.dashboard-premium-tool, .recent-lesson):hover,
+:root[data-palette="sage"] .app
+:is(.dashboard-premium-tool, .recent-lesson):hover {
+  background-color: var(--v20-hover);
+  border-color: var(--accent);
+}
+
+/* Readable primary and secondary text. */
+:root[data-palette="midnight"] .app
+:is(
+  .course-card h3,
+  .dashboard-panel-heading h3,
+  .recent-lesson strong,
+  .lesson-panel h2,
+  .practice-question h3
+),
+:root[data-palette="dusk"] .app
+:is(
+  .course-card h3,
+  .dashboard-panel-heading h3,
+  .recent-lesson strong,
+  .lesson-panel h2,
+  .practice-question h3
+),
+:root[data-palette="sage"] .app
+:is(
+  .course-card h3,
+  .dashboard-panel-heading h3,
+  .recent-lesson strong,
+  .lesson-panel h2,
+  .practice-question h3
+) {
+  color: var(--text-primary);
+}
+
+:root[data-palette="midnight"] .app
+:is(
+  .course-card p,
+  .recent-lesson small,
+  .dashboard-stat small
+),
+:root[data-palette="dusk"] .app
+:is(
+  .course-card p,
+  .recent-lesson small,
+  .dashboard-stat small
+),
+:root[data-palette="sage"] .app
+:is(
+  .course-card p,
+  .recent-lesson small,
+  .dashboard-stat small
+) {
+  color: var(--text-muted);
+}
+
+/* More consistent lesson and exam controls. */
+:root[data-palette="midnight"]
+:is(.question-option, .unit-clickable),
+:root[data-palette="dusk"]
+:is(.question-option, .unit-clickable),
+:root[data-palette="sage"]
+:is(.question-option, .unit-clickable) {
+  border-color: var(--border);
+  color: var(--text-primary);
+}
+
+:root[data-palette="midnight"]
+:is(.question-option, .unit-clickable):hover,
+:root[data-palette="dusk"]
+:is(.question-option, .unit-clickable):hover,
+:root[data-palette="sage"]
+:is(.question-option, .unit-clickable):hover {
+  border-color: var(--accent);
+}
+
+/* Preserve visible keyboard focus. */
+:root[data-palette="midnight"]
+:is(button, a, input, select, textarea):focus-visible,
+:root[data-palette="dusk"]
+:is(button, a, input, select, textarea):focus-visible,
+:root[data-palette="sage"]
+:is(button, a, input, select, textarea):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Honour reduced-motion preferences. */
+@media (prefers-reduced-motion: reduce) {
+  :root[data-palette="midnight"] .app *,
+  :root[data-palette="dusk"] .app *,
+  :root[data-palette="sage"] .app * {
+    scroll-behavior: auto;
+    transition-duration: 0.01ms;
+  }
+}
+
+:root[data-reduced-motion="true"]
+:is(.dashboard-premium-tool, .recent-lesson, .course-card) {
+  transition: none;
+}
