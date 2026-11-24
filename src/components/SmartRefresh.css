@@ -1,0 +1,96 @@
+/* PERIAK COMPACT UPDATE BANNER V1 */
+.periak-update-banner {
+  position: fixed;
+  z-index: 900;
+  bottom: 18px;
+  right: 16px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: min(330px, calc(100vw - 24px));
+  box-sizing: border-box;
+  padding: 8px 9px;
+  border: 1px solid var(--border, #344254);
+  border-radius: 11px;
+  background: var(--surface, #171e29);
+  color: var(--text-primary, #ffffff);
+  box-shadow: 0 5px 18px rgba(0,0,0,.18);
+}
+
+.periak-update-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 23px;
+  height: 23px;
+  color: #327cf5;
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.periak-update-copy {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-width: 0;
+  gap: 1px;
+}
+
+.periak-update-copy strong {
+  font-size: 11px;
+  line-height: 1.2;
+}
+
+.periak-update-copy > span {
+  font-size: 10px;
+  line-height: 1.2;
+  color: var(--text-secondary, #98a6b8);
+}
+
+.periak-update-action {
+  flex: 0 0 auto;
+  min-height: 31px;
+  padding: 5px 9px;
+  border: none;
+  border-radius: 7px;
+  background: #327cf5;
+  color: white;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.periak-update-action:disabled {
+  opacity: .65;
+  cursor: wait;
+}
+
+.periak-update-dismiss {
+  flex: 0 0 25px;
+  min-height: 31px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary, #98a6b8);
+  font-size: 21px;
+  cursor: pointer;
+}
+
+@media (max-width: 700px) {
+  .periak-update-banner {
+    left: 50%;
+    right: auto;
+    transform: translateX(-50%);
+    bottom: calc(65px + env(safe-area-inset-bottom, 0px));
+    width: min(330px, calc(100vw - 18px));
+    padding: 7px 8px;
+    gap: 5px;
+    border-radius: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .periak-update-banner {
+    transition: none;
+  }
+}

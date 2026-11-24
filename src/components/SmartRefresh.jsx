@@ -1,9 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
 import { registerSW } from 'virtual:pwa-register'
+import './SmartRefresh.css'
 
 export default function SmartRefresh() {
   // PERIAK SAFE AUTO UPDATE V1
   const [updateAvailable, setUpdateAvailable] = useState(false)
+  // PERIAK COMPACT UPDATE BANNER V1
+  const [dismissed, setDismissed] = useState(false)
+  const [safeToUpdate, setSafeToUpdate] = useState(false)
+  const [updating, setUpdating] = useState(false)
+
   const updateRef = useRef(null)
   const applyingRef = useRef(false)
 
@@ -98,58 +104,114 @@ export default function SmartRefresh() {
     }
   }, [])
 
-  // Apply a waiting version automatically only at a safe dashboard.
+
+  // Show the banner only when an update can be safely applied.
   useEffect(() => {
-    if (!updateAvailable) return undefined
-
-    let active = true
-
-    const applyWhenSafe = async () => {
-      if (
-        !active ||
-        applyingRef.current ||
-        !updateRef.current ||
-        !navigator.onLine ||
-        document.visibilityState !== 'visible' ||
-        window.__periakDashboardSafe !== true ||
-        window.__periakAuthSafe !== true ||
-        document.querySelector(
-          'input:focus, textarea:focus, [contenteditable="true"]:focus'
-        ) ||
-        document.querySelector(
-          'dialog[open], [role="dialog"]'
-        )
-      ) return
-
-      applyingRef.current = true
-
-      try {
-        await updateRef.current(true)
-      } catch (error) {
-        console.warn('PERIAK automatic update failed:', error)
-        applyingRef.current = false
-      }
+    if (!updateAvailable || dismissed) {
+      setSafeToUpdate(false)
+      return undefined
     }
 
     const checkSafety = () => {
-      void applyWhenSafe()
+      const safe = Boolean(
+        navigator.onLine &&
+        document.visibilityState === 'visible' &&
+        window.__periakDashboardSafe === true &&
+        window.__periakAuthSafe === true &&
+        !document.querySelector(
+          'input:focus, textarea:focus, [contenteditable="true"]:focus'
+        ) &&
+        !document.querySelector(
+          'dialog[open], [role="dialog"]'
+        )
+      )
+      setSafeToUpdate(safe)
     }
-
-    window.addEventListener('periak:update-safety', checkSafety)
-    window.addEventListener('focus', checkSafety)
-    document.addEventListener('visibilitychange', checkSafety)
 
     checkSafety()
 
+    window.addEventListener('periak:update-safety', checkSafety)
+    window.addEventListener('focus', checkSafety)
+    window.addEventListener('online', checkSafety)
+    window.addEventListener('offline', checkSafety)
+    document.addEventListener('visibilitychange', checkSafety)
+    document.addEventListener('focusin', checkSafety)
+    document.addEventListener('focusout', checkSafety)
+
     return () => {
-      active = false
       window.removeEventListener('periak:update-safety', checkSafety)
       window.removeEventListener('focus', checkSafety)
+      window.removeEventListener('online', checkSafety)
+      window.removeEventListener('offline', checkSafety)
       document.removeEventListener('visibilitychange', checkSafety)
+      document.removeEventListener('focusin', checkSafety)
+      document.removeEventListener('focusout', checkSafety)
     }
-  }, [updateAvailable])
+  }, [updateAvailable, dismissed])
 
-  // Updates remain pending during lessons, exams and admin workflows.
-  // Content Auto-Sync continues without any page reload.
-  return null
+  const applyUpdate = async () => {
+    if (
+      !safeToUpdate ||
+      updating ||
+      applyingRef.current ||
+      !updateRef.current ||
+      window.__periakDashboardSafe !== true ||
+      window.__periakAuthSafe !== true ||
+      !navigator.onLine ||
+      document.querySelector(
+        'input:focus, textarea:focus, [contenteditable="true"]:focus'
+      ) ||
+      document.querySelector('dialog[open], [role="dialog"]')
+    ) return
+
+    applyingRef.current = true
+    setUpdating(true)
+
+    try {
+      // The PWA plugin activates the waiting worker and reloads.
+      await updateRef.current(true)
+    } catch (error) {
+      console.warn('PERIAK update failed:', error)
+      applyingRef.current = false
+      setUpdating(false)
+    }
+  }
+
+  if (!updateAvailable || dismissed || !safeToUpdate) {
+    return null
+  }
+
+  return (
+    <div
+      className="periak-update-banner"
+      role="status"
+      aria-label="PERIAK update available"
+    >
+      <span className="periak-update-icon" aria-hidden="true">
+        ↻
+      </span>
+      <div className="periak-update-copy">
+        <strong>PERIAK Update Ready</strong>
+        <span>New improvements available.</span>
+      </div>
+      <button
+        type="button"
+        className="periak-update-action"
+        onClick={applyUpdate}
+        disabled={updating}
+      >
+        {updating ? 'Updating…' : 'Update'}
+      </button>
+      <button
+        type="button"
+        className="periak-update-dismiss"
+        onClick={() => setDismissed(true)}
+        aria-label="Update later"
+        title="Later"
+        disabled={updating}
+      >
+        ×
+      </button>
+    </div>
+  )
 }
