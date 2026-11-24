@@ -1563,11 +1563,9 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
         </button>
         <nav className={mobileMenuOpen ? 'mobile-open' : ''}>
           <a href="#courses" onClick={() => setMobileMenuOpen(false)}>Courses</a>
-          <a href="#examinations" onClick={(e) => { e.preventDefault(); setMobileMenuOpen(false); setShowExams(true) }}>Examinations</a>
-          <a href="#features" onClick={() => setMobileMenuOpen(false)}>Study resources</a>
           <a href="#about" onClick={() => setMobileMenuOpen(false)}>About</a>
         </nav>
-        <a className="nav-button" href="#courses">Start learning <span>→</span></a>
+        <a className="nav-button" href="#dashboard">Dashboard <span>→</span></a>
       </header>
 
       <main>
@@ -1611,7 +1609,7 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
           <div><strong>03</strong><span>Grow clinically</span></div>
         </section>
 
-        <section className="student-dashboard" data-periak-tour="learning-dashboard">
+        <section className="student-dashboard" id="dashboard" data-periak-tour="learning-dashboard">
           <HomeWelcome
             name={welcomeName}
           />
@@ -1748,9 +1746,7 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
             <div>
               <div className="eyebrow">YOUR LEARNING STARTS HERE</div>
               <h2>Explore nursing subjects</h2>
-              <p>Build a strong foundation across essential areas of nursing.</p>
             </div>
-            <a className="text-link" href="#features">Explore resources →</a>
           </div>
           <div className="periak-course-toolbar">
             <input
@@ -1815,13 +1811,20 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
           </div>
         </section>
 
-        <section className="cta-section" id="about">
-          <div>
-            <div className="eyebrow">YOUR FUTURE IN NURSING STARTS HERE</div>
-            <h2>Learn with purpose.<br />Care with confidence.</h2>
-            <p>PERIAK is being built to support the next generation of nursing professionals in Kenya.</p>
-          </div>
-          <a href="#courses" className="primary-button">Start exploring →</a>
+        {/* PERIAK PORTAL V13 VERIFIED */}
+        <section className="periak-about-mini" id="about">
+          <h2>About PERIAK</h2>
+          <p>
+            PERIAK supports nursing students through organised
+            study notes, examination practice, past papers and
+            interactive clinical learning resources.
+          </p>
+          <p>
+            Students can access free resources and optional Premium
+            features. PERIAK is an independent study-support
+            platform, not an accredited nursing college.
+          </p>
+          <a href="#courses">Explore nursing courses →</a>
         </section>
       </main>
 

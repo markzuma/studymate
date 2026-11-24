@@ -4989,3 +4989,57 @@ body.periak-focus-active .periak-reader-floating-dock {
     padding-top: 8px;
   }
 }
+
+/* PERIAK PORTAL V13 VERIFIED */
+.app .periak-about-mini {
+  box-sizing: border-box;
+  max-width: 1124px;
+  margin: 12px auto 28px;
+  padding: 14px 17px;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  background: var(--surface);
+  color: var(--text-primary);
+  scroll-margin-top: 80px;
+}
+
+.app .periak-about-mini h2 {
+  margin: 0 0 7px;
+  font-size: 17px;
+  color: var(--text-primary);
+}
+
+.app .periak-about-mini p {
+  margin: 6px 0;
+  font-size: 12px;
+  line-height: 1.55;
+  color: var(--text-secondary);
+}
+
+.app .periak-about-mini a {
+  display: inline-block;
+  margin-top: 7px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+.app #dashboard,
+.app #courses {
+  scroll-margin-top: 70px;
+}
+
+@media (max-width: 700px) {
+  .app .periak-about-mini {
+    margin: 8px 9px 72px;
+    padding: 10px;
+  }
+
+  .app .periak-about-mini h2 {
+    font-size: 14px;
+  }
+
+  .app .periak-about-mini p {
+    font-size: 11px;
+  }
+}
