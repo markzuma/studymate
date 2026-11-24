@@ -572,6 +572,92 @@ export default function Monetization() {
         </p>
       </section>
 
+      {/* PERIAK DARK EXAMS PAYMENT FIX V1 */}
+      <div className="cc-panel mon-panel">
+        <h3>Pending Manual Payment Verification ({pendingManualPayments.length})</h3>
+        <p>
+          Confirm each receipt against your actual Pochi transaction history
+          before approving. A student-entered receipt is not proof of payment.
+        </p>
+
+        <div className="cc-table-wrap">
+          <table className="cc-table">
+            <thead>
+              <tr>
+                <th>Student</th>
+                <th>Plan</th>
+                <th>Amount</th>
+                <th>Receipt</th>
+                <th>Submitted</th>
+                <th>Review</th>
+              </tr>
+            </thead>
+            <tbody>
+              {pendingManualPayments.map(payment => (
+                <tr key={payment.id}>
+                  <td>{profileName(payment.student_id)}</td>
+                  <td>{paymentPlan(payment)}</td>
+                  <td>KSh {Number(payment.amount_kes).toLocaleString()}</td>
+                  <td><strong>{payment.manual_receipt || '—'}</strong></td>
+                  <td>{formatDate(payment.created_at)}</td>
+                  <td>
+                    <div className="mon-review-actions">
+                      <button
+                        className="mon-action mon-approve"
+                        disabled={reviewing === payment.id}
+                        onClick={() => reviewPayment(payment, 'approve')}
+                      >
+                        {reviewing === payment.id ? 'Processing...' : 'Approve'}
+                      </button>
+                      <button
+                        className="mon-action mon-reject"
+                        disabled={reviewing === payment.id}
+                        onClick={() => reviewPayment(payment, 'reject')}
+                      >
+                        Reject
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+              {pendingManualPayments.length === 0 && (
+                <tr>
+                  <td colSpan="6">No pending manual receipts to review.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div className="cc-panel mon-panel">
+        <h3>Manual M-Pesa Payment Settings</h3>
+        <p>
+          Configure the number students use to pay. This number is displayed
+          publicly to authenticated students during checkout.
+        </p>
+
+        <div className="mon-phone-setting">
+          <label htmlFor="mon-pochi-phone">Pochi payment number</label>
+          <input
+            id="mon-pochi-phone"
+            type="tel"
+            inputMode="tel"
+            placeholder="07XXXXXXXX or 2547XXXXXXXX"
+            value={pochiPhone}
+            onChange={event => setPochiPhone(event.target.value)}
+            disabled={savingPhone}
+          />
+          <button
+            className="mon-action"
+            onClick={savePochiPhone}
+            disabled={savingPhone}
+          >
+            {savingPhone ? 'Saving...' : 'Save payment number'}
+          </button>
+        </div>
+      </div>
+
       <section className="cc-panel mon-panel">
         <h3>M-Pesa Reconciliation Queue</h3>
 
@@ -721,91 +807,6 @@ export default function Monetization() {
           It may be incomplete if database query limits apply.
         </p>
       </section>
-
-      <div className="cc-panel mon-panel">
-        <h3>Manual M-Pesa Payment Settings</h3>
-        <p>
-          Configure the number students use to pay. This number is displayed
-          publicly to authenticated students during checkout.
-        </p>
-
-        <div className="mon-phone-setting">
-          <label htmlFor="mon-pochi-phone">Pochi payment number</label>
-          <input
-            id="mon-pochi-phone"
-            type="tel"
-            inputMode="tel"
-            placeholder="07XXXXXXXX or 2547XXXXXXXX"
-            value={pochiPhone}
-            onChange={event => setPochiPhone(event.target.value)}
-            disabled={savingPhone}
-          />
-          <button
-            className="mon-action"
-            onClick={savePochiPhone}
-            disabled={savingPhone}
-          >
-            {savingPhone ? 'Saving...' : 'Save payment number'}
-          </button>
-        </div>
-      </div>
-
-      <div className="cc-panel mon-panel">
-        <h3>Pending Manual Payment Verification</h3>
-        <p>
-          Confirm each receipt against your actual Pochi transaction history
-          before approving. A student-entered receipt is not proof of payment.
-        </p>
-
-        <div className="cc-table-wrap">
-          <table className="cc-table">
-            <thead>
-              <tr>
-                <th>Student</th>
-                <th>Plan</th>
-                <th>Amount</th>
-                <th>Receipt</th>
-                <th>Submitted</th>
-                <th>Review</th>
-              </tr>
-            </thead>
-            <tbody>
-              {pendingManualPayments.map(payment => (
-                <tr key={payment.id}>
-                  <td>{profileName(payment.student_id)}</td>
-                  <td>{paymentPlan(payment)}</td>
-                  <td>KSh {Number(payment.amount_kes).toLocaleString()}</td>
-                  <td><strong>{payment.manual_receipt || '—'}</strong></td>
-                  <td>{formatDate(payment.created_at)}</td>
-                  <td>
-                    <div className="mon-review-actions">
-                      <button
-                        className="mon-action mon-approve"
-                        disabled={reviewing === payment.id}
-                        onClick={() => reviewPayment(payment, 'approve')}
-                      >
-                        {reviewing === payment.id ? 'Processing...' : 'Approve'}
-                      </button>
-                      <button
-                        className="mon-action mon-reject"
-                        disabled={reviewing === payment.id}
-                        onClick={() => reviewPayment(payment, 'reject')}
-                      >
-                        Reject
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {pendingManualPayments.length === 0 && (
-                <tr>
-                  <td colSpan="6">No pending manual receipts to review.</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
 
       <div className="cc-panel mon-panel">
         <h3>Premium Subscription Plans</h3>

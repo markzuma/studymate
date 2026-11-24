@@ -37,11 +37,13 @@ function readExamDraft(userId, examId) {
   }
 }
 
+// PERIAK DARK EXAMS PAYMENT FIX V1
 const panel = {
-  background: '#fff',
+  background: 'var(--surface)',
+  color: 'var(--text-primary)',
   padding: 20,
   borderRadius: 14,
-  border: '1px solid #e2e8f0',
+  border: '1px solid var(--border)',
   margin: '16px auto',
   maxWidth: 850
 }
@@ -312,16 +314,16 @@ export default function DatabaseExamCentre({ onBack }) {
     : `${Math.floor(secondsLeft / 60)}:${String(secondsLeft % 60).padStart(2, '0')}`
 
   return (
-    <main style={{ minHeight: '100vh', background: '#f3f6fb', padding: 16 }}>
+    <main className="periak-published-exams" style={{ minHeight: '100vh', background: 'var(--page-bg)', color: 'var(--text-primary)', padding: 16 }}>
       <div style={{ maxWidth: 900, margin: '0 auto' }}>
         <button onClick={selectedExam ? leaveExam : onBack}
-          style={{ padding: '10px 15px', margin: '10px 0', cursor: 'pointer' }}>
+          style={{ padding: '10px 15px', margin: '10px 0', cursor: 'pointer', background: 'var(--surface-secondary)', color: 'var(--text-primary)', border: '1px solid var(--border)', borderRadius: 8 }}>
           ← {selectedExam ? 'Exit examination' : 'Back to examination centre'}
         </button>
 
         <header style={{ ...panel, background: '#102b50', color: '#fff' }}>
           <p style={{ letterSpacing: 2, fontSize: 12 }}>PERIAK LEARNING</p>
-          <h1>Published Examinations</h1>
+          <h1 style={{ color: '#fff' }}>Published Examinations</h1>
           <p>Attempt examinations published by your course administrator.</p>
         </header>
 
@@ -366,7 +368,7 @@ export default function DatabaseExamCentre({ onBack }) {
 
             {questions.map((question, index) => (
               <div key={question.id} style={{
-                borderTop: '1px solid #e2e8f0',
+                borderTop: '1px solid var(--border)',
                 padding: '18px 0'
               }}>
                 <h3>{index + 1}. {question.question_text}</h3>
@@ -377,7 +379,7 @@ export default function DatabaseExamCentre({ onBack }) {
                     {(question.options || []).map((option, optionIndex) => (
                       <label key={optionIndex} className="periak-db-option" style={{
                         padding: 10,
-                        border: '1px solid #dbe3ed',
+                        border: '1px solid var(--border)',
                         borderRadius: 8
                       }}>
                         <input
@@ -404,7 +406,7 @@ export default function DatabaseExamCentre({ onBack }) {
                     placeholder="Enter your answer"
                     style={{
                       width: '100%', padding: 12, borderRadius: 8,
-                      border: '1px solid #cbd5e1', boxSizing: 'border-box'
+                      border: '1px solid var(--border)', boxSizing: 'border-box'
                     }}
                   />
                 )}

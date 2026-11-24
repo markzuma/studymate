@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 
+// PERIAK DARK EXAMS PAYMENT FIX V1
 export default function ExamHistory({ onBack }) {
   const [records, setRecords] = useState([])
   const [loading, setLoading] = useState(true)
@@ -50,7 +51,7 @@ export default function ExamHistory({ onBack }) {
   }
 
   return (
-    <main className="exam-centre">
+    <main className="exam-centre periak-exam-history">
       <button
         type="button"
         onClick={onBack}
@@ -59,8 +60,8 @@ export default function ExamHistory({ onBack }) {
           padding: '10px 18px',
           borderRadius: '8px',
           border: '1px solid #dbe3ed',
-          background: '#fff',
-          color: '#26354a',
+          background: 'var(--surface)',
+          color: 'var(--text-primary)',
           cursor: 'pointer',
           fontWeight: '600'
         }}
@@ -81,7 +82,7 @@ export default function ExamHistory({ onBack }) {
           </p>
         ) : error ? (
           <div style={{ textAlign: 'center', padding: '20px' }}>
-            <p style={{ color: '#b42318' }}>{error}</p>
+            <p style={{ color: 'var(--periak-history-error, #b42318)' }}>{error}</p>
             <button className="exam-submit" onClick={loadHistory}>
               Try Again
             </button>
@@ -108,7 +109,7 @@ export default function ExamHistory({ onBack }) {
                       border: '1px solid #dbe3ed',
                       borderRadius: '12px',
                       padding: '16px',
-                      background: '#fff'
+                      background: 'var(--surface)'
                     }}
                   >
                     <div style={{
@@ -119,15 +120,15 @@ export default function ExamHistory({ onBack }) {
                       flexWrap: 'wrap'
                     }}>
                       <div>
-                        <h3 style={{ margin: '0 0 6px', color: '#26354a' }}>
+                        <h3 style={{ margin: '0 0 6px', color: 'var(--text-primary)' }}>
                           {record.subject_title}
                         </h3>
                         <span style={{
                           display: 'inline-block',
                           padding: '4px 9px',
                           borderRadius: '20px',
-                          background: '#eaf3ff',
-                          color: '#1556a0',
+                          background: 'var(--accent-soft)',
+                          color: 'var(--accent)',
                           fontSize: '12px',
                           fontWeight: '700'
                         }}>
@@ -136,7 +137,7 @@ export default function ExamHistory({ onBack }) {
                       </div>
 
                       <div style={{ textAlign: 'right' }}>
-                        <strong style={{ fontSize: '22px', color: '#087e70' }}>
+                        <strong style={{ fontSize: '22px', color: 'var(--periak-history-success, #087e70)' }}>
                           {Number(record.score).toFixed(1)} / {Number(record.max_score).toFixed(1)}
                         </strong>
                         <p style={{ margin: '3px 0', fontWeight: '700' }}>
@@ -150,7 +151,7 @@ export default function ExamHistory({ onBack }) {
                       gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))',
                       gap: '10px',
                       marginTop: '16px',
-                      color: '#526176',
+                      color: 'var(--text-muted)',
                       fontSize: '13px'
                     }}>
                       <div><strong>Date:</strong><br />{formatDate(record.submitted_at)}</div>
@@ -161,7 +162,7 @@ export default function ExamHistory({ onBack }) {
                     </div>
 
                     {record.exam_mode === 'mock' && (
-                      <p style={{ color: '#8a5a00', fontSize: '12px', marginBottom: 0 }}>
+                      <p style={{ color: 'var(--periak-history-warning, #8a5a00)', fontSize: '12px', marginBottom: 0 }}>
                         Written marks are self-assessed.
                       </p>
                     )}
@@ -169,7 +170,7 @@ export default function ExamHistory({ onBack }) {
                     <details style={{ marginTop: '16px' }}>
                       <summary style={{
                         cursor: 'pointer',
-                        color: '#1556a0',
+                        color: 'var(--accent)',
                         fontWeight: '700'
                       }}>
                         Review questions and answers
@@ -186,7 +187,7 @@ export default function ExamHistory({ onBack }) {
                               key={index}
                               style={{
                                 padding: '12px',
-                                background: '#f8fafc',
+                                background: 'var(--surface-secondary)',
                                 borderRadius: '9px'
                               }}
                             >
@@ -199,10 +200,10 @@ export default function ExamHistory({ onBack }) {
                                     style={{
                                       margin: '5px 0',
                                       color: optionIndex === question.correct_answer
-                                        ? '#087e70'
+                                        ? 'var(--periak-history-success, #087e70)'
                                         : optionIndex === selectedIndex
-                                          ? '#b42318'
-                                          : '#526176',
+                                          ? 'var(--periak-history-error, #b42318)'
+                                          : 'var(--text-muted)',
                                       fontWeight: optionIndex === question.correct_answer ||
                                         optionIndex === selectedIndex ? '700' : '400'
                                     }}
@@ -214,9 +215,9 @@ export default function ExamHistory({ onBack }) {
                                   </p>
                                 ))}
                                 {selectedIndex === null || selectedIndex === undefined ? (
-                                  <p style={{ color: '#8a5a00' }}>Not answered</p>
+                                  <p style={{ color: 'var(--periak-history-warning, #8a5a00)' }}>Not answered</p>
                                 ) : (
-                                  <p style={{ color: isCorrect ? '#087e70' : '#b42318' }}>
+                                  <p style={{ color: isCorrect ? 'var(--periak-history-success, #087e70)' : 'var(--periak-history-error, #b42318)' }}>
                                     Your answer: {response?.selected_answer || 'Not recorded'}
                                   </p>
                                 )}
@@ -234,7 +235,7 @@ export default function ExamHistory({ onBack }) {
                             {record.written_snapshot.map((item, index) => (
                               <div key={index} style={{
                                 padding: '12px',
-                                background: '#f8fafc',
+                                background: 'var(--surface-secondary)',
                                 borderRadius: '9px',
                                 marginBottom: '10px'
                               }}>

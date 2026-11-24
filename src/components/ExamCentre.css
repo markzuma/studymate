@@ -608,3 +608,36 @@
 .exam-progress{margin-bottom:7px}
 .exam-submit{min-height:44px}
 }
+
+/* PERIAK DARK EXAMS PAYMENT FIX V1 */
+:root[data-theme="dark"] {
+  --periak-history-success: #6ee7b7;
+  --periak-history-error: #fda4af;
+  --periak-history-warning: #fcd34d;
+}
+:root[data-theme="dark"] .periak-exam-history,
+:root[data-theme="dark"] .periak-published-exams {
+  background: var(--page-bg);
+  color: var(--text-primary);
+}
+:root[data-theme="dark"]
+.periak-exam-history .exam-card,
+:root[data-theme="dark"]
+.periak-published-exams section:not(.exam-card) {
+  color: var(--text-primary);
+}
+:root[data-theme="dark"]
+.periak-published-exams .periak-db-option {
+  color: var(--text-primary);
+  background: var(--surface-secondary);
+  border-color: var(--border);
+}
+:root[data-theme="dark"]
+.periak-published-exams .periak-db-option:has(input:checked) {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+:root[data-theme="dark"]
+.periak-exam-history summary {
+  color: #8bbdff;
+}

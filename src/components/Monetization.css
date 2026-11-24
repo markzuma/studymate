@@ -286,3 +286,55 @@
     flex-wrap: wrap;
   }
 }
+
+/* PERIAK DARK EXAMS PAYMENT FIX V1 */
+:root[data-theme="dark"] .monetization .mon-panel {
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+:root[data-theme="dark"] .monetization .mon-panel h3 {
+  color: var(--text-primary);
+}
+:root[data-theme="dark"] .monetization .mon-panel > p {
+  color: var(--text-muted);
+}
+:root[data-theme="dark"] .monetization .mon-action {
+  background: var(--surface-secondary);
+  color: #a7cfff;
+  border-color: var(--border);
+}
+:root[data-theme="dark"] .monetization .mon-approve {
+  background: #183a2c;
+  color: #a7f3c2;
+  border-color: #329b62;
+}
+:root[data-theme="dark"] .monetization .mon-reject {
+  background: #48252b;
+  color: #ffc1c7;
+  border-color: #d65b68;
+}
+:root[data-theme="dark"] .monetization .mon-notice {
+  background: #41301b;
+  color: #fcd9a4;
+  border-color: #8a622e;
+}
+:root[data-theme="dark"] .monetization .mon-message {
+  background: #18385c;
+  color: #d2e5ff;
+}
+:root[data-theme="dark"] .monetization .cc-table {
+  color: var(--text-primary);
+}
+:root[data-theme="dark"] .monetization .cc-table th {
+  background: var(--surface-secondary);
+  color: var(--text-primary);
+}
+:root[data-theme="dark"] .monetization .cc-table td {
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+:root[data-theme="dark"] .monetization .mon-phone-setting input {
+  background: var(--surface-secondary);
+  color: var(--text-primary);
+  border-color: var(--border);
+}
