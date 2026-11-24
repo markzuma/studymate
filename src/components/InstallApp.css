@@ -1,0 +1,113 @@
+/* PERIAK APP INSTALL V21 */
+
+.periak-install {
+  position: fixed;
+  z-index: 850;
+  bottom: 18px;
+  left: 16px;
+  width: min(330px, calc(100vw - 24px));
+  box-sizing: border-box;
+  padding: 11px;
+  border: 1px solid var(--border, #d5dce6);
+  border-radius: 13px;
+  background: var(--surface, #ffffff);
+  color: var(--text-primary, #172334);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, .18);
+}
+
+.periak-install-top {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.periak-install-logo {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+}
+
+.periak-install-copy {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+
+.periak-install-copy strong {
+  font-size: 13px;
+}
+
+.periak-install-copy span {
+  color: var(--text-secondary, #67758a);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.periak-install-close {
+  align-self: flex-start;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 23px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.periak-install-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 11px;
+}
+
+.periak-install-actions button {
+  flex: 1;
+  min-height: 37px;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.periak-install-primary {
+  border: 1px solid #2878d0;
+  background: #2878d0;
+  color: #ffffff;
+}
+
+.periak-install-later {
+  border: 1px solid var(--border, #d5dce6);
+  background: transparent;
+  color: inherit;
+}
+
+.periak-install-help {
+  margin-top: 9px;
+  padding: 9px;
+  border-radius: 8px;
+  background: var(--surface-secondary, rgba(125, 135, 155, .10));
+  color: inherit;
+}
+
+.periak-install-help p {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.periak-install button:focus-visible {
+  outline: 2px solid var(--accent, #2878d0);
+  outline-offset: 2px;
+}
+
+@media (max-width: 700px) {
+  .periak-install {
+    bottom: calc(125px + env(safe-area-inset-bottom, 0px));
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(330px, calc(100vw - 18px));
+  }
+}
