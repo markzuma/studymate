@@ -3731,3 +3731,191 @@ body.periak-focus-active .periak-reader-floating-dock {
 }
 
 /* Success states remain green intentionally. */
+
+
+/* PERIAK MOBILE DESKTOP MATCH V2
+   Only phones. Desktop appearance is preserved. */
+
+@media (max-width: 700px) {
+
+  #root {
+    width: 100%;
+    max-width: 100%;
+    border-inline: 0;
+  }
+
+  .app .student-dashboard {
+    width: 100%;
+    max-width: 100%;
+    padding: 22px 13px;
+    text-align: left;
+  }
+
+  .app .dashboard-heading {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+    margin-bottom: 17px;
+  }
+
+  .app .dashboard-heading h2 {
+    font-size: 23px;
+    letter-spacing: -.5px;
+    line-height: 1.25;
+  }
+
+  .app .dashboard-heading p {
+    font-size: 12px;
+    line-height: 1.55;
+  }
+
+  .app .dashboard-exam-button {
+    align-self: flex-start;
+    width: auto;
+    max-width: 100%;
+  }
+
+  /* Preserve desktop-style statistics on phones. */
+  .app .student-dashboard .dashboard-stats {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    margin-bottom: 15px;
+  }
+
+  .app .student-dashboard .dashboard-stat {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    min-width: 0;
+    padding: 12px 9px;
+    gap: 6px;
+    border-radius: 9px;
+  }
+
+  .app .student-dashboard .dashboard-stat strong {
+    font-size: 24px;
+    line-height: 1.15;
+  }
+
+  .app .student-dashboard .dashboard-stat small {
+    font-size: 10px;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+  }
+
+  /* Keep progress and activity panels structured. */
+  .app .student-dashboard .dashboard-panels {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .app .student-dashboard .dashboard-panel,
+  .app .student-dashboard .dashboard-progress {
+    min-width: 0;
+    padding: 15px;
+    border-radius: 10px;
+  }
+
+  .app .student-dashboard .dashboard-panel-heading h3 {
+    font-size: 16px;
+  }
+
+  .app .student-dashboard .subject-progress-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 11px;
+  }
+
+  /* Match the desktop's resource-card presentation. */
+  .app .student-dashboard .dashboard-premium-ad {
+    display: block;
+    padding: 16px;
+    border-radius: 10px;
+  }
+
+  .app .student-dashboard .dashboard-premium-ad h2 {
+    font-size: 21px;
+    line-height: 1.3;
+  }
+
+  .app .student-dashboard .dashboard-premium-ad
+  .dashboard-premium-tools {
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+  }
+
+  .app .student-dashboard .dashboard-premium-ad
+  .dashboard-premium-tools .dashboard-premium-tool {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    min-width: 0;
+    width: 100%;
+    min-height: 100px;
+    padding: 12px;
+    gap: 7px;
+    text-align: left;
+    border-radius: 9px;
+  }
+
+  .app .student-dashboard .dashboard-premium-tool small {
+    font-size: 10px;
+    line-height: 1.4;
+  }
+
+  /* Comfortable mobile course catalogue. */
+  .app .courses-section {
+    padding: 30px 13px;
+  }
+
+  .app .course-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .app .course-card {
+    min-width: 0;
+    padding: 14px;
+    border-radius: 10px;
+  }
+
+  .app .course-card h3 {
+    font-size: 14px;
+    line-height: 1.4;
+  }
+
+  .app .course-card p {
+    font-size: 11px;
+    line-height: 1.55;
+    min-height: 0;
+  }
+
+  .app .course-icon {
+    width: 38px;
+    height: 38px;
+    font-size: 21px;
+    margin-bottom: 12px;
+  }
+}
+
+/* Narrow phones: keep course titles comfortable to read. */
+@media (max-width: 400px) {
+  .app .course-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .app .student-dashboard .dashboard-stat {
+    padding: 10px 7px;
+  }
+
+  .app .student-dashboard .dashboard-stat strong {
+    font-size: 22px;
+  }
+}
