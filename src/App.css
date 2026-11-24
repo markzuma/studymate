@@ -4925,3 +4925,37 @@ body.periak-focus-active .periak-reader-floating-dock {
     margin-top:0;
   }
 }
+
+/* PERIAK DASHBOARD SPACING V11 FIXED */
+
+/* Prevent activity panels from stretching to equal heights. */
+.student-dashboard .dashboard-panels {
+  align-items:start;
+}
+
+.student-dashboard .dashboard-panels > * {
+  align-self:start;
+  height:auto;
+  min-height:0;
+}
+
+/* Reduce the empty space before the course catalogue. */
+.student-dashboard {
+  padding-bottom:5px;
+}
+
+.student-dashboard + .courses-section {
+  padding-top:14px;
+}
+
+@media (max-width:700px) {
+  .student-dashboard .dashboard-panels {
+    align-items:start;
+    gap:6px;
+    margin-bottom:6px;
+  }
+
+  .student-dashboard + .courses-section {
+    padding-top:9px;
+  }
+}
