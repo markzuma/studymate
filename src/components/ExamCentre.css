@@ -558,3 +558,31 @@
     padding: 13px !important;
   }
 }
+
+/* PERIAK COMPREHENSIVE MOBILE COMPACT V2 */
+
+@media (max-width: 700px) {
+  .exam-centre {
+    padding: 12px 10px;
+  }
+  .exam-header {
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .exam-card {
+    min-width: 0;
+    padding: 12px;
+    margin-bottom: 9px;
+  }
+  .exam-option {
+    padding: 11px;
+    margin-bottom: 7px;
+    line-height: 1.5;
+  }
+  .exam-progress-track {
+    margin-block: 9px;
+  }
+  .exam-submit {
+    min-height: 44px;
+  }
+}

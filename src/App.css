@@ -4012,3 +4012,108 @@ body.periak-focus-active .periak-reader-floating-dock {
     color: #92c5ff;
   }
 }
+
+/* PERIAK COMPREHENSIVE MOBILE COMPACT V2 */
+
+@media (max-width: 700px) {
+  .app .navbar {
+    padding: 9px 12px;
+    gap: 8px;
+  }
+  .app .hero {
+    min-height: auto;
+    padding: 16px 12px;
+    gap: 12px;
+  }
+  .app .hero h1 {
+    font-size: clamp(27px, 7vw, 35px);
+    line-height: 1.2;
+  }
+  .app .student-dashboard {
+    padding: 14px 10px;
+  }
+  .app .dashboard-heading {
+    gap: 8px;
+    margin-bottom: 11px;
+  }
+  .app .dashboard-heading h2 {
+    font-size: 21px;
+    line-height: 1.3;
+  }
+  .app .dashboard-stats {
+    gap: 7px;
+    margin-bottom: 12px;
+  }
+  .app .dashboard-stat {
+    min-width: 0;
+    padding: 10px 8px;
+    gap: 5px;
+  }
+  .app .dashboard-stat strong {
+    font-size: 23px;
+  }
+  .app .dashboard-premium-ad {
+    padding: 12px;
+    margin-block: 12px;
+  }
+  .app .dashboard-premium-ad h2 {
+    font-size: 19px;
+    line-height: 1.3;
+  }
+  .app .dashboard-premium-tools {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .app .dashboard-premium-tool {
+    min-width: 0;
+    min-height: 84px;
+    padding: 10px;
+    gap: 5px;
+  }
+  .app .dashboard-panels {
+    gap: 10px;
+  }
+  .app .dashboard-panel,
+  .app .dashboard-progress {
+    padding: 12px;
+    min-width: 0;
+  }
+  .app .courses-section {
+    padding: 20px 10px;
+  }
+  .app .course-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+  }
+  .app .course-card {
+    min-width: 0;
+    padding: 12px;
+  }
+  .app .course-card h3 {
+    font-size: 14px;
+    overflow-wrap: anywhere;
+  }
+  .app.periak-compact-mobile-home
+  .periak-mobile-bottom-nav {
+    width: min(356px, calc(100vw - 20px));
+    height: 52px;
+    bottom: calc(6px + env(safe-area-inset-bottom, 0px));
+    padding: 3px 5px;
+    border-radius: 14px;
+  }
+  .app .periak-mobile-bottom-nav button {
+    height: 44px;
+    min-height: 44px;
+    gap: 1px;
+  }
+  .app .periak-mobile-bottom-nav button span {
+    font-size: 9px;
+  }
+}
+@media (max-width: 350px) {
+  .app .course-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

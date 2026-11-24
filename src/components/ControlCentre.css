@@ -874,3 +874,40 @@
     min-height: 240px;
   }
 }
+
+/* PERIAK COMPREHENSIVE MOBILE COMPACT V2 */
+
+@media (max-width: 700px) {
+  .control-centre {
+    padding: 12px 8px;
+  }
+  .cc-header {
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .cc-navigation {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 5px;
+    overflow-x: auto;
+    padding: 7px;
+  }
+  .cc-navigation button {
+    flex: 0 0 auto;
+    white-space: nowrap;
+    padding: 9px 10px;
+    font-size: 12px;
+  }
+  .cc-stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .cc-panel {
+    min-width: 0;
+    padding: 12px;
+  }
+  .cc-content {
+    min-width: 0;
+  }
+}

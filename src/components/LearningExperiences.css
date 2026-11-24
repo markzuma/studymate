@@ -495,3 +495,42 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* PERIAK COMPREHENSIVE MOBILE COMPACT V2 */
+
+@media (max-width: 700px) {
+  .xp-intro {
+    padding: 13px 11px;
+    margin-bottom: 12px;
+  }
+  .xp-metrics {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+  .xp-filter-row {
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 7px;
+    overflow-x: auto;
+    padding-bottom: 5px;
+  }
+  .xp-filter-row > * {
+    flex-shrink: 0;
+  }
+  .xp-course-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 9px;
+  }
+  .xp-course-card {
+    min-width: 0;
+    padding: 12px;
+    overflow-wrap: anywhere;
+  }
+}
+@media (max-width: 400px) {
+  .xp-course-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

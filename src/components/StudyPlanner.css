@@ -774,3 +774,27 @@
     flex-wrap: wrap;
   }
 }
+
+/* PERIAK COMPREHENSIVE MOBILE COMPACT V2 */
+
+@media (max-width: 700px) {
+  .sp-planner {
+    padding: 12px 10px;
+  }
+  .sp-welcome {
+    padding: 14px;
+    margin-bottom: 12px;
+  }
+  .sp-form-heading {
+    margin-bottom: 10px;
+  }
+  .sp-form {
+    padding: 12px;
+  }
+  .sp-task {
+    min-width: 0;
+    padding: 11px;
+    margin-bottom: 8px;
+    overflow-wrap: anywhere;
+  }
+}

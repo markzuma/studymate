@@ -312,3 +312,25 @@
 
 
 /* PERIAK SHARED TYPOGRAPHY SCALE V1 */
+
+/* PERIAK COMPREHENSIVE MOBILE COMPACT V2 */
+
+@media (max-width: 700px) {
+  .auth-page {
+    padding: 14px 10px;
+  }
+  .auth-card {
+    width: 100%;
+    max-width: 100%;
+    padding: 17px 14px;
+  }
+  .auth-brand {
+    margin-bottom: 12px;
+  }
+  .auth-userbar {
+    gap: 8px;
+  }
+  .auth-submit {
+    min-height: 44px;
+  }
+}
