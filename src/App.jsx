@@ -1678,38 +1678,6 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
           </div>
 
           <div className="dashboard-panels">
-            <section className="dashboard-panel continue-panel">
-              <div className="dashboard-panel-heading">
-                <div>
-                  <span className="dashboard-kicker">PICK UP WHERE YOU LEFT OFF</span>
-                  <h3>Continue learning</h3>
-                </div>
-                <span>↗</span>
-              </div>
-              {learningData.recent.length ? (
-                (() => {
-                  const latest = learningData.recent[0]
-                  const course = catalogueCourses.find(item => item.title === latest.courseTitle)
-                  return course ? (
-                    <div className="continue-content">
-                      <span className="continue-icon">{course.icon}</span>
-                      <div>
-                        <strong>{latest.unit}</strong>
-                        <small>{latest.courseTitle}</small>
-                      </div>
-                      <button onClick={() => openUnit(course, latest.unit)}>Resume →</button>
-                    </div>
-                  ) : <p>Explore a subject to begin your learning journey.</p>
-                })()
-              ) : (
-                <div className="dashboard-empty">
-                  <span>🚀</span>
-                  <p>Your next learning session starts here. Open a subject and select a unit.</p>
-                  <a href="#courses">Explore courses →</a>
-                </div>
-              )}
-            </section>
-
             <section className="dashboard-panel recent-panel">
               <div className="dashboard-panel-heading">
                 <div>

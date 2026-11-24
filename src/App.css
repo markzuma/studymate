@@ -5136,3 +5136,102 @@ body.periak-focus-active .periak-reader-floating-dock {
     padding: 8px;
   }
 }
+
+/* PERIAK DASHBOARD AND MOBILE REFINEMENT V16 */
+
+/* One learning history panel, occupying available width. */
+.app .student-dashboard .dashboard-panels {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 8px;
+  align-items: start;
+}
+
+.app .student-dashboard .recent-panel {
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  box-sizing: border-box;
+}
+
+/* Compact horizontal learning history. */
+.app .student-dashboard .recent-panel .recent-lesson-list {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 8px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 4px 2px 9px;
+  scroll-snap-type: x proximity;
+  scrollbar-width: thin;
+}
+
+.app .student-dashboard .recent-panel .recent-lesson {
+  flex: 0 0 clamp(180px, 27%, 270px);
+  box-sizing: border-box;
+  width: auto;
+  min-width: 0;
+  min-height: 65px;
+  padding: 8px;
+  scroll-snap-align: start;
+}
+
+.app .student-dashboard .recent-panel .recent-lesson strong {
+  overflow-wrap: anywhere;
+  line-height: 1.35;
+}
+
+/* Compact mobile dashboard and course catalogue. */
+@media (max-width: 700px) {
+  .app .student-dashboard .dashboard-panels {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
+  }
+
+  .app .student-dashboard .recent-panel {
+    padding: 9px;
+  }
+
+  .app .student-dashboard .recent-panel .recent-lesson-list {
+    gap: 7px;
+    padding-bottom: 7px;
+  }
+
+  .app .student-dashboard .recent-panel .recent-lesson {
+    flex: 0 0 78%;
+    min-height: 62px;
+    padding: 7px;
+  }
+
+  .app .courses-section .section-heading {
+    margin-bottom: 8px;
+  }
+
+  .app .courses-section .course-grid {
+    gap: 8px;
+  }
+
+  .app .courses-section .course-card {
+    min-width: 0;
+    padding: 10px;
+  }
+
+  .app .courses-section .course-open-button {
+    min-height: 34px;
+  }
+
+  .app .courses-section .periak-course-toolbar input {
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+@media (max-width: 420px) {
+  .app .student-dashboard .recent-panel .recent-lesson {
+    flex-basis: 85%;
+  }
+
+  .app .courses-section .course-card {
+    padding: 9px;
+  }
+}
