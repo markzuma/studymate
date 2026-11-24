@@ -5235,3 +5235,154 @@ body.periak-focus-active .periak-reader-floating-dock {
     padding: 9px;
   }
 }
+
+/* PERIAK MOBILE POLISH V17 */
+
+/* Scoped entirely to the compact home screen. */
+@media (max-width: 700px) {
+
+  /* Header: compact alignment and accessible controls. */
+  .app.periak-compact-mobile-home .navbar {
+    box-sizing: border-box;
+    min-width: 0;
+    gap: 8px;
+    padding: 8px 12px;
+  }
+
+  .app.periak-compact-mobile-home .navbar .brand {
+    min-width: 0;
+    max-width: calc(100% - 55px);
+    font-weight: 800;
+    letter-spacing: 0.2px;
+  }
+
+  .app.periak-compact-mobile-home
+  .mobile-menu-toggle {
+    box-sizing: border-box;
+    flex: 0 0 40px;
+    min-width: 40px;
+    min-height: 40px;
+    padding: 7px;
+    border-radius: 9px;
+    touch-action: manipulation;
+  }
+
+  /* Six study shortcuts: improve touch comfort. */
+  .app.periak-compact-mobile-home
+  .dashboard-premium-tools {
+    gap: 7px;
+    min-width: 0;
+  }
+
+  .app.periak-compact-mobile-home
+  .dashboard-premium-tool {
+    box-sizing: border-box;
+    min-width: 0;
+    min-height: 47px;
+    padding: 8px 5px;
+    border-radius: 9px;
+    touch-action: manipulation;
+  }
+
+  .app.periak-compact-mobile-home
+  .dashboard-premium-tool strong {
+    font-size: 11px;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+  }
+
+  /* Recent history remains swipeable. */
+  .app.periak-compact-mobile-home
+  .recent-panel .recent-lesson-list {
+    gap: 7px;
+    padding-bottom: 8px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .app.periak-compact-mobile-home
+  .recent-panel .recent-lesson {
+    flex: 0 0 76%;
+    min-height: 66px;
+    touch-action: pan-x pan-y;
+  }
+
+  /* Course cards: retain two columns, improve legibility. */
+  .app.periak-compact-mobile-home
+  .courses-section .course-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .app.periak-compact-mobile-home
+  .courses-section .course-card {
+    box-sizing: border-box;
+    min-width: 0;
+    min-height: 0;
+    padding: 11px;
+    gap: 7px;
+    border-radius: 10px;
+  }
+
+  .app.periak-compact-mobile-home
+  .courses-section .course-card h3 {
+    font-size: 12px;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+  }
+
+  .app.periak-compact-mobile-home
+  .courses-section .course-card p {
+    font-size: 11px;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+  }
+
+  .app.periak-compact-mobile-home
+  .courses-section .course-card-progress small {
+    font-size: 10px;
+    line-height: 1.4;
+  }
+
+  .app.periak-compact-mobile-home
+  .courses-section .course-open-button {
+    box-sizing: border-box;
+    min-height: 42px;
+    width: 100%;
+    padding: 8px 6px;
+    font-size: 11px;
+    line-height: 1.3;
+    touch-action: manipulation;
+  }
+
+  /* Search field: fit narrow mobile screens. */
+  .app.periak-compact-mobile-home
+  .periak-course-toolbar {
+    min-width: 0;
+  }
+
+  .app.periak-compact-mobile-home
+  .periak-course-toolbar input {
+    box-sizing: border-box;
+    min-width: 0;
+    max-width: 100%;
+    min-height: 40px;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 380px) {
+  .app.periak-compact-mobile-home
+  .courses-section .course-card {
+    padding: 9px;
+  }
+
+  .app.periak-compact-mobile-home
+  .dashboard-premium-tool {
+    padding: 7px 4px;
+  }
+
+  .app.periak-compact-mobile-home
+  .recent-panel .recent-lesson {
+    flex-basis: 84%;
+  }
+}
