@@ -104,7 +104,15 @@ export function ThemeProvider({ children }) {
     root.dataset.reducedMotion = String(appearance.reducedMotion)
 
     root.style.setProperty('--accent', accent.color)
-    root.style.setProperty('--accent-soft', accent.soft)
+    // PERIAK OBSIDIAN DARK V1
+    root.style.setProperty(
+      '--accent-soft',
+      dark
+        ? `rgba(${accent.color.match(/\w\w/g).map(
+            v => parseInt(v, 16)
+          ).join(', ')}, .16)`
+        : accent.soft
+    )
     root.style.setProperty('--accent-rgb',
       accent.color.match(/\w\w/g).map(v => parseInt(v, 16)).join(', '))
 

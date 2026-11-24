@@ -4625,3 +4625,129 @@ body.periak-focus-active .periak-reader-floating-dock {
 .app.periak-compact-mobile-home .periak-mobile-bottom-nav{width:min(340px,calc(100vw - 16px));height:50px;padding:3px}
 .app.periak-compact-mobile-home .periak-mobile-bottom-nav button{min-width:0;height:42px}
 }
+
+/* PERIAK OBSIDIAN DARK V1 — colour only */
+:root[data-theme="dark"] .app {
+  --professional-accent: #86b5ff;
+  --periak-brand-soft: rgba(var(--accent-rgb),.16);
+}
+
+/* App background and navigation */
+:root[data-theme="dark"] .app,
+:root[data-theme="dark"] .navbar,
+:root[data-theme="dark"] .courses-section,
+:root[data-theme="dark"] .features-section {
+  background-color: var(--page-bg);
+  color: var(--text-primary);
+}
+:root[data-theme="dark"] .navbar {
+  border-color: var(--border);
+}
+:root[data-theme="dark"] .navbar nav,
+:root[data-theme="dark"] .hero-text,
+:root[data-theme="dark"] .dashboard-muted {
+  color: var(--text-muted);
+}
+:root[data-theme="dark"] .app .brand-icon,
+:root[data-theme="dark"] .app .nav-button,
+:root[data-theme="dark"] .app .primary-button,
+:root[data-theme="dark"] .app .dashboard-exam-button,
+:root[data-theme="dark"]
+.app .dashboard-premium-ad-copy > button {
+  background: #327cf5;
+  color: #fff;
+}
+
+/* Learning cards, progress and study pages */
+:root[data-theme="dark"] .dashboard-stat,
+:root[data-theme="dark"] .dashboard-panel,
+:root[data-theme="dark"] .dashboard-progress,
+:root[data-theme="dark"] .course-card,
+:root[data-theme="dark"] .unit-card,
+:root[data-theme="dark"] .course-detail-hero,
+:root[data-theme="dark"] .lesson-panel,
+:root[data-theme="dark"] .feature,
+:root[data-theme="dark"] .exam-card,
+:root[data-theme="dark"] .practice-question,
+:root[data-theme="dark"] .periak-home-welcome,
+:root[data-theme="dark"] .periak-course-upgrade,
+:root[data-theme="dark"] .subject-progress {
+  background: var(--surface);
+  color: var(--text-primary);
+  border-color: var(--border);
+  box-shadow: var(--shadow);
+}
+
+/* Module, administrative and settings cards */
+:root[data-theme="dark"] .suite-card,
+:root[data-theme="dark"] .xp-course-card,
+:root[data-theme="dark"] .xp-patient-card,
+:root[data-theme="dark"] .xp-question,
+:root[data-theme="dark"] .sp-task,
+:root[data-theme="dark"] .sp-stat,
+:root[data-theme="dark"] .exam-option,
+:root[data-theme="dark"] .papers-result-card,
+:root[data-theme="dark"] .premium-card,
+:root[data-theme="dark"] .premium-checkout,
+:root[data-theme="dark"] .cc-panel,
+:root[data-theme="dark"] .cc-stats article,
+:root[data-theme="dark"] .cc-navigation,
+:root[data-theme="dark"] .profile-panel,
+:root[data-theme="dark"] .appearance-panel,
+:root[data-theme="dark"] .auth-card {
+  background: var(--surface);
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+
+/* Visible text inside cards */
+:root[data-theme="dark"] .course-card h3,
+:root[data-theme="dark"] .unit-info h3,
+:root[data-theme="dark"] .lesson-panel h2,
+:root[data-theme="dark"] .dashboard-panel-heading h3,
+:root[data-theme="dark"] .suite-card strong,
+:root[data-theme="dark"] .cc-panel h3,
+:root[data-theme="dark"] .premium-card h3 {
+  color: var(--text-primary);
+}
+:root[data-theme="dark"] .course-card p,
+:root[data-theme="dark"] .unit-info p,
+:root[data-theme="dark"] .suite-card p,
+:root[data-theme="dark"] .feature p,
+:root[data-theme="dark"] .cc-header p {
+  color: var(--text-muted);
+}
+
+/* Secondary surfaces and selected elements */
+:root[data-theme="dark"] .subject-progress-track,
+:root[data-theme="dark"] .progress-track,
+:root[data-theme="dark"] .appearance-preview,
+:root[data-theme="dark"] .profile-identity,
+:root[data-theme="dark"] .papers-card-meta span {
+  background: var(--surface-secondary);
+}
+:root[data-theme="dark"] .question-option,
+:root[data-theme="dark"] .unit-clickable {
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+:root[data-theme="dark"] .question-option:hover,
+:root[data-theme="dark"] .unit-clickable:hover {
+  background: var(--surface-secondary);
+  border-color: var(--accent);
+}
+
+/* Preserve the compact floating mobile navigation */
+:root[data-theme="dark"]
+.app.periak-compact-mobile-home .periak-mobile-bottom-nav {
+  background: #171e29;
+  border-color: #344254;
+  box-shadow: 0 5px 22px rgba(0,0,0,.4);
+}
+:root[data-theme="dark"] .periak-mobile-bottom-nav button {
+  color: #c3d0df;
+}
+:root[data-theme="dark"] .periak-mobile-bottom-nav button.nav-home {
+  background: rgba(var(--accent-rgb),.18);
+  color: #a7cfff;
+}

@@ -481,3 +481,59 @@ label:has(input[type="radio"]):hover {
     font-size: 15px;
   }
 }
+
+/* PERIAK OBSIDIAN DARK V1 */
+:root[data-theme="dark"] {
+  --page-bg: #0c1017;
+  --surface: #171e29;
+  --surface-secondary: #202b39;
+  --text-primary: #f3f6fc;
+  --text-muted: #b3c1d3;
+  --border: #344254;
+  --shadow: 0 5px 18px rgba(0,0,0,.20);
+  --text: var(--text-muted);
+  --text-h: var(--text-primary);
+  --bg: var(--page-bg);
+  --code-bg: var(--surface-secondary);
+  --social-bg: var(--surface-secondary);
+  --accent-border: rgba(var(--accent-rgb),.65);
+  color-scheme: dark;
+}
+
+/* Form controls and native dropdowns */
+:root[data-theme="dark"] input:not([type="checkbox"]):not([type="radio"]),
+:root[data-theme="dark"] select,
+:root[data-theme="dark"] textarea {
+  background-color: #202b39;
+  color: #f3f6fc;
+  border-color: #405269;
+}
+:root[data-theme="dark"] select option {
+  background-color: #202b39;
+  color: #f3f6fc;
+}
+:root[data-theme="dark"] input::placeholder,
+:root[data-theme="dark"] textarea::placeholder {
+  color: #a9b9ce;
+  opacity: 1;
+}
+
+/* Selected examination options retain visible contrast */
+:root[data-theme="dark"] .periak-db-option,
+:root[data-theme="dark"] .periak-mock-card {
+  background: #171e29 !important;
+  color: #f3f6fc !important;
+  border-color: #405269 !important;
+}
+:root[data-theme="dark"] .periak-db-option:has(input:checked),
+:root[data-theme="dark"]
+.periak-mock-card label:has(input[type="radio"]:checked) {
+  background: #18385c !important;
+  color: #f3f6fc !important;
+  border-color: #86b5ff !important;
+}
+:root[data-theme="dark"]
+.periak-mock-card label:has(input[type="radio"]) {
+  background: #202b39;
+  border-color: #405269;
+}
