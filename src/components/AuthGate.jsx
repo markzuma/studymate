@@ -561,10 +561,49 @@ export default function AuthGate({ children }) {
             </button>
           )}
 
-          <button data-periak-tour="profile" onClick={() => setShowProfile(true)}>Profile &amp; Security</button>
-          <button data-periak-tour="appearance" onClick={() => setShowAppearance(true)}>Appearance</button>
-          <button type="button" onClick={replayWelcomeTour}>Take App Tour</button>
-          <button onClick={handleLogout}>Log out</button>
+          {/* PERIAK UNIVERSAL ACCOUNT MENU V18B */}
+          <details
+            className="auth-account-menu"
+            onBlur={(event) => {
+              if (!event.currentTarget.contains(event.relatedTarget)) {
+                event.currentTarget.removeAttribute('open')
+              }
+            }}
+          >
+            <summary aria-label="Account options">
+              Account <span aria-hidden="true">▾</span>
+            </summary>
+            <div className="auth-account-menu-list">
+              <button type="button" data-periak-tour="profile"
+                onClick={(event) => {
+                  event.currentTarget.closest('details')?.removeAttribute('open')
+                  setShowProfile(true)
+                }}>
+                Profile &amp; Security
+              </button>
+              <button type="button" data-periak-tour="appearance"
+                onClick={(event) => {
+                  event.currentTarget.closest('details')?.removeAttribute('open')
+                  setShowAppearance(true)
+                }}>
+                Appearance
+              </button>
+              <button type="button"
+                onClick={(event) => {
+                  event.currentTarget.closest('details')?.removeAttribute('open')
+                  replayWelcomeTour()
+                }}>
+                Take App Tour
+              </button>
+              <button type="button" className="auth-account-logout"
+                onClick={(event) => {
+                  event.currentTarget.closest('details')?.removeAttribute('open')
+                  handleLogout()
+                }}>
+                Log out
+              </button>
+            </div>
+          </details>
         </div>
 
         {(showAppearance || showProfile) && (
