@@ -3,6 +3,7 @@ import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import useContentRefresh from './hooks/useContentRefresh.js'
 import { useBackHandler } from './context/NavigationProvider'
 import { supabase } from './lib/supabase'
+// PERIAK DASHBOARD SIMPLIFICATION V14
 import './App.css'
 
 // PERIAK ON-DEMAND LOADING V1
@@ -1563,9 +1564,7 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
         </button>
         <nav className={mobileMenuOpen ? 'mobile-open' : ''}>
           <a href="#courses" onClick={() => setMobileMenuOpen(false)}>Courses</a>
-          <a href="#about" onClick={() => setMobileMenuOpen(false)}>About</a>
         </nav>
-        <a className="nav-button" href="#dashboard">Dashboard <span>→</span></a>
       </header>
 
       <main>
@@ -1640,7 +1639,6 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
             </div>
             <div className="dashboard-premium-tools">
               {[
-                { id: 'dashboard', icon: '📊', title: 'Learning Dashboard', short: 'Dashboard', tag: 'Track your progress' },
                 { id: 'exams', icon: '📝', title: 'Smart Exam Centre', short: 'Exams', tag: 'CATs and mock exams' },
                 { id: 'clinical', icon: '🩺', title: 'Clinical Skills Lab', short: 'Clinical Lab', tag: 'Interactive scenarios' },
                 { id: 'simulator', icon: '🏥', title: 'Virtual Patient Simulator', short: 'Patient Sim', tag: 'Clinical simulations' },
@@ -1811,21 +1809,6 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
           </div>
         </section>
 
-        {/* PERIAK PORTAL V13 VERIFIED */}
-        <section className="periak-about-mini" id="about">
-          <h2>About PERIAK</h2>
-          <p>
-            PERIAK supports nursing students through organised
-            study notes, examination practice, past papers and
-            interactive clinical learning resources.
-          </p>
-          <p>
-            Students can access free resources and optional Premium
-            features. PERIAK is an independent study-support
-            platform, not an accredited nursing college.
-          </p>
-          <a href="#courses">Explore nursing courses →</a>
-        </section>
       </main>
 
       <footer>
