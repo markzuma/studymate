@@ -308,6 +308,27 @@ function mergeLearningData(localData, cloudData) {
   }
 }
 
+
+// PERIAK COMPACT MOBILE NAV V1
+function CompactNavIcon({ name }) {
+  const icons = {
+    home: 'M3 10.5 12 3l9 7.5v10h-6v-6H9v6H3z',
+    courses: 'M4 5c3-1 6-1 8 1v14c-2-2-5-2-8-1z M20 5c-3-1-6-1-8 1v14c2-2 5-2 8-1z',
+    papers: 'M7 3h9l4 4v14H7z M16 3v5h4 M10 12h7 M10 16h7',
+    exams: 'M9 2h6v4H9z M8 4H5v18h14V4h-3 M8 12l2 2 4-4 M8 18h8',
+    premium: 'M2 8l5 4 5-7 5 7 5-4-2 12H4z'
+  }
+
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24"
+      fill="none" stroke="currentColor" strokeWidth="1.7"
+      strokeLinecap="round" strokeLinejoin="round"
+      aria-hidden="true">
+      <path d={icons[name]} />
+    </svg>
+  )
+}
+
 function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, welcomeName = '', onOpenPremium = () => {}, onOpenPremiumFeature = () => {}, premiumLaunch = null, onPremiumLaunchHandled = () => {}, onPremiumModuleBack = () => {} }) {
   const [learningData, setLearningData] = useState(readLearningData)
   const [activeLearningUser, setActiveLearningUser] = useState(null)
@@ -1427,7 +1448,7 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
   }
 
   return (
-    <div className="app">
+    <div className="app periak-compact-mobile-home">
       <header className="navbar">
         <a className="brand" href="#">
           <span className="brand-icon">✚</span>
@@ -1739,6 +1760,50 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
         <p>Supporting nursing education in Kenya.</p>
         <span>© 2026 PERIAK. Learning made easier.</span>
       </footer>
+
+      <nav className="periak-mobile-bottom-nav"
+        aria-label="Quick mobile navigation">
+        {[
+          {
+            id: 'home',
+            label: 'Home',
+            action: () => window.scrollTo({
+              top: 0, behavior: 'smooth'
+            })
+          },
+          {
+            id: 'courses',
+            label: 'Courses',
+            action: () => document.getElementById('courses')
+              ?.scrollIntoView({ behavior: 'smooth' })
+          },
+          {
+            id: 'papers',
+            label: 'Papers',
+            action: () => onOpenPremiumFeature('pastpapers')
+          },
+          {
+            id: 'exams',
+            label: 'Exams',
+            action: () => setShowExams(true)
+          },
+          {
+            id: 'premium',
+            label: 'Premium',
+            action: () => onOpenPremium()
+          }
+        ].map(item => (
+          <button type="button" key={item.id}
+            className={item.id === 'home' ? 'nav-home' : ''}
+            onClick={() => {
+              setMobileMenuOpen(false)
+              item.action()
+            }}>
+            <CompactNavIcon name={item.id} />
+            <span>{item.label}</span>
+          </button>
+        ))}
+      </nav>
     </div>
   )
 }
