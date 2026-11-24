@@ -4959,3 +4959,33 @@ body.periak-focus-active .periak-reader-floating-dock {
     padding-top:9px;
   }
 }
+
+/* PERIAK DASHBOARD GAP V12 */
+
+/*
+ * The course catalogue immediately follows the dashboard.
+ * Remove duplicate vertical spacing between these sections.
+ */
+.app .student-dashboard {
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+.app .student-dashboard + .courses-section {
+  margin-top: 0;
+  padding-top: 18px;
+}
+
+/* Keep the existing mobile dashboard density. */
+@media (max-width: 700px) {
+  .app.periak-compact-mobile-home .student-dashboard {
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  .app.periak-compact-mobile-home
+  .student-dashboard + .courses-section {
+    margin-top: 0;
+    padding-top: 8px;
+  }
+}
