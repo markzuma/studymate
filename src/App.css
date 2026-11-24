@@ -4418,3 +4418,39 @@ body.periak-focus-active .periak-reader-floating-dock {
     height: 18px;
   }
 }
+
+/* PERIAK MOBILE V4 FINAL */
+@media(max-width:700px){
+.student-dashboard .continue-content{gap:6px;padding:5px 0}
+.student-dashboard .continue-content strong{font-size:11px;line-height:1.3}
+.student-dashboard .continue-content small{font-size:10px}
+.student-dashboard .continue-content button{padding:8px;font-size:11px}
+.student-dashboard .dashboard-progress{padding:10px;margin:8px 0}
+.student-dashboard .subject-progress-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.student-dashboard .subject-progress{min-width:0;padding:7px}
+.student-dashboard .subject-progress-title{font-size:10px}
+.student-dashboard .subject-progress small{font-size:9px}
+.student-dashboard .subject-progress-track{height:5px;margin:5px 0}
+.app .course-detail{padding:10px}
+.app .course-detail-hero{padding:11px;margin-bottom:10px;min-height:0}
+.app .course-detail-hero h1{font-size:19px;line-height:1.25}
+.app .course-detail-hero p{font-size:11px;line-height:1.4}
+.app .unit-list{gap:6px}
+.app .unit-card{min-height:0;padding:9px;gap:8px;border-radius:8px}
+.app .unit-number{width:28px;height:28px;font-size:11px}
+.app .unit-info h3{font-size:12px;line-height:1.3}
+.app .unit-info p{font-size:10px}
+.app .periak-course-upgrade{padding:10px;gap:8px;margin:10px 0}
+.app .periak-course-upgrade p{font-size:10px;line-height:1.4}
+.app .lesson-page{padding:10px}
+.app .lesson-heading h1{font-size:19px}
+.app .lesson-panel{padding:11px;margin-bottom:9px}
+.app .lesson-panel h2{font-size:16px}
+.app .lesson-panel p,.app .lesson-panel li{font-size:13px;line-height:1.6}
+.app .courses-section .course-card{min-height:0;padding:9px;gap:6px}
+.app .courses-section .course-card h3{font-size:12px}
+.app .courses-section .course-card p{font-size:10px;line-height:1.4}
+.app .features-section .feature{padding:10px}
+.app .features-section .feature h3{font-size:13px}
+.app .features-section .feature p{font-size:11px}
+}

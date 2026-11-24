@@ -440,3 +440,13 @@
     font-size: 12px;
   }
 }
+
+/* PERIAK MOBILE V4 FINAL */
+@media(max-width:700px){
+.papers-results-grid{gap:7px}
+.papers-result-card{padding:10px;gap:5px}
+.papers-result-card h3{font-size:13px}
+.papers-result-card p{font-size:11px}
+.papers-card-meta{gap:4px}
+.papers-card-meta span{font-size:10px;padding:3px 5px}
+}

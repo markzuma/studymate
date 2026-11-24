@@ -534,3 +534,14 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* PERIAK MOBILE V4 FINAL */
+@media(max-width:700px){
+.xp-intro{padding:10px;margin-bottom:9px}
+.xp-metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.xp-course-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.xp-course-card{padding:10px}
+.xp-filter-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;overflow:visible}
+.xp-filter-row>*{min-width:0;width:100%}
+.xp-question,.xp-patient-card{padding:11px}
+}

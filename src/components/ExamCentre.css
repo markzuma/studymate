@@ -586,3 +586,13 @@
     min-height: 44px;
   }
 }
+
+/* PERIAK MOBILE V4 FINAL */
+@media(max-width:700px){
+.exam-centre{padding:10px}
+.exam-header{margin-bottom:10px}
+.exam-card{padding:11px;margin-bottom:8px}
+.exam-card h2{font-size:15px;line-height:1.45}
+.exam-option{padding:10px;min-height:44px;font-size:14px;line-height:1.5}
+.exam-submit{min-height:44px}
+}

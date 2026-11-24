@@ -798,3 +798,16 @@
     overflow-wrap: anywhere;
   }
 }
+
+/* PERIAK MOBILE V4 FINAL */
+@media(max-width:700px){
+.sp-planner{padding:10px}
+.sp-welcome{padding:11px}
+.sp-welcome h2{font-size:18px}
+.sp-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.sp-stat{padding:9px}
+.sp-form{padding:11px}
+.sp-task{padding:10px;margin-bottom:7px}
+.sp-task h4{font-size:12px}
+.sp-task p{font-size:11px}
+}

@@ -491,3 +491,13 @@
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+/* PERIAK MOBILE V4 FINAL */
+@media(max-width:700px){
+.learning-suite{padding:10px}
+.suite-heading{margin-bottom:9px}
+.suite-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.suite-card{min-height:0;padding:10px;gap:5px}
+.suite-card strong{font-size:11px}
+.suite-card p{font-size:10px}
+}
