@@ -1616,7 +1616,6 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
             <div>
               <div className="eyebrow">YOUR PERSONAL STUDY SPACE</div>
               <h2>Your learning dashboard</h2>
-              <p>Pick up where you left off and keep track of your progress.</p>
             </div>
           </div>
 

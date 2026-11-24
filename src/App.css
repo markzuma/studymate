@@ -5386,3 +5386,62 @@ body.periak-focus-active .periak-reader-floating-dock {
     flex-basis: 84%;
   }
 }
+
+/* PERIAK V18A BALANCED SHORTCUTS */
+
+/* Desktop: six equally sized learning shortcuts. */
+@media (min-width: 701px) {
+  .app.periak-compact-mobile-home
+  .student-dashboard .dashboard-premium-ad
+  .dashboard-premium-tools {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 9px !important;
+    width: 100%;
+  }
+
+  .app.periak-compact-mobile-home
+  .student-dashboard .dashboard-premium-ad
+  .dashboard-premium-tools .dashboard-premium-tool {
+    grid-column: auto !important;
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    min-height: 70px;
+  }
+}
+
+/* Mobile: two columns, three balanced rows. */
+@media (max-width: 700px) {
+  .app.periak-compact-mobile-home
+  .student-dashboard .dashboard-premium-ad
+  .dashboard-premium-tools {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 7px !important;
+    width: 100%;
+  }
+
+  .app.periak-compact-mobile-home
+  .student-dashboard .dashboard-premium-ad
+  .dashboard-premium-tools .dashboard-premium-tool {
+    grid-column: auto !important;
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    min-height: 66px;
+    padding: 8px 5px !important;
+  }
+
+  .app.periak-compact-mobile-home
+  .student-dashboard .dashboard-premium-ad
+  .dashboard-premium-tools .dashboard-premium-tool strong {
+    font-size: 11px !important;
+    line-height: 1.3 !important;
+  }
+
+  .app.periak-compact-mobile-home
+  .student-dashboard .dashboard-heading {
+    margin-bottom: 9px;
+  }
+}
