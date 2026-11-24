@@ -3919,3 +3919,96 @@ body.periak-focus-active .periak-reader-floating-dock {
     font-size: 22px;
   }
 }
+
+
+/* PERIAK COMPACT MOBILE NAV V1 */
+
+.periak-mobile-bottom-nav {
+  display: none;
+}
+
+@media (max-width: 700px) {
+  .app.periak-compact-mobile-home {
+    padding-bottom: calc(70px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .app.periak-compact-mobile-home .periak-mobile-bottom-nav {
+    position: fixed;
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    align-items: center;
+    gap: 2px;
+
+    bottom: calc(7px + env(safe-area-inset-bottom, 0px));
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+
+    width: min(390px, calc(100% - 18px));
+    height: 56px;
+    padding: 4px 6px;
+
+    background: rgba(255, 255, 255, .97);
+    border: 1px solid #dfe7f2;
+    border-radius: 15px;
+
+    box-shadow: 0 5px 22px rgba(20, 51, 87, .13);
+  }
+
+  .periak-mobile-bottom-nav button {
+    appearance: none;
+    border: 0;
+    background: transparent;
+    color: #66758a;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+
+    width: 100%;
+    height: 47px;
+    min-width: 0;
+    padding: 2px;
+
+    border-radius: 10px;
+    font-family: inherit;
+    cursor: pointer;
+    touch-action: manipulation;
+  }
+
+  .periak-mobile-bottom-nav button span {
+    font-size: 9px;
+    font-weight: 650;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+
+  .periak-mobile-bottom-nav button.nav-home {
+    color: #2878d0;
+    background: #edf4ff;
+  }
+
+  .periak-mobile-bottom-nav button:focus-visible {
+    outline: 2px solid #2878d0;
+    outline-offset: -2px;
+  }
+
+  :root[data-theme="dark"]
+  .app.periak-compact-mobile-home .periak-mobile-bottom-nav {
+    background: #192638;
+    border-color: #34475b;
+  }
+
+  :root[data-theme="dark"]
+  .periak-mobile-bottom-nav button {
+    color: #c9d5e4;
+  }
+
+  :root[data-theme="dark"]
+  .periak-mobile-bottom-nav button.nav-home {
+    background: #25466b;
+    color: #92c5ff;
+  }
+}
