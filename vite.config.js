@@ -10,6 +10,7 @@ export default defineConfig({
       injectRegister: null,
       includeAssets: ['periak-icon.svg'],
       manifest: {
+        id: '/',
         name: 'PERIAK',
         short_name: 'PERIAK',
         description: 'Learn. Practise. Excel.',

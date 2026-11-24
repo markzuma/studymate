@@ -77,31 +77,53 @@ export default function InstallApp() {
     }
   }
 
+  // PERIAK DIRECT INSTALL V21.1
   const install = () => {
-    if (!promptEvent) {
-      setShowHelp(value => !value)
+    // Prefer the browser's newer direct installation API.
+    // The call must happen during the student's click.
+    if (typeof navigator.install === 'function') {
+      try {
+        Promise.resolve(navigator.install())
+          .then(() => {
+            setInstalled(true)
+            setShowHelp(false)
+          })
+          .catch(error => {
+            if (error?.name !== 'AbortError') {
+              console.warn('PERIAK installation unavailable:', error)
+            }
+            setShowHelp(true)
+          })
+      } catch {
+        setShowHelp(true)
+      }
       return
     }
 
-    const event = promptEvent
-    setPromptEvent(null)
+    // Existing Chrome/Edge PWA installation prompt.
+    if (promptEvent) {
+      const event = promptEvent
+      setPromptEvent(null)
 
-    // Must be called directly from this user click.
-    try {
-      const outcome = event.prompt()
-      Promise.resolve(outcome)
-        .then(() => event.userChoice)
-        .then(choice => {
-          if (choice?.outcome === 'accepted') {
-            setDismissed(true)
-          } else {
-            setShowHelp(true)
-          }
-        })
-        .catch(() => setShowHelp(true))
-    } catch {
-      setShowHelp(true)
+      try {
+        Promise.resolve(event.prompt())
+          .then(() => event.userChoice)
+          .then(choice => {
+            if (choice?.outcome === 'accepted') {
+              setShowHelp(false)
+            } else {
+              setShowHelp(true)
+            }
+          })
+          .catch(() => setShowHelp(true))
+      } catch {
+        setShowHelp(true)
+      }
+      return
     }
+
+    // Browsers without either API require manual installation.
+    setShowHelp(value => !value)
   }
 
   if (installed || dismissed) return null
@@ -139,7 +161,9 @@ export default function InstallApp() {
           className="periak-install-primary"
           onClick={install}
         >
-          {promptEvent ? 'Install app' : 'How to install'}
+          {promptEvent || typeof navigator.install === 'function'
+            ? 'Install PERIAK'
+            : 'Add to home screen'}
         </button>
         <button
           type="button"
