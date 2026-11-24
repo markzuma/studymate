@@ -20,6 +20,18 @@ const WelcomeTour = lazy(
   () => import('./WelcomeTour')
 )
 
+
+// PERIAK MOBILE EXPERIENCE V7 CORRECTED
+function savedPeriakAccount() {
+  try {
+    return window.sessionStorage.getItem(
+      'periak_account_view_v7'
+    ) || ''
+  } catch {
+    return ''
+  }
+}
+
 export default function AuthGate({ children }) {
   const [session, setSession] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -35,8 +47,8 @@ export default function AuthGate({ children }) {
   const [profile, setProfile] = useState(null)
   const [premiumAccess, setPremiumAccess] = useState(false)
   const [premiumLoading, setPremiumLoading] = useState(true)
-  const [showControlCentre, setShowControlCentre] = useState(false)
-  const [showPremium, setShowPremium] = useState(false)
+  const [showControlCentre, setShowControlCentre] = useState(() => savedPeriakAccount() === 'control')
+  const [showPremium, setShowPremium] = useState(() => savedPeriakAccount() === 'premium')
   const [premiumLaunch, setPremiumLaunch] = useState(null)
   const [premiumFeatureIntent, setPremiumFeatureIntent] = useState(null)
   const premiumBackHandlerRef = useRef(null)
@@ -44,9 +56,67 @@ export default function AuthGate({ children }) {
     premiumBackHandlerRef.current = handler
   }, [])
   const [premiumModuleReturn, setPremiumModuleReturn] = useState(false)
-  const [showAppearance, setShowAppearance] = useState(false)
-  const [showProfile, setShowProfile] = useState(false)
+  const [showAppearance, setShowAppearance] = useState(() => savedPeriakAccount() === 'appearance')
+  const [showProfile, setShowProfile] = useState(() => savedPeriakAccount() === 'profile')
   const [showWelcomeTour, setShowWelcomeTour] = useState(false)
+
+
+  // Remember account-level screens after refresh.
+  useEffect(() => {
+    if (!session?.user?.id || !profile?.role) return
+
+    const current = showControlCentre ? 'control'
+      : showAppearance ? 'appearance'
+      : showProfile ? 'profile'
+      : showPremium ? 'premium' : ''
+
+    try {
+      window.sessionStorage.setItem(
+        'periak_account_view_v7', current
+      )
+    } catch {}
+  }, [
+    session?.user?.id, profile?.role,
+    showControlCentre, showPremium,
+    showAppearance, showProfile
+  ])
+
+  // PERIAK MOBILE DENSITY V8
+  function handlePeriakMobileNav(id) {
+    if (id === 'premium') {
+      try {
+        window.sessionStorage.removeItem(
+          'periak_mobile_nav_intent'
+        )
+      } catch {}
+
+      setShowControlCentre(false)
+      setShowPremium(true)
+      return
+    }
+
+    // Only queue navigation when Premium has unmounted App.
+    // Otherwise dispatch directly to the existing App listener.
+    try {
+      if (showPremium) {
+        window.sessionStorage.setItem(
+          'periak_mobile_nav_intent', id
+        )
+      } else {
+        window.sessionStorage.removeItem(
+          'periak_mobile_nav_intent'
+        )
+      }
+    } catch {}
+
+    setShowPremium(false)
+
+    window.dispatchEvent(
+      new CustomEvent('periak:mobile-navigate', {
+        detail: id
+      })
+    )
+  }
 
   // PERIAK SAFE AUTO UPDATE V1
   useEffect(() => {
@@ -411,6 +481,12 @@ export default function AuthGate({ children }) {
       console.error('PERIAK logout activity update failed:', activityError.message)
     }
 
+    try {
+      window.sessionStorage.removeItem('periak_view_v7')
+      window.sessionStorage.removeItem('periak_account_view_v7')
+      window.sessionStorage.removeItem('periak_mobile_nav_intent')
+    } catch {}
+
     const { error } = await supabase.auth.signOut()
 
     if (error) {
@@ -435,6 +511,29 @@ export default function AuthGate({ children }) {
               onClose={closeWelcomeTour}
             />
           </Suspense>
+        )}
+
+        {!showControlCentre && !showAppearance &&
+          !showProfile && !showWelcomeTour && (
+          <nav className="periak-global-mobile-nav"
+            aria-label="Mobile quick navigation">
+            {[
+              ['home', '⌂', 'Home'],
+              ['courses', '▤', 'Courses'],
+              ['papers', '▣', 'Papers'],
+              ['exams', '▧', 'Exams'],
+              ['premium', '♛', 'Premium']
+            ].map(([id, icon, label]) => (
+              <button
+                type="button"
+                key={id}
+                onClick={() => handlePeriakMobileNav(id)}
+              >
+                <span aria-hidden="true">{icon}</span>
+                <small>{label}</small>
+              </button>
+            ))}
+          </nav>
         )}
         <div className="auth-userbar">
           <span>

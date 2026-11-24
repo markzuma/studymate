@@ -514,3 +514,31 @@
 .suite-card p{font-size:10px;line-height:1.3}
 .suite-option{min-height:44px}
 }
+
+/* PERIAK MOBILE DENSITY V8 */
+@media (max-width:700px) {
+  .learning-suite {
+    padding:7px;
+    margin:6px 0;
+  }
+
+  .suite-heading {
+    gap:4px;
+    margin-bottom:6px;
+  }
+
+  .suite-grid {
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:5px;
+  }
+
+  .suite-card {
+    width:100%;
+    min-width:0;
+    min-height:0;
+    padding:7px;
+    gap:4px;
+    border-radius:9px;
+  }
+}

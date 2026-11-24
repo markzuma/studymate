@@ -953,3 +953,54 @@
 .premium-methods>*{min-width:0}
 .premium-checkout input{font-size:16px}
 }
+
+/* PERIAK MOBILE DENSITY V8 */
+@media (max-width:700px) {
+  .premium-page {
+    padding:7px;
+  }
+
+  .premium-header {
+    gap:5px;
+    margin-bottom:7px;
+  }
+
+  .premium-hero {
+    padding:8px;
+    margin-bottom:7px;
+    border-radius:9px;
+  }
+
+  .premium-feature-grid {
+    display:grid;
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:5px;
+  }
+
+  .premium-feature-card {
+    min-width:0;
+    min-height:0;
+    padding:7px;
+    border-radius:8px;
+  }
+
+  .premium-card {
+    padding:8px;
+    border-radius:9px;
+  }
+
+  .premium-methods {
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:5px;
+  }
+
+  .premium-checkout {
+    padding:9px;
+  }
+}
+
+@media (max-width:380px) {
+  .premium-feature-grid {
+    gap:4px;
+  }
+}

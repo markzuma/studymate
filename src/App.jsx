@@ -329,6 +329,19 @@ function CompactNavIcon({ name }) {
   )
 }
 
+
+// PERIAK MOBILE EXPERIENCE V7 CORRECTED
+function readPeriakView() {
+  try {
+    return JSON.parse(
+      window.sessionStorage.getItem('periak_view_v7') || '{}'
+    )
+  } catch {
+    return {}
+  }
+}
+const savedPeriakView = readPeriakView()
+
 function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, welcomeName = '', onOpenPremium = () => {}, onOpenPremiumFeature = () => {}, premiumLaunch = null, onPremiumLaunchHandled = () => {}, onPremiumModuleBack = () => {} }) {
   const [learningData, setLearningData] = useState(readLearningData)
   const [activeLearningUser, setActiveLearningUser] = useState(null)
@@ -336,8 +349,8 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
   const progressSessionRef = useRef(null)
   const progressRetryRef = useRef(false)
   const progressWriteQueueRef = useRef(Promise.resolve())
-  const [showExams, setShowExams] = useState(false)
-  const [activePremiumModule, setActivePremiumModule] = useState('')
+  const [showExams, setShowExams] = useState(savedPeriakView.screen === 'exams')
+  const [activePremiumModule, setActivePremiumModule] = useState(savedPeriakView.screen === 'module' ? savedPeriakView.module || '' : '')
 
   useEffect(() => {
     if (!activePremiumModule) return
@@ -367,8 +380,14 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
     }
   }, [])
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [selectedCourse, setSelectedCourse] = useState(null)
-  const [selectedUnit, setSelectedUnit] = useState(null)
+  const [selectedCourse, setSelectedCourse] = useState(() => {
+    const title = savedPeriakView.course
+    return title ? (
+      legacyCourseCatalogue.find(c => c.title === title) ||
+      { title, icon: '📚', desc: '', level: '' }
+    ) : null
+  })
+  const [selectedUnit, setSelectedUnit] = useState(savedPeriakView.course ? savedPeriakView.unit || null : null)
   const [catalogueCourses, setCatalogueCourses] = useState(legacyCourseCatalogue)
 
   // PERIAK COMPACT COURSE CATALOGUE V1
@@ -898,6 +917,37 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
     }
   }
 
+
+  // Save the current screen in this browser tab.
+  useEffect(() => {
+    try {
+      const screen = showExams ? 'exams'
+        : activePremiumModule ? 'module'
+        : selectedCourse ? 'course' : 'home'
+
+      window.sessionStorage.setItem(
+        'periak_view_v7',
+        JSON.stringify({
+          screen,
+          module: activePremiumModule,
+          course: selectedCourse?.title || '',
+          unit: selectedUnit || ''
+        })
+      )
+    } catch {}
+  }, [showExams, activePremiumModule, selectedCourse, selectedUnit])
+
+  // Resolve a saved course against the published catalogue.
+  useEffect(() => {
+    if (!selectedCourse?.title) return
+    const match = catalogueCourses.find(
+      c => c.title === selectedCourse.title
+    )
+    if (match && match.id !== selectedCourse.id) {
+      setSelectedCourse(match)
+    }
+  }, [catalogueCourses, selectedCourse])
+
   const lessonKey = (courseTitle, unit) => `${courseTitle}::${unit}`
 
   const openUnit = (course, unit) => {
@@ -966,6 +1016,65 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
     onPremiumModuleBack()
   }
 
+
+  // Shared navigation used from all appropriate student pages.
+  useEffect(() => {
+    const navigate = id => {
+      if (id === 'home' || id === 'courses') {
+        setShowExams(false)
+        setActivePremiumModule('')
+        setSelectedUnit(null)
+        setSelectedCourse(null)
+
+        if (id === 'courses') {
+          window.setTimeout(() => {
+            document.getElementById('courses')
+              ?.scrollIntoView({ behavior: 'smooth' })
+          }, 150)
+        } else {
+          window.scrollTo({ top: 0, behavior: 'smooth' })
+        }
+      }
+
+      if (id === 'papers') {
+        setShowExams(false)
+        setSelectedUnit(null)
+        setSelectedCourse(null)
+        setActivePremiumModule('')
+        onOpenPremiumFeature('pastpapers')
+      }
+
+      if (id === 'exams') {
+        setSelectedUnit(null)
+        setActivePremiumModule('')
+        setShowExams(true)
+      }
+    }
+
+    const listener = event => navigate(event.detail)
+
+    window.addEventListener(
+      'periak:mobile-navigate', listener
+    )
+
+    try {
+      const pending = window.sessionStorage.getItem(
+        'periak_mobile_nav_intent'
+      )
+
+      if (pending) {
+        window.sessionStorage.removeItem(
+          'periak_mobile_nav_intent'
+        )
+        navigate(pending)
+      }
+    } catch {}
+
+    return () => window.removeEventListener(
+      'periak:mobile-navigate', listener
+    )
+  }, [onOpenPremiumFeature])
+
   const handleAppBack = () => {
     if (mobileMenuOpen) {
       setMobileMenuOpen(false)
@@ -1001,7 +1110,7 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
 
   if (showExams) {
     return (
-      <div className="app">
+      <div className="app periak-active-exams">
         <header className="navbar">
           <a className="brand" href="#" onClick={() => setShowExams(false)}>
             <span className="brand-icon">✚</span>
@@ -1381,7 +1490,7 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
             <div className="eyebrow">{selectedCourse.level}</div>
             <h1>{selectedCourse.title}</h1>
             <p>{selectedCourse.desc}</p>
-            <span className="unit-count">{catalogueUnits[selectedCourse.title].length} learning units</span>
+            <span className="unit-count">{(catalogueUnits[selectedCourse.title] || []).length} learning units</span>
           </div>
 
           <CourseOutlineViewer courseId={selectedCourse.id} />
@@ -1392,7 +1501,7 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
             <p className="unit-intro">Work through these units systematically, building your knowledge step by step.</p>
 
             <div className="unit-list">
-              {catalogueUnits[selectedCourse.title].map((unit, index) => (
+              {(catalogueUnits[selectedCourse.title] || []).map((unit, index) => (
                 <button
                   className="unit-card unit-clickable"
                   key={unit}
@@ -1761,49 +1870,7 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
         <span>© 2026 PERIAK. Learning made easier.</span>
       </footer>
 
-      <nav className="periak-mobile-bottom-nav"
-        aria-label="Quick mobile navigation">
-        {[
-          {
-            id: 'home',
-            label: 'Home',
-            action: () => window.scrollTo({
-              top: 0, behavior: 'smooth'
-            })
-          },
-          {
-            id: 'courses',
-            label: 'Courses',
-            action: () => document.getElementById('courses')
-              ?.scrollIntoView({ behavior: 'smooth' })
-          },
-          {
-            id: 'papers',
-            label: 'Papers',
-            action: () => onOpenPremiumFeature('pastpapers')
-          },
-          {
-            id: 'exams',
-            label: 'Exams',
-            action: () => setShowExams(true)
-          },
-          {
-            id: 'premium',
-            label: 'Premium',
-            action: () => onOpenPremium()
-          }
-        ].map(item => (
-          <button type="button" key={item.id}
-            className={item.id === 'home' ? 'nav-home' : ''}
-            onClick={() => {
-              setMobileMenuOpen(false)
-              item.action()
-            }}>
-            <CompactNavIcon name={item.id} />
-            <span>{item.label}</span>
-          </button>
-        ))}
-      </nav>
+
     </div>
   )
 }

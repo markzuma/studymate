@@ -893,3 +893,57 @@
 .cc-panel p{font-size:11px;line-height:1.4;padding:5px 0}
 .cc-content input,.cc-content select,.cc-content textarea{max-width:100%;font-size:16px}
 }
+
+/* PERIAK MOBILE DENSITY V8 */
+@media (max-width:700px) {
+  .control-centre {
+    padding:7px;
+  }
+
+  .cc-header {
+    gap:5px;
+    margin-bottom:7px;
+  }
+
+  .cc-navigation {
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:4px;
+    padding:5px;
+    margin-bottom:7px;
+  }
+
+  .cc-navigation button {
+    min-width:0;
+    min-height:38px;
+    padding:5px 3px;
+    font-size:10px;
+    white-space:normal;
+    overflow-wrap:anywhere;
+  }
+
+  .cc-stats {
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:5px;
+    margin-bottom:7px;
+  }
+
+  .cc-stats article,
+  .cc-panel {
+    min-width:0;
+    padding:8px;
+    border-radius:9px;
+  }
+
+  .cc-content input,
+  .cc-content select,
+  .cc-content textarea {
+    box-sizing:border-box;
+    max-width:100%;
+    font-size:16px;
+  }
+
+  .cc-content table {
+    font-size:11px;
+  }
+}

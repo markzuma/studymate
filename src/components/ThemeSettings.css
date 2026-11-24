@@ -234,3 +234,43 @@
 .appearance-section{padding:10px 0}
 .appearance-section h3{font-size:13px}
 }
+
+/* PERIAK MOBILE DENSITY V8 */
+@media (max-width:700px) {
+  .appearance-panel {
+    padding:8px;
+  }
+
+  .appearance-header {
+    gap:5px;
+    margin-bottom:7px;
+  }
+
+  .appearance-preview {
+    padding:7px;
+    margin-bottom:7px;
+  }
+
+  .preview-content {
+    gap:5px;
+    margin:6px 0;
+  }
+
+  .appearance-section {
+    padding:7px 0;
+  }
+
+  .appearance-choice-grid,
+  .accent-grid {
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:5px;
+  }
+
+  .appearance-choice,
+  .accent-option {
+    min-width:0;
+    padding:7px 4px;
+    border-radius:8px;
+  }
+}

@@ -241,3 +241,38 @@
 .profile-section label{gap:4px;margin:8px 0;font-size:11px}
 .profile-section input,.profile-section select{font-size:16px}
 }
+
+/* PERIAK MOBILE DENSITY V8 */
+@media (max-width:700px) {
+  .profile-panel {
+    padding:8px;
+  }
+
+  .profile-header {
+    gap:5px;
+    margin-bottom:7px;
+  }
+
+  .profile-identity {
+    padding:7px;
+    gap:6px;
+    margin-bottom:7px;
+    border-radius:9px;
+  }
+
+  .profile-section {
+    padding:7px 0;
+  }
+
+  .profile-section label {
+    margin:6px 0;
+    gap:4px;
+  }
+
+  .profile-section input,
+  .profile-section select {
+    max-width:100%;
+    box-sizing:border-box;
+    font-size:16px;
+  }
+}
