@@ -940,31 +940,3 @@
     box-sizing: border-box;
   }
 }
-
-/* PERIAK COMPREHENSIVE MOBILE COMPACT V2 */
-
-@media (max-width: 700px) {
-  .premium-page {
-    padding: 12px 10px;
-  }
-  .premium-header {
-    gap: 9px;
-    margin-bottom: 12px;
-  }
-  .premium-hero {
-    padding: 15px;
-    margin-bottom: 12px;
-  }
-  .premium-card {
-    min-width: 0;
-    padding: 13px;
-  }
-  .premium-checkout {
-    min-width: 0;
-    padding: 13px;
-    overflow-wrap: anywhere;
-  }
-  .premium-methods {
-    gap: 8px;
-  }
-}

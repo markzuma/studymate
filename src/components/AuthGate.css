@@ -334,3 +334,29 @@
     min-height: 44px;
   }
 }
+
+/* PERIAK MOBILE DENSITY V3 FIXED — ACCOUNT BAR */
+@media (max-width: 700px) {
+  body:has(.app.periak-compact-mobile-home) .auth-userbar {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 5px;
+    padding: 6px 8px;
+  }
+  body:has(.app.periak-compact-mobile-home)
+  .auth-userbar > span {
+    display: none;
+  }
+  body:has(.app.periak-compact-mobile-home)
+  .auth-userbar button {
+    width: 100%;
+    min-width: 0;
+    min-height: 40px;
+    padding: 6px 3px;
+    font-size: 10px;
+    line-height: 1.2;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    border-radius: 7px;
+  }
+}
