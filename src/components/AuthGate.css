@@ -371,3 +371,56 @@
 .auth-card input{font-size:16px}
 .auth-submit{min-height:44px}
 }
+
+/* PERIAK MOBILE V9 SAFE CSS ONLY */
+@media (max-width:700px) {
+
+  /* Consistent compact account bar on every screen */
+  .auth-userbar,
+  body:has(.app.periak-compact-mobile-home)
+  .auth-userbar {
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:4px;
+    padding:5px 6px;
+    margin:0;
+    width:100%;
+    max-width:100%;
+    box-sizing:border-box;
+    align-items:stretch;
+  }
+
+  .auth-userbar > span,
+  body:has(.app.periak-compact-mobile-home)
+  .auth-userbar > span {
+    display:none;
+  }
+
+  .auth-userbar > button,
+  body:has(.app.periak-compact-mobile-home)
+  .auth-userbar > button {
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:100%;
+    min-width:0;
+    min-height:34px;
+    padding:5px 3px;
+    border-radius:7px;
+    font-size:10px;
+    line-height:1.15;
+    text-align:center;
+    white-space:normal;
+    overflow-wrap:anywhere;
+    box-sizing:border-box;
+  }
+}
+
+@media (max-width:360px) {
+  .auth-userbar,
+  body:has(.app.periak-compact-mobile-home)
+  .auth-userbar {
+    gap:3px;
+    padding:4px;
+  }
+}

@@ -4873,3 +4873,55 @@ body.periak-focus-active .periak-reader-floating-dock {
     box-sizing:border-box;
   }
 }
+
+/* PERIAK MOBILE V9 SAFE CSS ONLY */
+
+/* Remove decorative labels, not their useful content. */
+.periak-home-label,
+.dashboard-heading > div > .eyebrow,
+.dashboard-premium-ad-label,
+.courses-section .section-heading .eyebrow {
+  display:none;
+}
+
+@media (max-width:700px) {
+
+  /*
+   * The existing lesson-page class is confirmed in App.jsx.
+   * Hide floating navigation while reading notes.
+   */
+  body:has(.lesson-page)
+  .periak-global-mobile-nav {
+    display:none !important;
+  }
+
+  /*
+   * Avoid reserving space for the hidden bottom bar.
+   */
+  body:has(.lesson-page)
+  .authenticated-app-shell .app {
+    padding-bottom:12px;
+  }
+
+  .lesson-page {
+    min-width:0;
+    max-width:100%;
+    box-sizing:border-box;
+  }
+
+  .lesson-heading,
+  .lesson-page > div {
+    min-width:0;
+  }
+
+  .dashboard-heading,
+  .courses-section .section-heading {
+    gap:5px;
+  }
+
+  .dashboard-heading h2,
+  .courses-section .section-heading h2,
+  .dashboard-premium-ad-copy h2 {
+    margin-top:0;
+  }
+}
