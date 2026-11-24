@@ -40,7 +40,9 @@ function normalizePayload(value) {
 }
 
 export default function AdminUsageStats() {
+  // PERIAK USAGE STATISTICS POLISH V20A
   const [days, setDays] = useState(30)
+  const [refreshKey, setRefreshKey] = useState(0)
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -74,7 +76,7 @@ export default function AdminUsageStats() {
     return () => {
       cancelled = true
     }
-  }, [days])
+  }, [days, refreshKey])
 
   const featureRows = Array.isArray(stats?.by_feature) ? stats.by_feature : []
   const paperRows = Array.isArray(stats?.top_papers) ? stats.top_papers : []
@@ -88,18 +90,29 @@ export default function AdminUsageStats() {
           <p>Understand which PERIAK features and past papers students are opening.</p>
         </div>
 
-        <div className="aus-range" aria-label="Statistics date range">
-          {RANGE_OPTIONS.map(option => (
-            <button
-              key={option}
-              type="button"
-              className={days === option ? 'active' : ''}
-              onClick={() => setDays(option)}
-              aria-pressed={days === option}
-            >
-              {option} days
-            </button>
-          ))}
+        <div className="aus-controls">
+          <div className="aus-range" aria-label="Statistics date range">
+            {RANGE_OPTIONS.map(option => (
+              <button
+                key={option}
+                type="button"
+                className={days === option ? 'active' : ''}
+                onClick={() => setDays(option)}
+                aria-pressed={days === option}
+                disabled={loading}
+              >
+                {option} days
+              </button>
+            ))}
+          </div>
+          <button
+            type="button"
+            className="aus-refresh"
+            onClick={() => setRefreshKey(value => value + 1)}
+            disabled={loading}
+          >
+            {loading ? 'Loading…' : '↻ Refresh'}
+          </button>
         </div>
       </header>
 
@@ -111,7 +124,9 @@ export default function AdminUsageStats() {
       )}
 
       {loading ? (
-        <div className="aus-state">Loading usage statistics…</div>
+        <div className="aus-state" role="status">
+          Loading usage statistics…
+        </div>
       ) : !error && stats ? (
         <>
           <div className="aus-summary">
@@ -122,9 +137,9 @@ export default function AdminUsageStats() {
             </article>
 
             <article className="aus-stat">
-              <span className="aus-stat-label">Active students</span>
+              <span className="aus-stat-label">Active users</span>
               <strong>{number(stats.active_students)}</strong>
-              <small>Students recorded opening features or papers</small>
+              <small>Distinct accounts opening features or papers</small>
             </article>
           </div>
 

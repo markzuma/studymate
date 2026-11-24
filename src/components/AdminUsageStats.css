@@ -211,3 +211,102 @@
     flex: 1;
   }
 }
+
+/* PERIAK USAGE STATISTICS POLISH V20A */
+
+.aus-page {
+  color: var(--text-primary);
+  gap: 15px;
+}
+
+.aus-header p,
+.aus-stat-label,
+.aus-stat small,
+.aus-privacy,
+.aus-empty,
+.aus-state {
+  color: var(--text-muted);
+  opacity: 1;
+}
+
+.aus-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.aus-range button,
+.aus-refresh {
+  box-sizing: border-box;
+  min-height: 40px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--surface-secondary);
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.aus-range button.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+.aus-range button:focus-visible,
+.aus-refresh:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.aus-range button:disabled,
+.aus-refresh:disabled {
+  opacity: .65;
+  cursor: wait;
+}
+
+.aus-stat,
+.aus-panel {
+  background: var(--surface);
+  border-color: var(--border);
+  color: var(--text-primary);
+}
+
+.aus-stat strong,
+.aus-ranked-list strong {
+  color: var(--text-primary);
+  font-variant-numeric: tabular-nums;
+}
+
+.aus-ranked-list li,
+.aus-table th,
+.aus-table td {
+  border-color: var(--border);
+}
+
+.aus-table th {
+  color: var(--text-muted);
+  opacity: 1;
+}
+
+.aus-table-wrap {
+  border-radius: 9px;
+  scrollbar-width: thin;
+}
+
+@media (max-width: 700px) {
+  .aus-controls {
+    width: 100%;
+  }
+
+  .aus-range {
+    flex: 1 1 100%;
+  }
+
+  .aus-refresh {
+    width: 100%;
+  }
+}
