@@ -450,3 +450,17 @@
 .papers-card-meta{gap:4px}
 .papers-card-meta span{font-size:10px;padding:3px 5px}
 }
+
+/* PERIAK WHOLE APP MOBILE DENSITY V6 */
+@media (max-width:700px) {
+.past-papers-page{padding:9px}
+.papers-page-header{margin-bottom:8px}
+.papers-search-panel{padding:8px;margin:8px 0}
+.papers-results-grid{gap:6px}
+.papers-result-card{min-width:0;padding:9px;gap:4px}
+.papers-result-card h3{font-size:12px}
+.papers-result-card p{font-size:10px}
+.papers-card-meta{gap:3px}
+.papers-card-meta span{font-size:9px;padding:3px 5px}
+.papers-result-card button{min-height:42px}
+}

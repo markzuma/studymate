@@ -224,3 +224,20 @@
   .profile-panel { padding: 19px; }
   .profile-header h2 { font-size: 22px; }
 }
+
+/* PERIAK WHOLE APP MOBILE DENSITY V6 */
+@media (max-width:700px) {
+.profile-panel{padding:12px}
+.profile-header{gap:6px;margin-bottom:10px}
+.profile-header h2{font-size:18px;margin:4px 0}
+.profile-header p{font-size:11px}
+.profile-identity{padding:9px;gap:8px;margin-bottom:9px}
+.profile-avatar{flex:0 0 34px;width:34px;height:34px;font-size:16px}
+.profile-identity strong{font-size:12px}
+.profile-identity span,.profile-identity small{font-size:10px}
+.profile-section{padding:10px 0}
+.profile-section h3{font-size:13px}
+.profile-section>p{font-size:11px;margin-bottom:7px}
+.profile-section label{gap:4px;margin:8px 0;font-size:11px}
+.profile-section input,.profile-section select{font-size:16px}
+}

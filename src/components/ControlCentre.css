@@ -874,3 +874,22 @@
     min-height: 240px;
   }
 }
+
+/* PERIAK WHOLE APP MOBILE DENSITY V6 */
+@media (max-width:700px) {
+.control-centre{padding:9px}
+.cc-header{gap:7px;margin-bottom:10px}
+.cc-header h1{font-size:19px}
+.cc-header p{font-size:11px}
+.cc-navigation{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;padding:7px;margin-bottom:10px;overflow:visible}
+.cc-navigation button{width:100%;min-width:0;min-height:40px;padding:6px 3px;font-size:10px;line-height:1.2;white-space:normal;overflow-wrap:anywhere}
+.cc-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-bottom:10px}
+.cc-stats article{min-width:0;padding:9px}
+.cc-stats article span{font-size:10px;margin-bottom:4px}
+.cc-stats article strong{font-size:18px}
+.cc-content h2{font-size:16px;margin-bottom:10px}
+.cc-panel,.cc-content article,.cc-content section{min-width:0;padding:10px}
+.cc-panel h3{font-size:13px}
+.cc-panel p{font-size:11px;line-height:1.4;padding:5px 0}
+.cc-content input,.cc-content select,.cc-content textarea{max-width:100%;font-size:16px}
+}

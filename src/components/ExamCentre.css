@@ -596,3 +596,15 @@
 .exam-option{padding:10px;min-height:44px;font-size:14px;line-height:1.5}
 .exam-submit{min-height:44px}
 }
+
+/* PERIAK WHOLE APP MOBILE DENSITY V6 */
+@media (max-width:700px) {
+.exam-centre{padding:9px}
+.exam-header{gap:6px;margin-bottom:9px}
+.exam-header h1{font-size:18px}
+.exam-card{padding:10px;margin-bottom:7px}
+.exam-card h2{font-size:15px;line-height:1.4}
+.exam-option{min-height:44px;padding:10px;font-size:14px;line-height:1.5}
+.exam-progress{margin-bottom:7px}
+.exam-submit{min-height:44px}
+}

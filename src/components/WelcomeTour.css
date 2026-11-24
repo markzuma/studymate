@@ -28,3 +28,13 @@
 @media(max-width:759px){.periak-tour-card{bottom:max(10px,env(safe-area-inset-bottom));border-radius:19px}.periak-tour-content{padding:16px 20px 12px}.periak-tour-content h2{font-size:21px}.periak-tour-header{padding:13px 18px}.periak-tour-footer{padding:0 20px 18px}.periak-tour-emoji{width:51px;height:51px;font-size:27px;margin-bottom:12px}}
 @media(max-height:580px){.periak-tour-content{padding-top:9px}.periak-tour-emoji{display:none}.periak-tour-description{margin-bottom:10px}}
 @media(prefers-reduced-motion:reduce){.periak-tour-progress-track>div,.periak-tour-spotlight{transition:none}}
+
+/* PERIAK WHOLE APP MOBILE DENSITY V6 */
+@media (max-width:700px) {
+.periak-tour-card{width:min(360px,calc(100vw - 16px));max-height:calc(100dvh - 18px)}
+.periak-tour-header{padding:9px}
+.periak-tour-content{padding:10px}
+.periak-tour-content h2{font-size:17px}
+.periak-tour-description{font-size:11px;line-height:1.4}
+.periak-tour-tip{padding:8px}
+}

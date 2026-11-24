@@ -360,3 +360,14 @@
     border-radius: 7px;
   }
 }
+
+/* PERIAK WHOLE APP MOBILE DENSITY V6 */
+@media (max-width:700px) {
+.auth-page{padding:10px}
+.auth-card{padding:12px}
+.auth-brand{margin-bottom:8px}
+.auth-card h1,.auth-card h2{font-size:18px}
+.auth-card p{font-size:11px;line-height:1.45}
+.auth-card input{font-size:16px}
+.auth-submit{min-height:44px}
+}

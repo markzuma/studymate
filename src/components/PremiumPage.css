@@ -940,3 +940,16 @@
     box-sizing: border-box;
   }
 }
+
+/* PERIAK WHOLE APP MOBILE DENSITY V6 */
+@media (max-width:700px) {
+.premium-page{padding:10px}
+.premium-header{gap:7px;margin-bottom:9px}
+.premium-header h1{font-size:19px}
+.premium-hero{padding:11px;margin-bottom:9px}
+.premium-card{min-width:0;padding:10px}
+.premium-checkout{padding:11px}
+.premium-methods{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.premium-methods>*{min-width:0}
+.premium-checkout input{font-size:16px}
+}

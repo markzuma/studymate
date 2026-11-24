@@ -219,3 +219,18 @@
   .appearance-panel { padding: 20px 17px; }
   .accent-grid { grid-template-columns: repeat(2, 1fr); }
 }
+
+/* PERIAK WHOLE APP MOBILE DENSITY V6 */
+@media (max-width:700px) {
+.appearance-panel{padding:12px}
+.appearance-header{gap:6px;margin-bottom:9px}
+.appearance-header h2{font-size:18px;margin:4px 0}
+.appearance-header p{font-size:11px}
+.appearance-preview{padding:9px;margin-bottom:10px}
+.preview-content{gap:7px;margin:9px 0}
+.preview-icon{font-size:19px}
+.preview-content strong{font-size:12px}
+.preview-content p{font-size:10px}
+.appearance-section{padding:10px 0}
+.appearance-section h3{font-size:13px}
+}

@@ -4558,3 +4558,70 @@ body.periak-focus-active .periak-reader-floating-dock {
     grid-template-columns: minmax(0,1fr);
   }
 }
+
+/* PERIAK WHOLE APP MOBILE DENSITY V6 */
+@media (max-width:700px) {
+/* Measure Your Growth */
+.student-dashboard .dashboard-progress{width:100%;min-height:0;padding:8px;margin:7px 0}
+.student-dashboard .dashboard-progress .dashboard-panel-heading{margin-bottom:6px}
+.student-dashboard .dashboard-progress h3{font-size:13px}
+.student-dashboard .subject-progress-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}
+.student-dashboard .subject-progress{min-width:0;padding:6px;border-radius:7px}
+.student-dashboard .subject-progress-title{font-size:9px;line-height:1.25;overflow-wrap:anywhere}
+.student-dashboard .subject-progress-title strong{font-size:9px}
+.student-dashboard .subject-progress small{font-size:9px}
+.student-dashboard .subject-progress-track{height:4px;margin:4px 0}
+
+/* Resume and recent cards */
+.student-dashboard .dashboard-panels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.student-dashboard .dashboard-panel{min-width:0;min-height:0;padding:8px}
+.student-dashboard .dashboard-panel-heading h3{font-size:12px}
+.student-dashboard .continue-content{display:flex;flex-direction:column;align-items:flex-start;gap:4px}
+.student-dashboard .continue-content strong{font-size:10px;line-height:1.3}
+.student-dashboard .continue-content small{font-size:9px}
+.student-dashboard .continue-content button{width:100%;min-height:40px;font-size:10px;white-space:normal}
+.student-dashboard .recent-lesson{padding:5px 0;gap:4px;min-width:0}
+.student-dashboard .recent-lesson strong{font-size:10px;overflow-wrap:anywhere}
+.student-dashboard .recent-lesson small{font-size:9px}
+
+/* Course catalogue */
+.courses-section .course-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.courses-section .course-card{width:100%;min-width:0;min-height:0;padding:8px}
+.courses-section .course-card h3{font-size:11px;line-height:1.25}
+.courses-section .course-card p{font-size:10px;line-height:1.35}
+.courses-section .course-icon{width:27px;height:27px;font-size:15px}
+.courses-section .course-open-button{min-height:40px;font-size:10px}
+
+/* Navigate Your Lesson: actual smaller unit cards */
+.course-detail{padding:9px}
+.course-detail .course-detail-hero{padding:10px;margin-bottom:9px}
+.course-detail .course-detail-hero h1{font-size:17px}
+.course-detail .unit-section h2{font-size:15px;margin:5px 0}
+.course-detail .unit-intro{font-size:10px;margin-bottom:7px}
+.course-detail .unit-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.course-detail .unit-card{display:flex;align-items:flex-start;width:100%;min-width:0;min-height:0;padding:8px;gap:5px;border-radius:8px}
+.course-detail .unit-number{flex:0 0 24px;width:24px;height:24px;font-size:10px}
+.course-detail .unit-info{min-width:0}
+.course-detail .unit-info h3{font-size:11px;line-height:1.25;overflow-wrap:anywhere}
+.course-detail .unit-info p{font-size:9px;line-height:1.3}
+.course-detail .unit-arrow{font-size:12px}
+
+/* Course upgrade box */
+.course-detail .periak-course-upgrade{display:grid;grid-template-columns:minmax(0,1fr) minmax(95px,34%);align-items:center;gap:6px;padding:8px}
+.course-detail .periak-course-upgrade p{font-size:10px}
+.course-detail .periak-course-upgrade button{width:100%;min-width:0;min-height:44px;font-size:10px;white-space:normal}
+
+/* Lesson controls compact, notes stay readable */
+.lesson-page{padding:9px}
+.lesson-page .lesson-heading{margin-bottom:8px}
+.lesson-page .lesson-heading h1{font-size:18px}
+.lesson-page .lesson-panel{padding:10px;margin-bottom:8px}
+.lesson-page .lesson-panel h2{font-size:15px}
+.lesson-page .lesson-panel p,.lesson-page .lesson-panel li{font-size:13px;line-height:1.6}
+.lesson-page .practice-question{padding:10px}
+.lesson-page .question-option{min-height:44px}
+
+/* Fixed bottom navigation */
+.app.periak-compact-mobile-home .periak-mobile-bottom-nav{width:min(340px,calc(100vw - 16px));height:50px;padding:3px}
+.app.periak-compact-mobile-home .periak-mobile-bottom-nav button{min-width:0;height:42px}
+}

@@ -545,3 +545,18 @@
 .xp-filter-row>*{min-width:0;width:100%}
 .xp-question,.xp-patient-card{padding:11px}
 }
+
+/* PERIAK WHOLE APP MOBILE DENSITY V6 */
+@media (max-width:700px) {
+.xp-intro{padding:8px;margin-bottom:8px}
+.xp-intro h3{font-size:16px}
+.xp-intro p{font-size:11px}
+.xp-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.xp-metrics article{min-width:0;padding:8px}
+.xp-course-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.xp-course-card{min-width:0;padding:8px}
+.xp-filter-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;overflow:visible}
+.xp-filter-row>*{min-width:0;width:100%;max-width:100%}
+.xp-patient-card,.xp-question,.xp-report{padding:10px}
+.xp-choice{min-height:44px}
+}
