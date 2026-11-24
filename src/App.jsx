@@ -1630,9 +1630,6 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
               <h2>Your learning dashboard</h2>
               <p>Pick up where you left off and keep track of your progress.</p>
             </div>
-            <button className="dashboard-exam-button" data-periak-tour="examinations" onClick={() => setShowExams(true)}>
-              Open examination centre →
-            </button>
           </div>
 
 
