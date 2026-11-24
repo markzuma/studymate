@@ -1,3 +1,4 @@
+// PERIAK DASHBOARD CLEANUP V10
 import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import useContentRefresh from './hooks/useContentRefresh.js'
 import { useBackHandler } from './context/NavigationProvider'
@@ -159,7 +160,7 @@ function StudyText({ value }) {
 
 
 // PERIAK PERSONAL HOMEPAGE V2
-function HomeWelcome({ name, completedCount = 0 }) {
+function HomeWelcome({ name }) {
   const firstName = String(name || '')
     .trim()
     .split(/\s+/)[0]
@@ -189,15 +190,6 @@ function HomeWelcome({ name, completedCount = 0 }) {
           Welcome back! Continue learning, explore your
           nursing subjects and make progress at your pace.
         </p>
-      </div>
-
-      <div className="periak-home-stat">
-        <strong>{completedCount}</strong>
-        <span>
-          {completedCount === 1
-            ? 'Lesson completed'
-            : 'Lessons completed'}
-        </span>
       </div>
     </section>
   )
@@ -1622,7 +1614,6 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
         <section className="student-dashboard" data-periak-tour="learning-dashboard">
           <HomeWelcome
             name={welcomeName}
-            completedCount={learningData?.completed?.length ?? 0}
           />
           <div className="dashboard-heading">
             <div>
@@ -1750,33 +1741,6 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
               )}
             </section>
           </div>
-
-          <section className="dashboard-progress">
-            <div className="dashboard-panel-heading">
-              <div>
-                <span className="dashboard-kicker">MEASURE YOUR GROWTH</span>
-                <h3>Subject progress</h3>
-              </div>
-              <a href="#courses">View all subjects ↓</a>
-            </div>
-            <div className="subject-progress-grid">
-              {catalogueCourses.map(course => {
-                const progress = courseProgress(course)
-                return (
-                  <div className="subject-progress" key={course.title}>
-                    <div className="subject-progress-title">
-                      <span>{course.icon} {course.title}</span>
-                      <strong>{progress.percent}%</strong>
-                    </div>
-                    <div className="subject-progress-track">
-                      <div style={{ width: `${progress.percent}%` }} />
-                    </div>
-                    <small>{progress.done} of {progress.total} units completed</small>
-                  </div>
-                )
-              })}
-            </div>
-          </section>
         </section>
 
         <section className="courses-section" id="courses" data-periak-tour="courses">
