@@ -4454,3 +4454,107 @@ body.periak-focus-active .periak-reader-floating-dock {
 .app .features-section .feature h3{font-size:13px}
 .app .features-section .feature p{font-size:11px}
 }
+
+
+/* PERIAK REAL COMPACT GRID V5 */
+@media (max-width: 700px) {
+
+  /* Two actual cards per row, not full-width stacks */
+  .app .student-dashboard .dashboard-panels {
+    display: grid;
+    grid-template-columns: repeat(2,minmax(0,1fr));
+    align-items: stretch;
+    gap: 7px;
+  }
+
+  .app .student-dashboard .dashboard-panel {
+    width: 100%;
+    min-width: 0;
+    padding: 9px;
+  }
+
+  .app .student-dashboard .continue-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 5px;
+  }
+
+  .app .student-dashboard .continue-content > div {
+    width: 100%;
+    min-width: 0;
+  }
+
+  .app .student-dashboard .continue-content button {
+    width: 100%;
+    min-height: 38px;
+    white-space: normal;
+  }
+
+  .app .student-dashboard .recent-lesson {
+    gap: 4px;
+    padding: 5px 0;
+    min-width: 0;
+  }
+
+  .app .student-dashboard .recent-lesson strong {
+    overflow-wrap: anywhere;
+  }
+
+  /* Actual small subject-progress cards */
+  .app .student-dashboard .subject-progress-grid {
+    display: grid;
+    grid-template-columns: repeat(2,minmax(0,1fr));
+    gap: 6px;
+  }
+
+  .app .student-dashboard .subject-progress {
+    width: 100%;
+    min-width: 0;
+    padding: 7px;
+  }
+
+  /* Course cards and numbered units */
+  .app .courses-section .course-grid,
+  .app .course-detail .unit-list {
+    display: grid;
+    grid-template-columns: repeat(2,minmax(0,1fr));
+    gap: 7px;
+  }
+
+  .app .courses-section .course-card,
+  .app .course-detail .unit-card {
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    padding: 9px;
+  }
+
+  .app .course-detail .unit-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .app .course-detail .unit-info {
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+
+  /* Slim upgrade banner */
+  .app .periak-course-upgrade {
+    padding: 9px;
+    min-height: 0;
+  }
+
+  /* Keep important reading content full-width */
+  .app .lesson-page .lesson-panel {
+    width: 100%;
+  }
+}
+
+@media (max-width: 350px) {
+  .app .student-dashboard .dashboard-panels {
+    grid-template-columns: minmax(0,1fr);
+  }
+}
