@@ -1,0 +1,293 @@
+
+/* PERIAK WORKSPACE V4 */
+.app.periak-workspace-page {
+  display: grid;
+  grid-template-columns: 190px minmax(0, 1fr);
+  grid-template-rows: auto 1fr auto;
+  background: var(--page-bg);
+  color: var(--text-primary);
+  text-align: left;
+  min-height: 100vh;
+}
+.periak-workspace-page .workspace-sidebar {
+  grid-column: 1;
+  grid-row: 1 / 4;
+  padding: 23px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  background: var(--surface);
+  border-right: 1px solid var(--border);
+}
+.periak-workspace-page .workspace-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 19px;
+  letter-spacing: -.6px;
+  padding: 0 8px;
+}
+.periak-workspace-page .workspace-brand-mark {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #2878d0;
+  color: white;
+  font-size: 24px;
+}
+.periak-workspace-page .workspace-nav-title {
+  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 1px;
+  padding-left: 11px;
+}
+.periak-workspace-page .workspace-navigation {
+  display: grid;
+  gap: 4px;
+}
+.periak-workspace-page .workspace-navigation a,
+.periak-workspace-page .workspace-navigation button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 11px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-muted);
+  font: 600 12px inherit;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+.periak-workspace-page .workspace-navigation .active,
+.periak-workspace-page .workspace-navigation a:hover,
+.periak-workspace-page .workspace-navigation button:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.periak-workspace-page .workspace-premium {
+  margin-top: auto;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--surface-secondary);
+}
+.periak-workspace-page .workspace-premium strong { font-size: 12px; }
+.periak-workspace-page .workspace-premium p {
+  margin: 8px 0;
+  color: var(--text-muted);
+  font-size: 11px;
+  line-height: 1.5;
+}
+.periak-workspace-page .workspace-premium button {
+  border: 0;
+  background: none;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0;
+}
+.periak-workspace-page .workspace-topbar {
+  grid-column: 2;
+  grid-row: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 15px;
+  min-height: 64px;
+  padding: 11px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+.periak-workspace-page .workspace-search {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: min(370px, 100%);
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-secondary);
+  color: var(--text-muted);
+}
+.periak-workspace-page .workspace-search input {
+  width: 100%;
+  min-width: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text-primary);
+  outline: none;
+  font-family: inherit;
+  font-size: 12px;
+}
+.periak-workspace-page .workspace-account {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.periak-workspace-page .workspace-avatar {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.periak-workspace-page .periak-workspace-main {
+  grid-column: 2;
+  grid-row: 2;
+  min-width: 0;
+  padding: 22px 20px 35px;
+}
+.periak-workspace-page .student-dashboard {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+.periak-workspace-page .dashboard-heading h2 {
+  font-size: 25px;
+  font-weight: 750;
+}
+.periak-workspace-page .dashboard-stats {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.periak-workspace-page .dashboard-stat,
+.periak-workspace-page .dashboard-panel,
+.periak-workspace-page .dashboard-progress,
+.periak-workspace-page .dashboard-premium-ad,
+.periak-workspace-page .course-card {
+  background: var(--surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: none;
+}
+.periak-workspace-page .dashboard-stat { padding: 17px; }
+.periak-workspace-page .dashboard-stat > span {
+  display: inline-flex;
+  color: var(--accent);
+}
+.periak-workspace-page .dashboard-stat strong {
+  font-size: 28px;
+  color: var(--text-primary);
+}
+.periak-workspace-page .dashboard-premium-ad {
+  display: block;
+  padding: 22px;
+  margin: 22px 0;
+}
+.periak-workspace-page .dashboard-premium-ad h2 {
+  color: var(--text-primary);
+  font-size: 23px;
+}
+.periak-workspace-page .dashboard-premium-ad p {
+  color: var(--text-muted);
+}
+.periak-workspace-page .dashboard-premium-ad .dashboard-premium-tools {
+  display: grid;
+  width: 100%;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 18px;
+}
+.periak-workspace-page .dashboard-premium-ad
+.dashboard-premium-tools .dashboard-premium-tool {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  text-align: left;
+  min-width: 0;
+  min-height: 116px;
+  gap: 9px;
+  padding: 15px;
+  color: var(--text-primary);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  box-shadow: none;
+}
+.periak-workspace-page .dashboard-premium-tool .tool-icon {
+  display: inline-flex;
+  color: var(--accent);
+}
+.periak-workspace-page .dashboard-premium-tool small {
+  color: var(--text-muted);
+  opacity: 1;
+}
+.periak-workspace-page .courses-section {
+  max-width: none;
+  margin: 0;
+  padding: 28px 0;
+}
+.periak-workspace-page .features-section,
+.periak-workspace-page .cta-section {
+  display: none;
+}
+.periak-workspace-page > footer {
+  grid-column: 2;
+  grid-row: 3;
+  padding: 18px 20px;
+  background: var(--surface);
+}
+@media (max-width: 800px) {
+  .app.periak-workspace-page {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto auto 1fr auto;
+  }
+  .periak-workspace-page .workspace-sidebar {
+    grid-column: 1;
+    grid-row: 1;
+    padding: 12px;
+    gap: 10px;
+    border-right: 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .periak-workspace-page .workspace-nav-title,
+  .periak-workspace-page .workspace-premium { display: none; }
+  .periak-workspace-page .workspace-navigation {
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+  }
+  .periak-workspace-page .workspace-navigation a,
+  .periak-workspace-page .workspace-navigation button {
+    flex: 0 0 auto;
+    width: auto;
+    white-space: nowrap;
+  }
+  .periak-workspace-page .workspace-topbar {
+    grid-column: 1;
+    grid-row: 2;
+    padding: 11px 14px;
+  }
+  .periak-workspace-page .periak-workspace-main {
+    grid-column: 1;
+    grid-row: 3;
+    padding: 20px 15px;
+  }
+  .periak-workspace-page > footer {
+    grid-column: 1;
+    grid-row: 4;
+  }
+  .periak-workspace-page .dashboard-premium-ad .dashboard-premium-tools {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 480px) {
+  .periak-workspace-page .workspace-account strong { display: none; }
+  .periak-workspace-page .dashboard-stats { gap: 7px; }
+  .periak-workspace-page .dashboard-stat { padding: 11px; }
+  .periak-workspace-page .dashboard-stat strong { font-size: 23px; }
+  .periak-workspace-page .dashboard-stat small { font-size: 10px; }
+}
