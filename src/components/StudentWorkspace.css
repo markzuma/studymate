@@ -567,3 +567,35 @@
     min-height: 100dvh;
   }
 }
+
+/* Persistent desktop sidebar */
+
+@media (min-width: 901px) {
+  .periak-workspace {
+    position: relative;
+    display: block;
+    width: 100%;
+    min-height: 100dvh;
+    overflow: visible;
+  }
+
+  .periak-workspace .pw-sidebar {
+    position: fixed !important;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: var(--pw-sidebar-width, 245px);
+    height: 100dvh;
+    overflow-y: auto;
+    overflow-x: hidden;
+    box-sizing: border-box;
+    z-index: 100;
+  }
+
+  .periak-workspace .pw-main {
+    margin-left: var(--pw-sidebar-width, 245px);
+    width: calc(100% - var(--pw-sidebar-width, 245px));
+    min-width: 0;
+    box-sizing: border-box;
+  }
+}
