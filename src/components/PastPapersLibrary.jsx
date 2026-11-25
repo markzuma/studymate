@@ -1,3 +1,4 @@
+import WorkspaceIcon from './WorkspaceIcon'
 import { useEffect, useMemo, useState } from 'react'
 import useContentRefresh from '../hooks/useContentRefresh.js'
 import { supabase } from '../lib/supabase'
@@ -290,7 +291,9 @@ export default function PastPapersLibrary({
               {filtered.map(paper => (
                 <article className="papers-result-card" key={paper.id}>
                   <div className="papers-card-top">
-                    <span className="papers-card-icon">📄</span>
+                    <span className="papers-card-icon">
+                      <WorkspaceIcon name="papers" size={24}/>
+                    </span>
                     {isAdmin && <span className={`papers-status status-${paper.status}`}>{paper.status}</span>}
                   </div>
                   <h3>{paper.paper_title}</h3>

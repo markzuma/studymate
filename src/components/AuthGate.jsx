@@ -3,6 +3,11 @@ import { cloneElement, lazy, Suspense, useCallback, useEffect, useState,
   useRef} from 'react'
 import { supabase } from '../lib/supabase'
 import './AuthGate.css'
+import './StudentWorkspace.css'
+import './WorkspaceFinishing.css'
+import StudentWorkspaceNav from './StudentWorkspaceNav'
+import WorkspaceIcon from './WorkspaceIcon'
+import StudentMobileNav from './StudentMobileNav'
 import UserActivityMonitor from './UserActivityMonitor'
 import NotificationCentre from './NotificationCentre'
 import SupportCentre from './SupportCentre'
@@ -61,6 +66,7 @@ export default function AuthGate({ children }) {
   const [showAppearance, setShowAppearance] = useState(() => savedPeriakAccount() === 'appearance')
   const [showProfile, setShowProfile] = useState(() => savedPeriakAccount() === 'profile')
   const [showWelcomeTour, setShowWelcomeTour] = useState(false)
+  const [workspaceScreen, setWorkspaceScreen] = useState('home')
 
 
   // Remember account-level screens after refresh.
@@ -83,8 +89,73 @@ export default function AuthGate({ children }) {
     showAppearance, showProfile
   ])
 
+  useEffect(() => {
+    function handleWorkspaceScreen(event) {
+      if (typeof event.detail === 'string') {
+        setWorkspaceScreen(event.detail)
+      }
+    }
+
+    window.addEventListener(
+      'periak:workspace-screen',
+      handleWorkspaceScreen
+    )
+
+    return () => window.removeEventListener(
+      'periak:workspace-screen',
+      handleWorkspaceScreen
+    )
+  }, [])
+
+  function openWorkspaceAccount() {
+    const menu = document.querySelector(
+      '.pw-main .auth-account-menu'
+    )
+
+    if (menu) {
+      menu.open = true
+      menu.querySelector('summary')?.focus()
+    }
+  }
+
+  async function openWorkspaceTool(moduleId) {
+    const freeModules = [
+      'pastpapers', 'dashboard', 'hub', 'exams'
+    ]
+
+    const allowed =
+      premiumAccess ||
+      profile?.role === 'admin' ||
+      freeModules.includes(moduleId) ||
+      (premiumLoading
+        ? await refreshPremiumAccess()
+        : false)
+
+    setShowAppearance(false)
+    setShowProfile(false)
+    setShowControlCentre(false)
+    setPremiumModuleReturn(false)
+
+    if (allowed) {
+      setPremiumFeatureIntent(null)
+      setShowPremium(false)
+      setPremiumLaunch(moduleId)
+    } else {
+      setPremiumFeatureIntent(moduleId)
+      setShowPremium(true)
+    }
+  }
+
   // PERIAK MOBILE DENSITY V8
   function handlePeriakMobileNav(id) {
+    setShowAppearance(false)
+    setShowProfile(false)
+    setShowControlCentre(false)
+
+    setPremiumFeatureIntent(null)
+    setPremiumModuleReturn(false)
+    setPremiumLaunch(null)
+
     if (id === 'premium') {
       try {
         window.sessionStorage.removeItem(
@@ -517,6 +588,20 @@ export default function AuthGate({ children }) {
   }
 
   if (session) {
+    const adminWorkspace =
+      profile?.role === 'admin' &&
+      showControlCentre
+
+    const studentWorkspace =
+      !adminWorkspace && Boolean(profile?.role)
+
+    const activeWorkspaceScreen =
+      showAppearance || showProfile
+        ? 'account'
+        : showPremium
+          ? 'premium'
+          : workspaceScreen
+
     return (
       <>
         <UserActivityMonitor userId={session.user.id} />
@@ -529,29 +614,44 @@ export default function AuthGate({ children }) {
           </Suspense>
         )}
 
-        {!showControlCentre && !showAppearance &&
-          !showProfile && !showWelcomeTour && (
-          <nav className="periak-global-mobile-nav"
-            aria-label="Mobile quick navigation">
-            {[
-              ['home', '⌂', 'Home'],
-              ['courses', '▤', 'Courses'],
-              ['papers', '▣', 'Papers'],
-              ['exams', '▧', 'Exams'],
-              ['premium', '♛', 'Premium']
-            ].map(([id, icon, label]) => (
-              <button
-                type="button"
-                key={id}
-                onClick={() => handlePeriakMobileNav(id)}
-              >
-                <span aria-hidden="true">{icon}</span>
-                <small>{label}</small>
-              </button>
-            ))}
-          </nav>
+        <div className={
+          studentWorkspace
+            ? 'periak-workspace'
+            : undefined
+        }>
+
+        {studentWorkspace && (
+          <StudentWorkspaceNav
+            active={activeWorkspaceScreen}
+            onNavigate={handlePeriakMobileNav}
+            onTool={openWorkspaceTool}
+            onAccount={openWorkspaceAccount}
+          />
         )}
+
+        <div className={
+          studentWorkspace
+            ? 'pw-main'
+            : undefined
+        }>
+
+        {studentWorkspace &&
+          !showWelcomeTour && (
+            <StudentMobileNav
+              active={activeWorkspaceScreen}
+              onNavigate={handlePeriakMobileNav}
+              onTool={openWorkspaceTool}
+            />
+          )}
+
         <div className="auth-userbar">
+
+          {studentWorkspace && (
+            <div className="pwm-brand">
+              <span className="auth-logo">✚</span>
+              <strong>PERIAK</strong>
+            </div>
+          )}
 
           <span>
             Signed in as <strong>{session.user.email}</strong>
@@ -588,6 +688,9 @@ export default function AuthGate({ children }) {
             }}
           >
             <summary aria-label="Account options">
+              {studentWorkspace && (
+                <WorkspaceIcon name="account" size={19}/>
+              )}
               Account <span aria-hidden="true">▾</span>
             </summary>
             <div className="auth-account-menu-list">
@@ -715,6 +818,9 @@ export default function AuthGate({ children }) {
             })}
           </div>
         )}
+
+        </div>
+        </div>
       </>
     )
   }

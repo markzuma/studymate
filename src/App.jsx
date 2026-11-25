@@ -5,6 +5,10 @@ import { useBackHandler } from './context/NavigationProvider'
 import { supabase } from './lib/supabase'
 // PERIAK DASHBOARD SIMPLIFICATION V14
 import './App.css'
+import StudentDashboard from './components/StudentDashboard'
+import WorkspaceIcon from './components/WorkspaceIcon'
+import './components/AcademicWorkspace.css'
+import './components/LearningWorkspace.css'
 
 // PERIAK ON-DEMAND LOADING V1
 const LessonReadingTools = lazy(
@@ -397,6 +401,8 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
   const progressSessionRef = useRef(null)
   const progressRetryRef = useRef(false)
   const progressWriteQueueRef = useRef(Promise.resolve())
+  const [catalogueOpen, setCatalogueOpen] = useState(false)
+
   const [showExams, setShowExams] = useState(savedPeriakView.screen === 'exams')
   const [activePremiumModule, setActivePremiumModule] = useState(savedPeriakView.screen === 'module' ? savedPeriakView.module || '' : '')
 
@@ -1072,6 +1078,7 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
   }
 
   const goHome = () => {
+    setCatalogueOpen(false)
     setSelectedUnit(null)
     setSelectedCourse(null)
     window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -1088,19 +1095,16 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
   useEffect(() => {
     const navigate = id => {
       if (id === 'home' || id === 'courses') {
+        setCatalogueOpen(id === 'courses')
         setShowExams(false)
         setActivePremiumModule('')
         setSelectedUnit(null)
         setSelectedCourse(null)
 
-        if (id === 'courses') {
-          window.setTimeout(() => {
-            document.getElementById('courses')
-              ?.scrollIntoView({ behavior: 'smooth' })
-          }, 150)
-        } else {
-          window.scrollTo({ top: 0, behavior: 'smooth' })
-        }
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth'
+        })
       }
 
       if (id === 'papers') {
@@ -1161,14 +1165,54 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
     }
 
     if (selectedCourse) {
-      goHome()
+      setSelectedCourse(null)
+      setSelectedUnit(null)
+      setCatalogueOpen(true)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+      return true
+    }
+
+    if (catalogueOpen) {
+      setCatalogueOpen(false)
+      window.scrollTo({ top: 0, behavior: 'smooth' })
       return true
     }
 
     return false
   }
 
-  useBackHandler(handleAppBack, showExams || Boolean(selectedCourse) || Boolean(activePremiumModule), 20)
+  useBackHandler(
+    handleAppBack,
+    showExams ||
+      Boolean(selectedCourse) ||
+      Boolean(activePremiumModule) ||
+      catalogueOpen,
+    20
+  )
+
+  useEffect(() => {
+    const workspaceScreen =
+      showExams
+        ? 'exams'
+        : activePremiumModule === 'pastpapers'
+          ? 'papers'
+          : activePremiumModule
+            ? activePremiumModule
+            : selectedCourse || catalogueOpen
+              ? 'courses'
+              : 'home'
+
+    window.dispatchEvent(
+      new CustomEvent('periak:workspace-screen', {
+        detail: workspaceScreen
+      })
+    )
+  }, [
+    showExams,
+    activePremiumModule,
+    selectedCourse,
+    catalogueOpen
+  ])
 
   if (showExams) {
     return (
@@ -1307,14 +1351,7 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
                 onClick={toggleLessonBookmark}
                 disabled={bookmarkBusy}
                 aria-pressed={isBookmarked}
-                style={{
-                  border: '1px solid #cbd5e1',
-                  borderRadius: '8px',
-                  padding: '8px 12px',
-                  background: isBookmarked ? '#eff6ff' : '#ffffff',
-                  color: '#1e40af',
-                  cursor: bookmarkBusy ? 'wait' : 'pointer'
-                }}
+                className="pw-bookmark-button"
               >
                 {bookmarkBusy ? 'Saving…' : isBookmarked ? '★ Bookmarked' : '☆ Save lesson'}
               </button>
@@ -1408,7 +1445,9 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
                     : []).map((question, index) => {
                       const options = Array.isArray(question.options)
                         ? question.options
-                        : Object.values(question.options || {})
+                        : ['A', 'B', 'C', 'D']
+                            .map(key => question.options?.[key])
+                            .filter(value => typeof value === 'string')
                       const answerIndex = typeof question.answer === 'number'
                         ? question.answer
                         : /^[A-D]$/i.test(String(question.answer || '').trim())
@@ -1539,10 +1578,22 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
         </header>
 
         <main className="course-detail">
-          <button className="back-link" onClick={goHome}>← Back to all courses</button>
+          <button
+            className="back-link"
+            onClick={() => {
+              setSelectedUnit(null)
+              setSelectedCourse(null)
+              setCatalogueOpen(true)
+              window.scrollTo({ top: 0 })
+            }}
+          >
+            ← Back to all courses
+          </button>
 
           <div className="course-detail-hero">
-            <div className="course-detail-icon">{selectedCourse.icon}</div>
+            <div className="course-detail-icon">
+              <WorkspaceIcon name="book" size={29}/>
+            </div>
             <div className="eyebrow">{selectedCourse.level}</div>
             <h1>{selectedCourse.title}</h1>
             <p>{selectedCourse.desc}</p>
@@ -1613,168 +1664,13 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
   }
 
   return (
-    <div className="app periak-compact-mobile-home">
-      <header className="navbar">
-        <a className="brand" href="#">
-          <span className="brand-icon">✚</span>
-          <span>PERIAK</span>
-        </a>
-        <nav>
-          <a href="#courses">Courses</a>
-        </nav>
-      </header>
-
-      <main>
-        <section className="hero">
-          <div className="hero-content">
-            <div className="eyebrow"><span></span> BUILT FOR NURSING STUDENTS IN KENYA</div>
-            <h1>Your nursing journey.<br /><span>Made easier.</span></h1>
-            <p className="hero-text">
-              Learn with confidence. Access organised nursing notes,
-              practise exam questions and strengthen your clinical knowledge
-              — all in one place.
-            </p>
-            <div className="hero-actions">
-              <a className="primary-button" href="#courses">Explore courses <span>→</span></a>
-              <a className="secondary-button" href="#features">Discover resources</a>
-            </div>
-            <div className="hero-note">
-              <span>✓</span> For certificate, diploma and degree nursing students
-            </div>
-          </div>
-          <div className="hero-visual">
-            <div className="visual-card main-card">
-              <div className="visual-top"><span>YOUR LEARNING SPACE</span><span className="live-dot"></span></div>
-              <div className="visual-symbol">🩺</div>
-              <h3>Learn. Practise. Excel.</h3>
-              <p>Build knowledge for the classroom and the clinical setting.</p>
-              <div className="progress-label"><span>Your learning journey</span><strong>Start today</strong></div>
-              <div className="progress-track"><div></div></div>
-              <div className="visual-bottom"><span>📚 Study resources</span><span>✍️ Practice quizzes</span></div>
-            </div>
-            <div className="floating-card float-one">📖 <span><strong>Study notes</strong><small>Learn at your pace</small></span></div>
-            <div className="floating-card float-two">🎯 <span><strong>Exam practice</strong><small>Test your knowledge</small></span></div>
-            <div className="decor decor-one"></div>
-            <div className="decor decor-two"></div>
-          </div>
-        </section>
-
-        <section className="trust-strip">
-          <div><strong>01</strong><span>Learn systematically</span></div>
-          <div><strong>02</strong><span>Practise confidently</span></div>
-          <div><strong>03</strong><span>Grow clinically</span></div>
-        </section>
-
-        <section className="student-dashboard" id="dashboard" data-periak-tour="learning-dashboard">
-          <HomeWelcome
-            name={welcomeName}
-          />
-          <div className="dashboard-heading">
-            <div>
-              <div className="eyebrow">YOUR PERSONAL STUDY SPACE</div>
-              <h2>Your learning dashboard</h2>
-            </div>
-          </div>
-
-
-
-          <section className="dashboard-premium-ad" data-periak-tour="pastpapers">
-            <div className="dashboard-premium-ad-copy">
-              <span className="dashboard-premium-ad-label">PERIAK PREMIUM · FLAGSHIP</span>
-              <h2>Past Papers &amp; Exam Practice</h2>
-              <p>Search past papers and exam-style practice papers by course, unit,
-                year, semester and exam type.</p>
-              <div className="dashboard-premium-ad-features">
-                <span>🔎 Searchable library</span>
-                <span>📚 Course &amp; unit filters</span>
-                <span>📄 Secure PDF access</span>
-              </div>
-              <button type="button" onClick={() => onOpenPremiumFeature('pastpapers')}>
-                {isPremium || isAdmin ? 'Open Past Papers →' : 'Explore Past Papers →'}
-              </button>
-            </div>
-            <div className="dashboard-premium-tools">
-              {[
-                { id: 'exams', icon: '📝', title: 'Smart Exam Centre', short: 'Exams', tag: 'CATs and mock exams' },
-                { id: 'clinical', icon: '🩺', title: 'Clinical Skills Lab', short: 'Clinical Lab', tag: 'Interactive scenarios' },
-                { id: 'simulator', icon: '🏥', title: 'Virtual Patient Simulator', short: 'Patient Sim', tag: 'Clinical simulations' },
-                { id: 'tutor', icon: '🤖', title: 'Study Tutor', short: 'Tutor', tag: 'Search lesson materials' },
-                { id: 'hub', icon: '📚', title: 'Nursing Knowledge Hub', short: 'Knowledge Hub', tag: 'Browse subjects' },
-                { id: 'planner', icon: '📅', title: 'Study Planner', short: 'Planner', tag: 'Plan CATs and exams' }
-              ].map(tool => (
-                <button type="button" key={tool.id} className="dashboard-premium-tool" data-periak-tour={tool.id}
-                  aria-label={tool.title} onClick={() => onOpenPremiumFeature(tool.id)}>
-                  <span className="tool-icon">{tool.icon}</span>
-                  <strong>
-                    <span className="tool-full">{tool.title}</span>
-                    <span className="tool-short">{tool.short}</span>
-                  </strong>
-                  <small>{tool.tag}</small>
-                </button>
-              ))}
-            </div>
-          </section>
-
-
-
-          <div className="dashboard-stats periak-minimal-stats">
-            <article className="dashboard-stat">
-              <span>📚</span>
-              <strong>{learningData.completed.length}</strong>
-              <small>Lessons completed</small>
-            </article>
-            <article className="dashboard-stat">
-              <span>📖</span>
-              <strong>{learningData.recent.length}</strong>
-              <small>Recently studied</small>
-            </article>
-            <article className="dashboard-stat">
-              <span>🎓</span>
-              <strong>{catalogueCourses.filter(course => courseProgress(course).percent === 100).length}</strong>
-              <small>Subjects completed</small>
-            </article>
-            <article className="dashboard-stat">
-              <span>🔥</span>
-              <strong>{studyStreak ?? '—'}</strong>
-              <small>Day streak</small>
-            </article>
-          </div>
-
-          <div className="dashboard-panels">
-            <section className="dashboard-panel recent-panel">
-              <div className="dashboard-panel-heading">
-                <div>
-                  <span className="dashboard-kicker">YOUR STUDY ACTIVITY</span>
-                  <h3>Recently studied</h3>
-                </div>
-                <span>◷</span>
-              </div>
-              {learningData.recent.length ? (
-                <div className="recent-lesson-list">
-                  {learningData.recent.slice(0, 4).map((item, index) => {
-                    const course = catalogueCourses.find(entry => entry.title === item.courseTitle)
-                    return course ? (
-                      <button className="recent-lesson" key={`${item.courseTitle}-${item.unit}-${index}`}
-                        onClick={() => openUnit(course, item.unit)}>
-                        <span>{course.icon}</span>
-                        <span><strong>{item.unit}</strong><small>{item.courseTitle}</small></span>
-                        <b>→</b>
-                      </button>
-                    ) : null
-                  })}
-                </div>
-              ) : (
-                <p className="dashboard-muted">Lessons you open will appear here for quick access.</p>
-              )}
-            </section>
-          </div>
-        </section>
-
-        <section className="courses-section" id="courses" data-periak-tour="courses">
+    <div className="app pw-learning-home">
+      {catalogueOpen ? (
+        <main>
+          <section className="courses-section pw-course-catalogue" id="courses" data-periak-tour="courses">
           <div className="section-heading">
             <div>
-              <div className="eyebrow">YOUR LEARNING STARTS HERE</div>
-              <h2>Explore nursing subjects</h2>
+                            <h2>Courses</h2><p>Explore your nursing learning materials.</p>
             </div>
           </div>
           <div className="periak-course-toolbar">
@@ -1793,7 +1689,9 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
           <div className="course-grid">
             {visibleCatalogueCourses.map((course) => (
               <article className="course-card" key={course.title}>
-                <div className="course-icon">{course.icon}</div>
+                <div className="course-icon">
+                  <WorkspaceIcon name="book" size={25}/>
+                </div>
                 <div className="course-level">{course.level}</div>
                 <h3>{course.title}</h3>
                 <p>{course.desc}</p>
@@ -1805,7 +1703,7 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
                   <small>{courseProgress(course).done}/{courseProgress(course).total} units completed</small>
                 </div>
                 <button className="course-open-button" onClick={() => openCourse(course)}>
-                  Explore subject <span>→</span>
+                  Open course <WorkspaceIcon name="chevron" size={17}/>
                 </button>
               </article>
             ))}
@@ -1829,26 +1727,26 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
             </button>
           )}
         </section>
-
-        <section className="features-section" id="features">
-          <div className="eyebrow">MORE THAN JUST NOTES</div>
-          <h2>Everything you need to study smarter.</h2>
-          <div className="feature-grid">
-            <div className="feature"><span>📚</span><h3>Structured study notes</h3><p>Clear, organised learning materials for your nursing subjects.</p></div>
-            <div className="feature"><span>✍️</span><h3>Exam practice</h3><p>Multiple-choice questions, explanations and mock examinations.</p></div>
-            <div className="feature"><span>🩹</span><h3>Clinical skills</h3><p>Strengthen your understanding of practical nursing procedures.</p></div>
-          </div>
-        </section>
-
-      </main>
-
-      <footer>
-        <a className="brand footer-brand" href="#"><span className="brand-icon">✚</span> PERIAK</a>
-        <p>Supporting nursing education in Kenya.</p>
-        <span>© 2026 PERIAK. Learning made easier.</span>
-      </footer>
-
-
+        </main>
+      ) : (
+        <StudentDashboard
+          courses={catalogueCourses}
+          units={catalogueUnits}
+          learningData={learningData}
+          courseProgress={courseProgress}
+          studyStreak={studyStreak}
+          onCourse={openCourse}
+          onLesson={openUnit}
+          onCatalogue={() => {
+            setCatalogueOpen(true)
+            window.scrollTo({
+              top: 0,
+              behavior: 'smooth'
+            })
+          }}
+          onFeature={onOpenPremiumFeature}
+        />
+      )}
     </div>
   )
 }

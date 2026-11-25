@@ -1,0 +1,554 @@
+/* PERIAK 3.0 — Unified specialist and account interfaces */
+
+/* Shared specialist workspace */
+
+.periak-workspace .xp-root {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+  color: var(--text-primary);
+}
+
+.periak-workspace .xp-intro {
+  padding: 0 0 15px;
+  margin: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.periak-workspace .xp-intro h3 {
+  font-size: 24px;
+  font-weight: 750;
+  margin: 7px 0;
+  color: var(--text-primary);
+}
+
+.periak-workspace .xp-intro small {
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: .5px;
+}
+
+.periak-workspace .xp-intro p {
+  color: var(--text-muted);
+  line-height: 1.65;
+  font-size: 14px;
+}
+
+.periak-workspace :is(
+  .xp-question,
+  .xp-report,
+  .xp-patient-card,
+  .xp-story,
+  .xp-result,
+  .xp-course-card,
+  .xp-recent,
+  .xp-metrics article
+) {
+  padding: 18px;
+  background: var(--surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: none;
+  min-width: 0;
+}
+
+.periak-workspace .xp-case-head {
+  background: var(--surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px;
+}
+
+.periak-workspace .xp-root :is(h4,h5) {
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+.periak-workspace .xp-root :is(p,li) {
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+.periak-workspace .xp-choice {
+  min-height: 48px;
+  border-radius: 8px;
+  line-height: 1.6;
+}
+
+.periak-workspace .xp-meter-track {
+  background: var(--surface-secondary);
+  height: 8px;
+  border-radius: 10px;
+}
+
+.periak-workspace .xp-meter-track > span {
+  background: var(--accent);
+  border-radius: inherit;
+}
+
+.periak-workspace .xp-primary {
+  min-height: 44px;
+  padding: 11px 15px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--accent);
+  color: white;
+  box-shadow: none;
+  font-weight: 650;
+}
+
+.periak-workspace .xp-disclaimer {
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+/* Study Planner */
+
+.periak-workspace .sp-planner {
+  max-width: 1480px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 26px 30px 36px;
+  background: var(--page-bg);
+  color: var(--text-primary);
+  min-width: 0;
+}
+
+.periak-workspace .sp-welcome {
+  background: var(--surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 22px;
+  box-shadow: none;
+}
+
+.periak-workspace .sp-welcome :is(h1,h2) {
+  font-size: 28px;
+  color: var(--text-primary);
+  margin: 7px 0;
+}
+
+.periak-workspace .sp-welcome :is(p,.sp-date) {
+  color: var(--text-muted);
+}
+
+.periak-workspace .sp-welcome-icon {
+  display: none;
+}
+
+.periak-workspace .sp-eyebrow {
+  color: var(--accent);
+  font-size: 11px;
+  letter-spacing: .5px;
+}
+
+.periak-workspace :is(
+  .sp-stat,
+  .sp-content,
+  .sp-task,
+  .sp-form
+) {
+  background: var(--surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: none;
+  min-width: 0;
+}
+
+.periak-workspace .sp-stat-icon {
+  color: var(--accent);
+  background: var(--accent-soft);
+  border-radius: 8px;
+}
+
+.periak-workspace .sp-add-button {
+  min-height: 44px;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  box-shadow: none;
+}
+
+/* Premium membership */
+
+.periak-workspace .pw-main > .premium-page {
+  width: 100%;
+  max-width: 1480px;
+  min-width: 0;
+  margin: 0 auto;
+  padding: 26px 30px 36px;
+  background: var(--page-bg);
+  color: var(--text-primary);
+}
+
+.periak-workspace .premium-header {
+  background: transparent;
+  color: var(--text-primary);
+  border: 0;
+  box-shadow: none;
+}
+
+.periak-workspace .premium-hero {
+  padding: 22px;
+  background: var(--surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: none;
+}
+
+.periak-workspace .premium-hero h1 {
+  font-size: clamp(25px,3vw,34px);
+  line-height: 1.3;
+  color: var(--text-primary);
+}
+
+.periak-workspace .premium-hero p {
+  color: var(--text-muted);
+}
+
+.periak-workspace .premium-hero::before,
+.periak-workspace .premium-hero::after {
+  display: none;
+}
+
+.periak-workspace :is(
+  .premium-card,
+  .premium-feature-card,
+  .premium-feature-preview,
+  .premium-feature-focus,
+  .premium-membership-panel,
+  .premium-checkout
+) {
+  background: var(--surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: none;
+  min-width: 0;
+}
+
+.periak-workspace .premium-card.selected {
+  border: 2px solid var(--accent);
+}
+
+.periak-workspace .premium-feature-card {
+  transform: none;
+}
+
+.periak-workspace .premium-feature-card:hover {
+  transform: none;
+  border-color: var(--accent);
+}
+
+.periak-workspace .premium-feature-icon {
+  background: var(--accent-soft);
+  border-radius: 8px;
+}
+
+.periak-workspace :is(
+  .premium-pay,
+  .premium-hero-cta,
+  .premium-feature-continue
+) {
+  background: var(--accent);
+  color: #fff;
+  border-radius: 8px;
+  box-shadow: none;
+}
+
+/* Profile and appearance */
+
+.periak-workspace :is(
+  .profile-panel,
+  .appearance-panel
+) {
+  background: var(--surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+
+.periak-workspace :is(
+  .profile-header,
+  .appearance-header
+) {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  color: var(--text-primary);
+}
+
+.periak-workspace :is(
+  .profile-section,
+  .appearance-section
+) {
+  border-color: var(--border);
+}
+
+.periak-workspace :is(
+  .profile-primary,
+  .appearance-done
+) {
+  min-height: 44px;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  box-shadow: none;
+}
+
+/* Theme-aware form fields */
+
+.periak-workspace :is(
+  .xp-root,
+  .sp-planner,
+  .premium-checkout,
+  .profile-panel
+) :is(
+  input:not([type="checkbox"]):not([type="radio"]),
+  select,
+  textarea
+) {
+  background: var(--surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  min-height: 44px;
+  font: inherit;
+}
+
+.periak-workspace :is(input,select,textarea):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Authentication — retain original branding */
+
+.auth-page {
+  background: var(--page-bg);
+}
+
+.auth-page .auth-card {
+  background: var(--surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 3px 18px rgba(15,35,55,.06);
+}
+
+.auth-page .auth-card h1 {
+  color: var(--text-primary);
+  letter-spacing: -.5px;
+}
+
+.auth-page .auth-card input {
+  min-height: 46px;
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+
+.auth-page .auth-submit {
+  min-height: 46px;
+  border-radius: 8px;
+  box-shadow: none;
+}
+
+/* Responsive refinements */
+
+@media (max-width: 900px) {
+  .periak-workspace .sp-planner,
+  .periak-workspace .pw-main > .premium-page {
+    padding: 18px 13px 24px;
+  }
+
+  .periak-workspace .sp-welcome,
+  .periak-workspace .premium-hero {
+    padding: 16px;
+  }
+
+  .periak-workspace .xp-intro h3 {
+    font-size: 21px;
+  }
+
+  .periak-workspace :is(
+    .xp-question,
+    .xp-patient-card,
+    .xp-result,
+    .xp-course-card,
+    .xp-story,
+    .xp-case-head
+  ) {
+    padding: 14px;
+  }
+
+  .periak-workspace .sp-stat-grid {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+  }
+
+  .periak-workspace .premium-grid {
+    grid-template-columns: minmax(0,1fr);
+  }
+}
+
+@media (max-width: 420px) {
+  .periak-workspace .pwm-brand strong {
+    font-size: 17px;
+  }
+
+  .periak-workspace .pw-main > .auth-userbar > button {
+    max-width: 120px;
+    font-size: 10px;
+  }
+
+  .periak-workspace .xp-root {
+    gap: 12px;
+  }
+}
+
+/* Prevent long academic content from breaking the workspace. */
+
+.periak-workspace .pw-main,
+.periak-workspace .authenticated-app-shell {
+  min-width: 0;
+}
+
+.periak-workspace :is(
+  .course-card,
+  .unit-info,
+  .papers-result-card,
+  .sev2-card,
+  .sev2-tile,
+  .suite-content,
+  .xp-result,
+  .xp-course-card,
+  .sp-task-main,
+  .premium-card,
+  .premium-feature-card,
+  .profile-section,
+  .appearance-section
+) {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.periak-workspace :is(
+  .course-detail,
+  .lesson-page,
+  .smart-exam-v2,
+  .past-papers-page,
+  .learning-suite,
+  .sp-planner,
+  .premium-page
+) :is(input,select,textarea) {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.periak-workspace :is(
+  .sev2-options button,
+  .xp-choice,
+  .papers-result-card button,
+  .unit-card,
+  .premium-feature-card
+) {
+  white-space: normal;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.periak-workspace :is(
+  .unit-info,
+  .sp-task-main,
+  .xp-result-title > div,
+  .xp-patient-head > div
+) {
+  flex: 1;
+  min-width: 0;
+}
+
+.periak-workspace :is(
+  .sev2-actions,
+  .xp-actions,
+  .sp-form-actions,
+  .learning-completion,
+  .papers-card-meta
+) {
+  flex-wrap: wrap;
+}
+
+.periak-workspace :is(
+  .xp-result-title,
+  .xp-case-head,
+  .xp-patient-head,
+  .sp-task-topline
+) {
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+@media (max-width: 700px) {
+  .periak-workspace :is(
+    .sp-task-actions,
+    .premium-methods,
+    .sp-filters
+  ) {
+    flex-wrap: wrap;
+  }
+
+  .periak-workspace :is(
+    .profile-panel,
+    .appearance-panel
+  ) {
+    max-width: calc(100vw - 16px);
+    max-height: calc(100dvh - 16px);
+    box-sizing: border-box;
+    overflow-y: auto;
+  }
+}
+
+/* Keep floating reading controls above mobile navigation. */
+
+@media (max-width: 900px) {
+  .periak-workspace .periak-reader-floating-dock {
+    bottom: calc(
+      82px + env(safe-area-inset-bottom, 0px)
+    ) !important;
+    right: 12px !important;
+    max-width: calc(100vw - 24px);
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .periak-workspace .lesson-page {
+    padding-bottom: 80px;
+  }
+
+  .periak-workspace .periak-reader-links,
+  .periak-workspace .periak-reader-actions,
+  .periak-workspace .periak-reader-header {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+}
+
+/* Keep long reading-tool labels within their containers. */
+
+.periak-workspace .periak-reader-tools {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+
+.periak-workspace .periak-reader-floating-progress {
+  white-space: nowrap;
+}
