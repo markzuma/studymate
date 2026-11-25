@@ -438,7 +438,6 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
       else window.clearTimeout(id)
     }
   }, [])
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [selectedCourse, setSelectedCourse] = useState(() => {
     const title = savedPeriakView.course
     return title ? (
@@ -476,7 +475,6 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
       !activePremiumModule &&
       !selectedCourse &&
       !selectedUnit &&
-      !mobileMenuOpen &&
       !courseSearch.trim()
     )
 
@@ -491,7 +489,6 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
     activePremiumModule,
     selectedCourse,
     selectedUnit,
-    mobileMenuOpen,
     courseSearch
   ])
   const [isBookmarked, setIsBookmarked] = useState(false)
@@ -1146,11 +1143,6 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
   }, [onOpenPremiumFeature])
 
   const handleAppBack = () => {
-    if (mobileMenuOpen) {
-      setMobileMenuOpen(false)
-      return true
-    }
-
     if (showExams) {
       returnFromPremiumModule()
       window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -1176,7 +1168,7 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
     return false
   }
 
-  useBackHandler(handleAppBack, mobileMenuOpen || showExams || Boolean(selectedCourse) || Boolean(activePremiumModule), 20)
+  useBackHandler(handleAppBack, showExams || Boolean(selectedCourse) || Boolean(activePremiumModule), 20)
 
   if (showExams) {
     return (
@@ -1186,15 +1178,9 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
             <span className="brand-icon">✚</span>
             <span>PERIAK</span>
           </a>
-          <button type="button" className="mobile-menu-toggle"
-            aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
-            aria-expanded={mobileMenuOpen}
-            onClick={() => setMobileMenuOpen(open => !open)}>
-            {mobileMenuOpen ? '✕' : '☰'}
-          </button>
-          <nav className={mobileMenuOpen ? 'mobile-open' : ''}>
-            <a href="#" onClick={() => { setMobileMenuOpen(false); setShowExams(false) }}>Home</a>
-            <a href="#courses" onClick={() => { setMobileMenuOpen(false); setShowExams(false) }}>Courses</a>
+          <nav>
+            <a href="#" onClick={() => { setShowExams(false) }}>Home</a>
+            <a href="#courses" onClick={() => { setShowExams(false) }}>Courses</a>
           </nav>
         </header>
         <ExamCentre
@@ -1633,14 +1619,8 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
           <span className="brand-icon">✚</span>
           <span>PERIAK</span>
         </a>
-        <button type="button" className="mobile-menu-toggle"
-          aria-label={mobileMenuOpen ? 'Close navigation menu' : 'Open navigation menu'}
-          aria-expanded={mobileMenuOpen}
-          onClick={() => setMobileMenuOpen(open => !open)}>
-          {mobileMenuOpen ? '✕' : '☰'}
-        </button>
-        <nav className={mobileMenuOpen ? 'mobile-open' : ''}>
-          <a href="#courses" onClick={() => setMobileMenuOpen(false)}>Courses</a>
+        <nav>
+          <a href="#courses">Courses</a>
         </nav>
       </header>
 
