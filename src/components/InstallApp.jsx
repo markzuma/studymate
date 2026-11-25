@@ -1,7 +1,13 @@
 import { useEffect, useState } from 'react'
 import './InstallApp.css'
 
-// PERIAK APP INSTALL V21
+// PERIAK ANDROID INSTALL V22
+const APK_URL =
+  'https://github.com/markzuma/studymate/releases/download/android-v1.0.0/PERIAK-1.0.0.apk'
+
+function isAndroid() {
+  return /Android/i.test(navigator.userAgent)
+}
 const DISMISS_KEY = 'periak_install_dismissed_until_v21'
 const DISMISS_DAYS = 7
 
@@ -9,7 +15,8 @@ function installedMode() {
   return (
     window.matchMedia('(display-mode: standalone)').matches ||
     window.matchMedia('(display-mode: fullscreen)').matches ||
-    window.navigator.standalone === true
+    window.navigator.standalone === true ||
+    document.referrer.startsWith('android-app://com.periak.app')
   )
 }
 
@@ -128,6 +135,7 @@ export default function InstallApp() {
 
   if (installed || dismissed) return null
 
+  const android = isAndroid()
   const appleMobile = isAppleMobile()
   const safari = isAppleSafari()
 
@@ -142,8 +150,8 @@ export default function InstallApp() {
           height="36"
         />
         <div className="periak-install-copy">
-          <strong>Install PERIAK</strong>
-          <span>Open your nursing app from your home screen.</span>
+          <strong>Get the PERIAK app</strong>
+          <span>Your learning, always within reach.</span>
         </div>
         <button
           type="button"
@@ -155,28 +163,73 @@ export default function InstallApp() {
         </button>
       </div>
 
-      <div className="periak-install-actions">
-        <button
-          type="button"
-          className="periak-install-primary"
-          onClick={install}
-        >
-          {promptEvent || typeof navigator.install === 'function'
-            ? 'Install PERIAK'
-            : 'Add to home screen'}
-        </button>
-        <button
-          type="button"
-          className="periak-install-later"
-          onClick={dismiss}
-        >
-          Not now
-        </button>
-      </div>
+      {android ? (
+        <>
+          <a
+            className="periak-apk-download"
+            href={APK_URL}
+          >
+            <svg
+              width="17"
+              height="17"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              aria-hidden="true"
+            >
+              <path d="M12 3v12m-5-5 5 5 5-5" />
+              <path d="M5 16v4h14v-4" />
+            </svg>
+            Download for Android
+          </a>
+
+          <div className="periak-install-meta">
+            <span>1.1 MB · Android 7+</span>
+            <button
+              type="button"
+              onClick={() => setShowHelp(value => !value)}
+              aria-expanded={showHelp}
+            >
+              Installation help
+            </button>
+          </div>
+        </>
+      ) : (
+        <div className="periak-install-actions">
+          <button
+            type="button"
+            className="periak-install-primary"
+            onClick={install}
+          >
+            {promptEvent || typeof navigator.install === 'function'
+              ? 'Install PERIAK'
+              : 'Add to home screen'}
+          </button>
+          <button
+            type="button"
+            className="periak-install-later"
+            onClick={dismiss}
+          >
+            Not now
+          </button>
+        </div>
+      )}
 
       {showHelp && (
         <div className="periak-install-help">
-          {appleMobile ? (
+          {android ? (
+            <>
+              <p>Download and open the PERIAK APK.</p>
+              <p>
+                If prompted, allow installation from your browser
+                in device settings, then tap Install.
+              </p>
+              <p>
+                You can disable that permission again after installation.
+              </p>
+            </>
+          ) : appleMobile ? (
             safari ? (
               <p>
                 In Safari, tap Share, then Add to Home Screen.
