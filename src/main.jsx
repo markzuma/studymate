@@ -6,6 +6,7 @@ import InstallApp from './components/InstallApp.jsx'
 import AuthGate from './components/AuthGate.jsx'
 import { ThemeProvider } from './context/ThemeProvider.jsx'
 import { NavigationProvider } from './context/NavigationProvider.jsx'
+import './MobileRefinement.css'
 
 const App = lazy(() => import('./App.jsx'))
 
