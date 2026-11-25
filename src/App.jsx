@@ -356,13 +356,24 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
 
   // Warm the screens a student is likely to open next, once the browser is idle.
   useEffect(() => {
-    if (navigator.connection?.saveData) return undefined
+    const canWarm = () => {
+      const connection = navigator.connection
+
+      return navigator.onLine &&
+        document.visibilityState === 'visible' &&
+        !connection?.saveData &&
+        connection?.effectiveType === '4g' &&
+        connection?.type !== 'cellular' &&
+        (navigator.deviceMemory ?? 4) >= 4
+    }
+
+    if (!canWarm()) return undefined
+
     const warm = () => {
+      if (!canWarm()) return
+
       loadPastPapersLibrary().catch(() => {})
       loadLearningSuite().catch(() => {})
-      loadExamCentre().catch(() => {})
-      loadStudyPlanner().catch(() => {})
-      loadCourseOutlineViewer().catch(() => {})
     }
     const id = 'requestIdleCallback' in window
       ? window.requestIdleCallback(warm, { timeout: 5000 })

@@ -94,7 +94,17 @@ export default function SmartRefresh() {
     window.addEventListener('focus', onReturn)
     window.addEventListener('pageshow', onReturn)
 
+    // Check periodically while the application remains open.
+    // Existing visibility, connectivity and safety guards remain active.
+    const updateTimer = window.setInterval(
+      checkForUpdates,
+      5 * 60 * 1000
+    )
+
+    void checkForUpdates()
+
     return () => {
+      window.clearInterval(updateTimer)
       active = false
       updateRef.current = null
       document.removeEventListener('visibilitychange', onVisibility)

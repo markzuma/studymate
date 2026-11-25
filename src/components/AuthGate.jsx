@@ -375,8 +375,22 @@ export default function AuthGate({ children }) {
 
   // Warm the Premium page once the browser is idle so it opens instantly.
   useEffect(() => {
-    if (!session?.user?.id || navigator.connection?.saveData) return undefined
-    const run = () => { loadPremiumPage().catch(() => {}) }
+    const canWarm = () => {
+      const connection = navigator.connection
+
+      return navigator.onLine &&
+        document.visibilityState === 'visible' &&
+        !connection?.saveData &&
+        connection?.effectiveType === '4g' &&
+        connection?.type !== 'cellular' &&
+        (navigator.deviceMemory ?? 4) >= 4
+    }
+
+    if (!session?.user?.id || !canWarm()) return undefined
+
+    const run = () => {
+      if (canWarm()) loadPremiumPage().catch(() => {})
+    }
     const id = 'requestIdleCallback' in window
       ? window.requestIdleCallback(run, { timeout: 4000 })
       : window.setTimeout(run, 2500)

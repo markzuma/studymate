@@ -2,6 +2,16 @@ name: Build PERIAK Android
 
 on:
   workflow_dispatch:
+    inputs:
+      version:
+        description: 'Android version, for example 1.0.1'
+        required: true
+        default: '1.0.1'
+        type: string
+
+concurrency:
+  group: periak-android-build
+  cancel-in-progress: false
 
 permissions:
   contents: read
@@ -55,6 +65,32 @@ jobs:
 
           bubblewrap doctor
 
+      - name: Configure release version
+        working-directory: android-app
+        env:
+          RELEASE_VERSION: ${{ inputs.version }}
+        run: |
+          node --input-type=module <<'JS'
+          import fs from 'node:fs';
+
+          const version = process.env.RELEASE_VERSION;
+
+          if (!/^\d+\.\d+\.\d+$/.test(version)) {
+            throw new Error('Invalid Android version');
+          }
+
+          const file = 'twa-manifest.json';
+          const config = JSON.parse(fs.readFileSync(file, 'utf8'));
+
+          config.appVersion = version;
+          config.appVersionCode = Number(process.env.GITHUB_RUN_NUMBER) + 1;
+
+          fs.writeFileSync(file, JSON.stringify(config, null, 2) + '\\n');
+
+          console.log('Android release:', config.appVersion);
+          console.log('Version code:', config.appVersionCode);
+          JS
+
       - name: Generate Android project
         working-directory: android-app
         run: bubblewrap update --skipVersionUpgrade
@@ -76,16 +112,18 @@ jobs:
 
       - name: Prepare release files
         working-directory: android-app
+        env:
+          RELEASE_VERSION: ${{ inputs.version }}
         run: |
           mkdir -p release
-          cp app-release-signed.apk release/PERIAK-1.0.0.apk
-          cp app-release-bundle.aab release/PERIAK-1.0.0.aab
+          cp app-release-signed.apk "release/PERIAK-${RELEASE_VERSION}.apk"
+          cp app-release-bundle.aab "release/PERIAK-${RELEASE_VERSION}.aab"
           ls -lh release/
 
       - name: Upload Android packages
         uses: actions/upload-artifact@v4
         with:
-          name: PERIAK-Android-1.0.0
+          name: PERIAK-Android-${{ inputs.version }}
           path: android-app/release/
           retention-days: 30
           if-no-files-found: error

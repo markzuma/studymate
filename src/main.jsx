@@ -1,20 +1,34 @@
-import { StrictMode } from 'react'
+import { StrictMode, lazy, Suspense } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
-import App from './App.jsx'
 import SmartRefresh from './components/SmartRefresh.jsx'
 import InstallApp from './components/InstallApp.jsx'
 import AuthGate from './components/AuthGate.jsx'
 import { ThemeProvider } from './context/ThemeProvider.jsx'
 import { NavigationProvider } from './context/NavigationProvider.jsx'
 
+const App = lazy(() => import('./App.jsx'))
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ThemeProvider>
       <NavigationProvider>
-        <AuthGate>
-          <App />
-        </AuthGate>
+        <Suspense fallback={
+          <div role="status" style={{
+            minHeight: '100dvh',
+            display: 'grid',
+            placeItems: 'center',
+            background: 'var(--surface)',
+            color: 'var(--text-primary)',
+            fontSize: '14px'
+          }}>
+            Opening PERIAK…
+          </div>
+        }>
+          <AuthGate>
+            <App />
+          </AuthGate>
+        </Suspense>
         <SmartRefresh />
         <InstallApp />
       </NavigationProvider>
