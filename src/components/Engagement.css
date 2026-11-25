@@ -1,0 +1,252 @@
+.pe-bell,
+.pe-study-card,
+.pe-inbox,
+.pe-admin-item,
+.pe-resume {
+  color: var(--text-primary, inherit);
+  background: var(--surface, Canvas);
+  border: 1px solid var(--border, #8885);
+  border-radius: 12px;
+}
+
+.pe-bell {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  min-height: 34px;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.pe-count {
+  position: absolute;
+  right: -4px;
+  top: -5px;
+  min-width: 16px;
+  border-radius: 20px;
+  background: #dc2626;
+  color: white;
+  padding: 2px 4px;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.pe-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1200;
+  background: #0006;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-end;
+  padding: 12px;
+}
+
+.pe-inbox {
+  width: min(100%, 420px);
+  max-height: 85dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 16px;
+  box-shadow: 0 12px 40px #0003;
+}
+
+.pe-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.pe-heading h2,
+.pe-heading h3,
+.pe-heading p {
+  margin: 3px 0;
+}
+
+.pe-heading small {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .05em;
+  color: var(--text-secondary, #777);
+}
+
+.pe-heading h2 { font-size: 20px; }
+.pe-heading h3 { font-size: 16px; }
+
+.pe-heading p,
+.pe-muted {
+  font-size: 12px;
+  color: var(--text-secondary, #777);
+}
+
+.pe-notification {
+  display: flex;
+  gap: 10px;
+  padding: 12px 8px;
+  margin-top: 8px;
+  border-bottom: 1px solid var(--border, #8884);
+  overflow-wrap: anywhere;
+}
+
+.pe-notification.unread {
+  background: #6d28d910;
+  border-left: 3px solid #8b5cf6;
+  border-radius: 7px;
+}
+
+.pe-notification strong { font-size: 13px; }
+
+.pe-notification p,
+.pe-admin-item p {
+  font-size: 13px;
+  white-space: pre-wrap;
+  line-height: 1.5;
+  margin: 6px 0;
+}
+
+.pe-notification small {
+  display: block;
+  font-size: 10px;
+  opacity: .8;
+}
+
+.pe-inbox button,
+.pe-admin button,
+.pe-study-card button:not(.pe-resume) {
+  font: inherit;
+  font-size: 12px;
+  padding: 7px 11px;
+  border: 1px solid var(--border, #8885);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.pe-notification button {
+  margin-top: 8px;
+}
+
+.pe-study-card {
+  padding: 14px;
+  margin: 12px 0;
+}
+
+.pe-study-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.pe-study-grid article {
+  display: grid;
+  gap: 5px;
+  text-align: center;
+  padding: 10px 4px;
+  background: #8b5cf60b;
+  border: 1px solid var(--border, #8883);
+  border-radius: 9px;
+}
+
+.pe-study-grid strong { font-size: 19px; }
+.pe-study-grid small { font-size: 11px; }
+
+.pe-progress {
+  height: 7px;
+  margin-top: 12px;
+  background: #8883;
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.pe-progress > div {
+  height: 100%;
+  background: #8b5cf6;
+  border-radius: inherit;
+}
+
+.pe-resume {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  width: 100%;
+  padding: 12px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.pe-resume span {
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.pe-resume strong { font-size: 14px; }
+.pe-resume small { font-size: 10px; }
+
+.pe-form {
+  display: grid;
+  gap: 12px;
+  margin: 12px 0;
+}
+
+.pe-form label {
+  display: grid;
+  gap: 6px;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.pe-form input,
+.pe-form select,
+.pe-form textarea {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 10px;
+  font: inherit;
+  font-size: 14px;
+  color: var(--text-primary, inherit);
+  background: var(--surface, Canvas);
+  border: 1px solid var(--border, #8886);
+  border-radius: 8px;
+}
+
+.pe-form button[type="submit"] {
+  background: #6d28d9;
+  color: white;
+  border-color: #6d28d9;
+  font-weight: 700;
+}
+
+.pe-admin-item {
+  padding: 12px;
+  margin: 8px 0;
+  overflow-wrap: anywhere;
+}
+
+.pe-admin-item small { display: block; }
+.pe-admin-item button { margin-top: 8px; }
+
+@media (max-width: 600px) {
+  .pe-overlay {
+    padding: 8px;
+    justify-content: center;
+  }
+
+  .pe-inbox {
+    max-height: 87dvh;
+    padding: 12px;
+  }
+
+  .pe-study-card {
+    padding: 10px;
+  }
+
+  .pe-study-grid strong {
+    font-size: 17px;
+  }
+}

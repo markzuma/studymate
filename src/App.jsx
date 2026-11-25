@@ -5,6 +5,7 @@ import { useBackHandler } from './context/NavigationProvider'
 import { supabase } from './lib/supabase'
 // PERIAK DASHBOARD SIMPLIFICATION V14
 import './App.css'
+import StudentEngagement from './components/StudentEngagement'
 
 // PERIAK ON-DEMAND LOADING V1
 const LessonReadingTools = lazy(
@@ -955,6 +956,17 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
   const lessonKey = (courseTitle, unit) => `${courseTitle}::${unit}`
 
   const openUnit = (course, unit) => {
+    if (activeLearningUser && navigator.onLine) {
+      supabase.rpc('record_study_activity', {
+        p_course_title: course.title,
+        p_unit_title: unit
+      }).then(({ error }) => {
+        if (!error) {
+          window.dispatchEvent(new Event('periak:study-refresh'))
+        }
+      }).catch(() => {})
+    }
+
     const entry = { courseTitle: course.title, unit, studiedAt: Date.now() }
     const recent = [
       entry,
@@ -1668,6 +1680,17 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
               ))}
             </div>
           </section>
+
+          {activeLearningUser && (
+            <StudentEngagement
+              key={activeLearningUser}
+              recent={learningData.recent}
+              completed={learningData.completed}
+              courses={catalogueCourses}
+              catalogueUnits={catalogueUnits}
+              onResume={openUnit}
+            />
+          )}
 
           <div className="dashboard-stats">
             <article className="dashboard-stat">

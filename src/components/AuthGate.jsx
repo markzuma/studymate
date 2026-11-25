@@ -4,6 +4,7 @@ import { cloneElement, lazy, Suspense, useCallback, useEffect, useState,
 import { supabase } from '../lib/supabase'
 import './AuthGate.css'
 import UserActivityMonitor from './UserActivityMonitor'
+import NotificationCentre from './NotificationCentre'
 const loadPremiumPage = () => import('./PremiumPage')
 const PremiumPage = lazy(loadPremiumPage)
 const ControlCentre = lazy(() => import('./ControlCentre'))
@@ -550,6 +551,15 @@ export default function AuthGate({ children }) {
           </nav>
         )}
         <div className="auth-userbar">
+          <NotificationCentre
+            key={session.user.id}
+            onOpenPremium={() => {
+              setShowControlCentre(false)
+              setShowAppearance(false)
+              setShowProfile(false)
+              setShowPremium(true)
+            }}
+          />
           <span>
             Signed in as <strong>{session.user.email}</strong>
             {' · '}

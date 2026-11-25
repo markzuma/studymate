@@ -7,6 +7,7 @@ import AdminAcademicManager from './AdminAcademicManager'
 import LessonContentEditor from './LessonContentEditor'
 import AdminPastPapersManager from './AdminPastPapersManager'
 import AdminUsageStats from './AdminUsageStats'
+import AdminAnnouncements from './AdminAnnouncements'
 
 const SECTIONS = [
   { id: 'overview', label: 'Overview' },
@@ -1291,28 +1292,7 @@ export default function ControlCentre({ onClose }) {
             <AdminAcademicManager mode="outlines" courses={courses} />
           )}
 
-          {section === 'announcements' && (
-            <>
-              <h2>Announcements</h2>
-              <div className="cc-table-wrap">
-                <table className="cc-table">
-                  <thead><tr><th>Title</th><th>Audience</th><th>Status</th></tr></thead>
-                  <tbody>
-                    {announcements.map(item => (
-                      <tr key={item.id}>
-                        <td>{item.title}</td>
-                        <td>{item.audience}</td>
-                        <td>{item.status}</td>
-                      </tr>
-                    ))}
-                    {announcements.length === 0 && (
-                      <tr><td colSpan="3">No announcements have been created.</td></tr>
-                    )}
-                  </tbody>
-                </table>
-              </div>
-            </>
-          )}
+          {section === 'announcements' && <AdminAnnouncements />}
         </section>
       )}
 
