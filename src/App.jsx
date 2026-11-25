@@ -5,7 +5,6 @@ import { useBackHandler } from './context/NavigationProvider'
 import { supabase } from './lib/supabase'
 // PERIAK DASHBOARD SIMPLIFICATION V14
 import './App.css'
-import StudentEngagement from './components/StudentEngagement'
 
 // PERIAK ON-DEMAND LOADING V1
 const LessonReadingTools = lazy(
@@ -338,7 +337,62 @@ const savedPeriakView = readPeriakView()
 
 function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, welcomeName = '', onOpenPremium = () => {}, onOpenPremiumFeature = () => {}, premiumLaunch = null, onPremiumLaunchHandled = () => {}, onPremiumModuleBack = () => {} }) {
   const [learningData, setLearningData] = useState(readLearningData)
+  const [studyStreak, setStudyStreak] = useState(null)
+
   const [activeLearningUser, setActiveLearningUser] = useState(null)
+
+  useEffect(() => {
+    let active = true
+    setStudyStreak(null)
+
+    if (!activeLearningUser) return
+
+    async function refreshStreak() {
+      try {
+        const { data, error } = await supabase.rpc(
+          'my_engagement_summary'
+        )
+
+        if (active && !error) {
+          setStudyStreak(
+            Number(data?.study_streak || 0)
+          )
+        }
+      } catch {
+        // Existing dashboard remains usable.
+      }
+    }
+
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') {
+        void refreshStreak()
+      }
+    }
+
+    void refreshStreak()
+
+    window.addEventListener(
+      'periak:study-refresh', refreshStreak
+    )
+    window.addEventListener('online', refreshStreak)
+    document.addEventListener(
+      'visibilitychange', onVisible
+    )
+
+    return () => {
+      active = false
+      window.removeEventListener(
+        'periak:study-refresh', refreshStreak
+      )
+      window.removeEventListener(
+        'online', refreshStreak
+      )
+      document.removeEventListener(
+        'visibilitychange', onVisible
+      )
+    }
+  }, [activeLearningUser])
+
   const [learningCloudReady, setLearningCloudReady] = useState(false)
   const progressSessionRef = useRef(null)
   const progressRetryRef = useRef(false)
@@ -1681,18 +1735,9 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
             </div>
           </section>
 
-          {activeLearningUser && (
-            <StudentEngagement
-              key={activeLearningUser}
-              recent={learningData.recent}
-              completed={learningData.completed}
-              courses={catalogueCourses}
-              catalogueUnits={catalogueUnits}
-              onResume={openUnit}
-            />
-          )}
 
-          <div className="dashboard-stats">
+
+          <div className="dashboard-stats periak-minimal-stats">
             <article className="dashboard-stat">
               <span>📚</span>
               <strong>{learningData.completed.length}</strong>
@@ -1707,6 +1752,11 @@ function AppInner({ isPremium = false, premiumLoading = false, isAdmin = false, 
               <span>🎓</span>
               <strong>{catalogueCourses.filter(course => courseProgress(course).percent === 100).length}</strong>
               <small>Subjects completed</small>
+            </article>
+            <article className="dashboard-stat">
+              <span>🔥</span>
+              <strong>{studyStreak ?? '—'}</strong>
+              <small>Day streak</small>
             </article>
           </div>
 

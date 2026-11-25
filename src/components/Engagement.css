@@ -250,3 +250,28 @@
     font-size: 17px;
   }
 }
+
+/* PERIAK ACCOUNT NOTIFICATIONS V2 */
+.pe-notification-menu {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  text-align: left;
+}
+
+.pe-menu-count {
+  flex-shrink: 0;
+  background: #dc2626;
+  color: white;
+  border-radius: 20px;
+  padding: 2px 6px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.pe-overlay {
+  z-index: 10000 !important;
+  box-sizing: border-box;
+}

@@ -1,3 +1,4 @@
+import { createPortal } from 'react-dom'
 import { useCallback, useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import { useBackHandler } from '../context/NavigationProvider'
@@ -11,7 +12,7 @@ const icons = {
   important: 'ℹ️'
 }
 
-export default function NotificationCentre({ onOpenPremium }) {
+export default function NotificationCentre({ onOpenPremium, menuMode = false }) {
   const [open, setOpen] = useState(false)
   const [items, setItems] = useState([])
   const [unread, setUnread] = useState(0)
@@ -106,25 +107,24 @@ export default function NotificationCentre({ onOpenPremium }) {
     <>
       <button
         type="button"
-        className="pe-bell"
+        className={menuMode ? "pe-notification-menu" : "pe-bell"}
         aria-label={`Notifications, ${unread} unread`}
-        onClick={() => {
+        onClick={event => {
+          event.currentTarget.closest('details')
+            ?.removeAttribute('open')
           setOpen(true)
           void refresh()
         }}
       >
-        <svg width="20" height="20" viewBox="0 0 24 24"
-          fill="none" stroke="currentColor" strokeWidth="1.8"
-          strokeLinecap="round" strokeLinejoin="round">
-          <path d="M18 8a6 6 0 0 0-12 0c0 7-3 7-3 9h18c0-2-3-2-3-9"/>
-          <path d="M10 21h4"/>
-        </svg>
+        <span>Notifications</span>
         {unread > 0 && (
-          <span className="pe-count">{unread > 99 ? '99+' : unread}</span>
+          <span className="pe-menu-count">
+            {unread > 99 ? '99+' : unread}
+          </span>
         )}
       </button>
 
-      {open && (
+      {open && createPortal(
         <div className="pe-overlay"
           onClick={() => setOpen(false)}>
           <section
@@ -208,7 +208,8 @@ export default function NotificationCentre({ onOpenPremium }) {
               </article>
             ))}
           </section>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   )

@@ -551,15 +551,7 @@ export default function AuthGate({ children }) {
           </nav>
         )}
         <div className="auth-userbar">
-          <NotificationCentre
-            key={session.user.id}
-            onOpenPremium={() => {
-              setShowControlCentre(false)
-              setShowAppearance(false)
-              setShowProfile(false)
-              setShowPremium(true)
-            }}
-          />
+
           <span>
             Signed in as <strong>{session.user.email}</strong>
             {' · '}
@@ -619,6 +611,15 @@ export default function AuthGate({ children }) {
                 }}>
                 Take App Tour
               </button>
+              <NotificationCentre menuMode
+            key={session.user.id}
+            onOpenPremium={() => {
+              setShowControlCentre(false)
+              setShowAppearance(false)
+              setShowProfile(false)
+              setShowPremium(true)
+            }}
+          />
               <button type="button" className="auth-account-logout"
                 onClick={(event) => {
                   event.currentTarget.closest('details')?.removeAttribute('open')
