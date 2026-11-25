@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.periak.app",
+      "sha256_cert_fingerprints": [
+        "7A:DA:B7:08:3F:91:B7:EE:BF:6C:67:7F:00:99:E9:17:A7:04:06:04:94:9A:1A:29:E5:43:E4:C9:30:F0:08:6F"
+      ]
+    }
+  }
+]
