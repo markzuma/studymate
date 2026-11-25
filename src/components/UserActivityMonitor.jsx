@@ -5,12 +5,30 @@ const IDLE_LIMIT = 30 * 60 * 1000
 const HEARTBEAT_INTERVAL = 60 * 1000
 const ACTIVE_WINDOW = 2 * 60 * 1000
 
+// PERIAK APPLICATION ANALYTICS
+function detectPlatform() {
+  if (document.referrer.startsWith('android-app://com.periak.app')) {
+    return 'android_app'
+  }
+
+  if (
+    window.matchMedia('(display-mode: standalone)').matches ||
+    window.matchMedia('(display-mode: fullscreen)').matches ||
+    navigator.standalone === true
+  ) {
+    return 'pwa'
+  }
+
+  return 'browser'
+}
+
 export default function UserActivityMonitor({ userId }) {
   useEffect(() => {
     if (!userId) return
 
     const storageKey = `periak_last_activity_${userId}`
     let lastHeartbeat = 0
+    let lastAppHeartbeat = 0
     let lastStorageWrite = 0
     let signingOut = false
 
@@ -81,6 +99,22 @@ export default function UserActivityMonitor({ userId }) {
         Date.now() - lastHeartbeat >= HEARTBEAT_INTERVAL
       ) {
         lastHeartbeat = Date.now()
+
+        if (Date.now() - lastAppHeartbeat >= 5 * 60 * 1000) {
+          lastAppHeartbeat = Date.now()
+
+          supabase.rpc('record_app_usage', {
+            p_platform: detectPlatform()
+          }).then(({ error }) => {
+            if (error) {
+              lastAppHeartbeat = 0
+              console.warn('Application analytics:', error.message)
+            }
+          }).catch(() => {
+            lastAppHeartbeat = 0
+          })
+        }
+
 
         const { error } = await supabase.rpc('record_my_activity')
 

@@ -310,3 +310,134 @@
     width: 100%;
   }
 }
+
+/* PERIAK APPLICATION ANALYTICS */
+
+.aus-app-analytics {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.aus-app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.aus-app-header h3 {
+  margin: 0 0 5px;
+}
+
+.aus-app-header p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.aus-version {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.aus-app-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.aus-app-metric {
+  padding: 13px;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  background: var(--surface-secondary);
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+}
+
+.aus-app-metric span,
+.aus-active-periods span {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.aus-app-metric strong {
+  font-size: 27px;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+
+.aus-app-metric small {
+  font-size: 10px;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.aus-app-analytics h4 {
+  font-size: 13px;
+  margin: 0;
+}
+
+.aus-active-periods {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.aus-active-periods > div {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 11px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.aus-active-periods strong {
+  font-size: 22px;
+}
+
+.aus-activity-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.aus-chart-row {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr) 35px;
+  align-items: center;
+  gap: 9px;
+  font-size: 11px;
+}
+
+.aus-chart-track {
+  height: 9px;
+  background: var(--surface-secondary);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.aus-chart-bar {
+  height: 100%;
+  background: var(--accent, #6d28d9);
+  border-radius: inherit;
+}
+
+.aus-chart-row strong {
+  text-align: right;
+}
+
+@media (max-width: 400px) {
+  .aus-app-metric {
+    padding: 10px;
+  }
+
+  .aus-app-metric strong {
+    font-size: 23px;
+  }
+}

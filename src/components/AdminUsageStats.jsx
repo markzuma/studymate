@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
+import AppUsageAnalytics from './AppUsageAnalytics'
 import './AdminUsageStats.css'
 
 const FEATURE_NAMES = {
@@ -116,6 +117,11 @@ export default function AdminUsageStats() {
         </div>
       </header>
 
+      <AppUsageAnalytics
+        days={days}
+        refreshKey={refreshKey}
+      />
+
       {error && (
         <div className="aus-error" role="alert">
           <strong>Could not load usage statistics.</strong>
@@ -230,7 +236,7 @@ export default function AdminUsageStats() {
       ) : null}
 
       <p className="aus-privacy">
-        Activity records feature and paper openings only. No IP addresses, device details
+        Analytics records application activity and feature and paper openings. No IP addresses, device details
         or location are collected by this activity log.
       </p>
     </section>
