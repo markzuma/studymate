@@ -7,11 +7,14 @@ import AuthGate from './components/AuthGate.jsx'
 import { ThemeProvider } from './context/ThemeProvider.jsx'
 import { NavigationProvider } from './context/NavigationProvider.jsx'
 import './MobileRefinement.css'
+import AppErrorBoundary from './components/AppErrorBoundary.jsx'
+import './components/AppErrorBoundary.css'
 
 const App = lazy(() => import('./App.jsx'))
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
+    <AppErrorBoundary>
     <ThemeProvider>
       <NavigationProvider>
         <Suspense fallback={
@@ -34,5 +37,6 @@ createRoot(document.getElementById('root')).render(
         <InstallApp />
       </NavigationProvider>
     </ThemeProvider>
+    </AppErrorBoundary>
   </StrictMode>,
 )

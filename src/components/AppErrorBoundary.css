@@ -1,0 +1,63 @@
+.periak-recovery-page {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  padding: 18px;
+  background: var(--page-bg, #f4f7fa);
+  color: var(--text-primary, #172b36);
+  font-family: inherit;
+}
+
+.periak-recovery-card {
+  width: min(100%, 420px);
+  box-sizing: border-box;
+  padding: 22px;
+  border: 1px solid var(--border, #dce4ed);
+  border-radius: 14px;
+  background: var(--surface, #ffffff);
+  text-align: center;
+}
+
+.periak-recovery-icon {
+  display: block;
+  margin-bottom: 10px;
+  color: var(--accent, #2878d0);
+  font-size: 30px;
+}
+
+.periak-recovery-card small {
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.periak-recovery-card h1 {
+  font-size: 22px;
+  margin: 12px 0;
+}
+
+.periak-recovery-card p {
+  color: var(--text-muted, #64748b);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.periak-recovery-card button {
+  width: 100%;
+  min-height: 44px;
+  padding: 10px;
+  margin-top: 8px;
+  border: 1px solid var(--accent, #2878d0);
+  border-radius: 9px;
+  background: var(--accent, #2878d0);
+  color: white;
+  font: inherit;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.periak-recovery-card .periak-recovery-secondary {
+  background: var(--surface, #ffffff);
+  color: var(--text-primary, #172b36);
+  border-color: var(--border, #dce4ed);
+}
