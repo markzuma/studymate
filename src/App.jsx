@@ -12,7 +12,7 @@ const LessonReadingTools = lazy(
 )
 
 // Heavy screens load on demand, then are warmed in the background (see AppInner).
-const loadExamCentre = () => import('./components/ExamCentre')
+const loadExamCentre = () => import('./components/SmartExamCentre')
 const loadStudyPlanner = () => import('./components/StudyPlanner')
 const loadLearningSuite = () => import('./components/LearningSuite')
 const loadCourseOutlineViewer = () => import('./components/CourseOutlineViewer')

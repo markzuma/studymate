@@ -1,0 +1,383 @@
+.smart-exam-v2 {
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 16px;
+  color: var(--text-primary, inherit);
+  overflow-wrap: anywhere;
+}
+
+.smart-exam-v2 * {
+  box-sizing: border-box;
+}
+
+.sev2-header {
+  margin-bottom: 18px;
+}
+
+.sev2-header h1 {
+  font-size: clamp(1.4rem, 4vw, 1.85rem);
+  margin: 12px 0 4px;
+  line-height: 1.3;
+}
+
+.sev2-header p {
+  font-size: .85rem;
+  opacity: .72;
+  margin: 0;
+}
+
+.sev2-card {
+  display: grid;
+  gap: 12px;
+  background: var(--surface, transparent);
+  border: 1px solid rgba(128,128,128,.28);
+  border-radius: 14px;
+  padding: 16px;
+  margin-bottom: 14px;
+}
+
+.sev2-card h2 {
+  margin: 0;
+  font-size: 1.12rem;
+  line-height: 1.5;
+}
+
+.sev2-card label {
+  font-weight: 600;
+  font-size: .86rem;
+}
+
+.sev2-card input,
+.sev2-card select {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  border: 1px solid rgba(128,128,128,.5);
+  border-radius: 9px;
+  padding: 10px;
+  color: inherit;
+  background: var(--surface, transparent);
+  font: inherit;
+  font-size: .9rem;
+}
+
+.sev2-card option {
+  color: #172033;
+  background: #fff;
+}
+
+.sev2-muted {
+  opacity: .75;
+  line-height: 1.5;
+}
+
+.sev2-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.sev2-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
+  gap: 7px;
+  min-height: 115px;
+  padding: 14px;
+  border: 1px solid rgba(128,128,128,.3);
+  border-radius: 12px;
+  background: var(--surface, transparent);
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+}
+
+.sev2-icon {
+  font-size: 1.4rem;
+}
+
+.sev2-tile strong {
+  font-size: .93rem;
+}
+
+.sev2-tile small {
+  font-size: .75rem;
+  line-height: 1.4;
+  opacity: .72;
+}
+
+.sev2-primary,
+.sev2-back,
+.sev2-actions button,
+.sev2-error button {
+  min-height: 44px;
+  padding: 10px 14px;
+  border-radius: 9px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.sev2-primary {
+  background: #6d28d9;
+  color: #fff;
+  border: 1px solid #6d28d9;
+  width: 100%;
+}
+
+.sev2-back,
+.sev2-actions button,
+.sev2-error button {
+  background: transparent;
+  color: inherit;
+  border: 1px solid rgba(128,128,128,.5);
+}
+
+.sev2-performance,
+.sev2-resume,
+.sev2-record {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px;
+  min-height: 66px;
+  background: var(--surface, transparent);
+  color: inherit;
+  border: 1px solid rgba(128,128,128,.3);
+  border-radius: 12px;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+
+.sev2-performance > span:nth-child(2) {
+  flex: 1;
+}
+
+.sev2-performance small,
+.sev2-resume small,
+.sev2-record small {
+  display: block;
+  font-size: .78rem;
+  opacity: .75;
+  margin-top: 4px;
+}
+
+.sev2-resume,
+.sev2-record {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.sev2-resume {
+  margin-bottom: 12px;
+  border-color: #8b5cf6;
+  background: rgba(139,92,246,.09);
+}
+
+.sev2-error {
+  margin: 12px 0;
+  padding: 13px;
+  border: 1px solid #d97706;
+  background: rgba(217,119,6,.08);
+  border-radius: 10px;
+  line-height: 1.5;
+}
+
+.sev2-progress,
+.sev2-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+}
+
+.sev2-actions button {
+  flex: 1;
+}
+
+.sev2-card progress {
+  width: 100%;
+  height: 8px;
+  accent-color: #8b5cf6;
+}
+
+.sev2-timer {
+  text-align: center;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  padding: 10px;
+  border-radius: 9px;
+  background: rgba(139,92,246,.1);
+}
+
+.sev2-timer.urgent {
+  background: rgba(220,38,38,.13);
+}
+
+.sev2-options {
+  display: grid;
+  gap: 10px;
+}
+
+.sev2-option {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  text-align: left;
+  font: inherit;
+  line-height: 1.5;
+  background: transparent;
+  color: inherit;
+  border: 1px solid rgba(128,128,128,.4);
+  border-radius: 10px;
+  padding: 12px;
+  min-height: 48px;
+  cursor: pointer;
+}
+
+.sev2-option.selected {
+  border-color: #8b5cf6;
+  background: rgba(139,92,246,.12);
+}
+
+.sev2-option.correct {
+  border-color: #22a06b;
+  background: rgba(34,160,107,.15);
+}
+
+.sev2-option.incorrect {
+  border-color: #dc5656;
+  background: rgba(220,86,86,.12);
+}
+
+.sev2-explanation {
+  padding: 13px;
+  border: 1px solid #8b5cf6;
+  background: rgba(139,92,246,.07);
+  border-radius: 10px;
+  line-height: 1.6;
+}
+
+.sev2-score {
+  font-size: 2.8rem;
+  font-weight: 800;
+  color: #8b5cf6;
+  text-align: center;
+  padding: 12px;
+}
+
+.sev2-review {
+  border: 1px solid rgba(128,128,128,.28);
+  border-radius: 9px;
+  padding: 12px;
+  line-height: 1.5;
+  font-size: .88rem;
+}
+
+.sev2-review summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.smart-exam-v2 button:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+@media (max-width: 480px) {
+  .smart-exam-v2 {
+    padding: 10px;
+  }
+
+  .sev2-card {
+    padding: 12px;
+  }
+
+  .sev2-tile {
+    padding: 12px;
+    min-height: 108px;
+  }
+}
+
+.sev2-written-response {
+  width: 100%;
+  min-height: 150px;
+  resize: vertical;
+  border: 1px solid rgba(128,128,128,.45);
+  border-radius: 10px;
+  padding: 13px;
+  color: inherit;
+  background: var(--surface, transparent);
+  font: inherit;
+  line-height: 1.65;
+}
+
+.sev2-model-answer {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  line-height: 1.7;
+}
+
+.sev2-written-response:focus,
+.smart-exam-v2 select:focus,
+.smart-exam-v2 input:focus {
+  outline: 2px solid #8b5cf6;
+  outline-offset: 2px;
+}
+
+
+.sev2-performance-panel {
+  display: grid;
+  gap: 14px;
+}
+
+.sev2-metric-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.sev2-metric {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  padding: 13px;
+  border: 1px solid rgba(128,128,128,.28);
+  border-radius: 11px;
+}
+
+.sev2-metric small {
+  font-size: .76rem;
+  opacity: .78;
+  line-height: 1.4;
+}
+
+.sev2-metric strong {
+  font-size: clamp(1.25rem, 4vw, 1.8rem);
+  font-variant-numeric: tabular-nums;
+}
+
+.sev2-course-performance {
+  display: grid;
+  gap: 8px;
+  padding: 12px 0;
+  border-bottom: 1px solid rgba(128,128,128,.2);
+  line-height: 1.5;
+}
+
+.sev2-course-performance strong {
+  font-size: .86rem;
+}
+
+.sev2-course-performance small {
+  font-size: .77rem;
+}
+
+.sev2-admin-launch {
+  margin-bottom: 12px;
+}
