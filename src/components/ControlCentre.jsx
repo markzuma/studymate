@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react'
 import { useBackHandler } from '../context/NavigationProvider'
 import { supabase } from '../lib/supabase'
 import './ControlCentre.css'
+import './ControlCentreV2.css'
+import ControlCentreOverview from './ControlCentreOverview'
+import AcademicQualityManager from './AcademicQualityManager'
 import Monetization from './Monetization'
 import AdminAcademicManager from './AdminAcademicManager'
 import LessonContentEditor from './LessonContentEditor'
@@ -17,6 +20,7 @@ const SECTIONS = [
   { id: 'courses', label: 'Courses & Units' },
   { id: 'materials', label: 'Learning Materials' },
   { id: 'outlines', label: 'Course Outlines' },
+  { id: 'academic-quality', label: 'Academic Quality' },
   { id: 'exams', label: 'Examinations' },
   { id: 'results', label: 'Results & Analytics' },
   { id: 'announcements', label: 'Announcements' },
@@ -27,8 +31,61 @@ const SECTIONS = [
   { id: 'monetization', label: 'Monetization' }
 ]
 
+const NAV_GROUPS = [
+  {
+    id: 'academics',
+    label: 'Academics',
+    icon: '▤',
+    sections: [
+      'courses',
+      'materials',
+      'outlines',
+      'academic-quality'
+    ]
+  },
+  {
+    id: 'assessments',
+    label: 'Assessments',
+    icon: '✓',
+    sections: [
+      'exams',
+      'exam-quality',
+      'results'
+    ]
+  },
+  {
+    id: 'library',
+    label: 'Content & Library',
+    icon: '▧',
+    sections: [
+      'pastpapers',
+      'announcements'
+    ]
+  },
+  {
+    id: 'students',
+    label: 'Students & Operations',
+    icon: '◉',
+    sections: [
+      'users',
+      'support',
+      'usage'
+    ]
+  },
+  {
+    id: 'business',
+    label: 'Business',
+    icon: '◆',
+    sections: [
+      'monetization'
+    ]
+  }
+]
+
 export default function ControlCentre({ onClose }) {
   const [section, setSection] = useState('overview')
+  const [expandedGroup, setExpandedGroup] = useState('')
+  const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const [sectionHistory, setSectionHistory] = useState([])
   const [profiles, setProfiles] = useState([])
   const [courses, setCourses] = useState([])
@@ -100,7 +157,53 @@ export default function ControlCentre({ onClose }) {
     }
   }, [])
 
+  async function openAuditLesson(courseId, unitId, materialId) {
+    navigateSection('materials')
+
+    try {
+      await handleMaterialCourseChange(courseId)
+      await handleMaterialUnitChange(unitId)
+
+      const { data, error } = await supabase
+        .from('learning_materials')
+        .select('*')
+        .eq('id', materialId)
+        .eq('unit_id', unitId)
+        .single()
+
+      if (error) throw error
+
+      if (data) editMaterial(data)
+
+    } catch (err) {
+      setMaterialMessage(
+        err.message || 'Unable to open the selected lesson.'
+      )
+    }
+  }
+
+  async function openAuditCourse(courseId) {
+    navigateSection('courses')
+
+    setShowCourseForm(false)
+    setEditingCourseId('')
+    setEditingUnitId('')
+    setSelectedCourseId(courseId)
+
+    await loadCourseUnits(courseId)
+  }
+
   function navigateSection(nextSection) {
+    if (!SECTIONS.some(item => item.id === nextSection)) return
+
+    setMobileNavOpen(false)
+
+    const nextGroup = NAV_GROUPS.find(
+      group => group.sections.includes(nextSection)
+    )
+
+    setExpandedGroup(nextGroup?.id || '')
+
     if (nextSection === section) return
     setSectionHistory(previous => [...previous, section])
     setSection(nextSection)
@@ -111,6 +214,14 @@ export default function ControlCentre({ onClose }) {
     const previousSection = sectionHistory[sectionHistory.length - 1]
     setSectionHistory(previous => previous.slice(0, -1))
     setSection(previousSection)
+
+    const previousGroup = NAV_GROUPS.find(
+      group => group.sections.includes(previousSection)
+    )
+
+    setExpandedGroup(previousGroup?.id || '')
+    setMobileNavOpen(false)
+
     return true
   }
 
@@ -182,6 +293,14 @@ export default function ControlCentre({ onClose }) {
   )
 
   useBackHandler(handleSectionBack, sectionHistory.length > 0, 30)
+
+  useBackHandler(() => {
+    if (!mobileNavOpen) return false
+
+    setMobileNavOpen(false)
+    return true
+
+  }, mobileNavOpen, 45)
 
   async function loadDashboard() {
     setLoading(true)
@@ -670,8 +789,6 @@ export default function ControlCentre({ onClose }) {
   )
 
   const students = profiles.filter(user => user.role === 'student')
-  const admins = profiles.filter(user => user.role === 'admin')
-  const onlineUsers = profiles.filter(user => user.is_online).length
 
   const filteredUsers = profiles.filter(user => {
     const search = userSearch.trim().toLowerCase()
@@ -687,27 +804,125 @@ export default function ControlCentre({ onClose }) {
   })
 
   return (
-    <main className="control-centre">
+    <main className="control-centre ccv2">
       <header className="cc-header">
         <div>
-          <span className="cc-eyebrow">PERIAK MANAGEMENT</span>
+          <span className="cc-eyebrow">PERIAK ADMINISTRATION</span>
           <h1>Control Centre</h1>
-          <p>Manage your nursing learning platform.</p>
+          <p>Manage, monitor and improve PERIAK.</p>
         </div>
         <button onClick={onClose}>Back to Learning</button>
       </header>
 
-      <nav className="cc-navigation">
-        {SECTIONS.map(item => (
-          <button
-            key={item.id}
-            className={section === item.id ? 'active' : ''}
-            onClick={() => navigateSection(item.id)}
-          >
-            {item.label}
-          </button>
-        ))}
+
+      <button
+        type="button"
+        className="ccv2-mobile-toggle"
+        aria-expanded={mobileNavOpen}
+        aria-controls="ccv2-navigation"
+        onClick={() => setMobileNavOpen(v => !v)}
+      >
+        <span>
+          {SECTIONS.find(item => item.id === section)?.label}
+        </span>
+        <span aria-hidden="true">
+          {mobileNavOpen ? '−' : '+'}
+        </span>
+      </button>
+
+      <nav
+        id="ccv2-navigation"
+        aria-label="Administration navigation"
+        className={`cc-navigation ccv2-sidebar ${
+          mobileNavOpen ? 'ccv2-sidebar-open' : ''
+        }`}
+      >
+        <button
+          type="button"
+          className={`ccv2-nav-overview ${
+            section === 'overview' ? 'active' : ''
+          }`}
+          aria-current={
+            section === 'overview' ? 'page' : undefined
+          }
+          onClick={() => navigateSection('overview')}
+        >
+          <span aria-hidden="true">⌂</span>
+          <span>Overview</span>
+        </button>
+
+        {NAV_GROUPS.map(group => {
+          const containsActive =
+            group.sections.includes(section)
+
+          const expanded =
+            expandedGroup === group.id
+
+          return (
+            <div
+              className="ccv2-nav-group"
+              key={group.id}
+            >
+              <button
+                type="button"
+                className={`ccv2-group-toggle ${
+                  containsActive ? 'group-active' : ''
+                }`}
+                aria-expanded={expanded}
+                aria-controls={`ccv2-group-${group.id}`}
+                onClick={() => setExpandedGroup(
+                  expanded ? '' : group.id
+                )}
+              >
+                <span aria-hidden="true">
+                  {group.icon}
+                </span>
+
+                <span>{group.label}</span>
+
+                <span aria-hidden="true">
+                  {expanded ? '−' : '+'}
+                </span>
+              </button>
+
+              {expanded && (
+                <div
+                  className="ccv2-subnav"
+                  id={`ccv2-group-${group.id}`}
+                >
+                  {group.sections.map(id => {
+                    const item = SECTIONS.find(
+                      entry => entry.id === id
+                    )
+
+                    return (
+                      <button
+                        type="button"
+                        key={id}
+                        className={
+                          section === id ? 'active' : ''
+                        }
+                        aria-current={
+                          section === id
+                            ? 'page'
+                            : undefined
+                        }
+                        onClick={() =>
+                          navigateSection(id)
+                        }
+                      >
+                        {item.label}
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
+            </div>
+          )
+        })}
       </nav>
+
+      <div className="ccv2-workspace">
 
       {error && <p className="cc-error">{error}</p>}
 
@@ -716,24 +931,19 @@ export default function ControlCentre({ onClose }) {
       ) : (
         <section className="cc-content">
           {section === 'overview' && (
-            <>
-              <h2>Platform Overview</h2>
-              <div className="cc-stats">
-                <article><span>Total Users</span><strong>{profiles.length}</strong></article>
-                <article><span>Students</span><strong>{students.length}</strong></article>
-                <article><span>Administrators</span><strong>{admins.length}</strong></article>
-                <article><span>Online Now</span><strong>{onlineUsers}</strong></article>
-                <article><span>Courses</span><strong>{courses.length}</strong></article>
-              </div>
-              <div className="cc-panel">
-                <h3>Recent Announcements</h3>
-                {announcements.length === 0
-                  ? <p>No announcements have been created.</p>
-                  : announcements.slice(0, 5).map(item => (
-                    <p key={item.id}>{item.title} · {item.status}</p>
-                  ))}
-              </div>
-            </>
+            <ControlCentreOverview
+              profiles={profiles}
+              announcements={announcements}
+              onNavigate={navigateSection}
+            />
+          )}
+
+          {section === 'academic-quality' && (
+            <AcademicQualityManager
+              onNavigate={navigateSection}
+              onOpenLesson={openAuditLesson}
+              onOpenCourse={openAuditCourse}
+            />
           )}
 
           {section === 'users' && (
@@ -1315,6 +1525,7 @@ export default function ControlCentre({ onClose }) {
           {loading ? 'Refreshing...' : 'Refresh Dashboard'}
         </button>
       </footer>
+      </div>
     </main>
   )
 }
