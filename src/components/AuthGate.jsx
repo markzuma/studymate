@@ -5,6 +5,7 @@ import { supabase } from '../lib/supabase'
 import './AuthGate.css'
 import UserActivityMonitor from './UserActivityMonitor'
 import NotificationCentre from './NotificationCentre'
+import SupportCentre from './SupportCentre'
 const loadPremiumPage = () => import('./PremiumPage')
 const PremiumPage = lazy(loadPremiumPage)
 const ControlCentre = lazy(() => import('./ControlCentre'))
@@ -620,6 +621,7 @@ export default function AuthGate({ children }) {
               setShowPremium(true)
             }}
           />
+              <SupportCentre key={session.user.id} />
               <button type="button" className="auth-account-logout"
                 onClick={(event) => {
                   event.currentTarget.closest('details')?.removeAttribute('open')

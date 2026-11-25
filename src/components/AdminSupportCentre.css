@@ -1,0 +1,161 @@
+.pas-centre {
+  min-width: 0;
+  color: var(--text-primary);
+}
+
+.pas-centre * {
+  box-sizing: border-box;
+}
+
+.pas-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.pas-header small {
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: .5px;
+  color: var(--text-muted);
+}
+
+.pas-header h2 {
+  font-size: 21px;
+  margin: 5px 0;
+}
+
+.pas-header p {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin: 5px 0;
+}
+
+.pas-stats {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 13px;
+}
+
+.pas-stats article {
+  display: grid;
+  gap: 5px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  background: var(--surface-secondary);
+  border-radius: 10px;
+}
+
+.pas-stats small {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.pas-stats strong {
+  font-size: 23px;
+  color: var(--text-primary);
+}
+
+.pas-filters {
+  display: grid;
+  grid-template-columns: 2fr repeat(3, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.pas-filters input,
+.pas-filters select {
+  width: 100%;
+  min-width: 0;
+  min-height: 44px;
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 14px;
+}
+
+.pas-ticket-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.pas-priority {
+  border-radius: 5px;
+  padding: 4px 7px;
+  font-size: 10px;
+  font-weight: 700;
+  background: var(--surface);
+}
+
+.pas-high {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.pas-urgent {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.pas-manage {
+  grid-template-columns: 1fr 1fr auto;
+  align-items: end;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-secondary);
+}
+
+.pas-centre h3 {
+  font-size: 16px;
+}
+
+@media (max-width: 700px) {
+  .pas-header h2 {
+    font-size: 19px;
+  }
+
+  .pas-stats {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pas-stats article {
+    padding: 10px;
+  }
+
+  .pas-stats strong {
+    font-size: 20px;
+  }
+
+  .pas-filters {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .pas-filters input {
+    grid-column: 1 / -1;
+  }
+
+  .pas-filters input,
+  .pas-filters select {
+    font-size: 16px;
+  }
+
+  .pas-ticket-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pas-manage {
+    grid-template-columns: 1fr 1fr;
+    padding: 9px;
+  }
+
+  .pas-manage .psc-primary {
+    grid-column: 1 / -1;
+  }
+}

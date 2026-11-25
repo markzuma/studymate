@@ -1,0 +1,392 @@
+.psc-menu-button {
+  width: 100%;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+
+.psc-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20000;
+  display: grid;
+  place-items: center;
+  padding: 14px;
+  background: rgba(0, 0, 0, .58);
+}
+
+.psc-panel {
+  box-sizing: border-box;
+  width: min(100%, 540px);
+  max-height: 90dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 17px;
+  background: var(--surface, #fff);
+  color: var(--text-primary, #172b36);
+  border: 1px solid var(--border, #dce4ed);
+  border-radius: 15px;
+  box-shadow: 0 16px 48px rgba(0,0,0,.18);
+  font-family: inherit;
+}
+
+.psc-panel * {
+  box-sizing: border-box;
+}
+
+.psc-header,
+.psc-list-heading,
+.psc-ticket-top,
+.psc-ticket-bottom,
+.psc-message-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.psc-header {
+  align-items: flex-start;
+  margin-bottom: 13px;
+}
+
+.psc-header h2 {
+  font-size: 21px;
+  margin: 5px 0;
+  color: var(--text-primary);
+}
+
+.psc-header p,
+.psc-muted,
+.psc-footer,
+.psc-privacy-note {
+  color: var(--text-muted, #64748b);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.psc-header p {
+  margin: 4px 0;
+}
+
+.psc-header small {
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .6px;
+  color: var(--text-muted);
+}
+
+.psc-panel button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.psc-panel button:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+.psc-panel button:focus-visible,
+.psc-panel input:focus-visible,
+.psc-panel textarea:focus-visible,
+.psc-panel select:focus-visible {
+  outline: 2px solid var(--accent, #2878d0);
+  outline-offset: 2px;
+}
+
+.psc-close,
+.psc-secondary {
+  min-height: 44px;
+  border: 1px solid var(--border);
+  border-radius: 9px;
+  background: var(--surface-secondary, #f5f7fa);
+  color: var(--text-primary);
+  padding: 8px 11px;
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.psc-close {
+  min-width: 44px;
+  flex-shrink: 0;
+}
+
+.psc-back {
+  margin-bottom: 10px;
+}
+
+.psc-new-request {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 60px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 11px;
+  background: var(--surface-secondary);
+  color: var(--text-primary);
+  text-align: left;
+}
+
+.psc-new-icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: 9px;
+  color: #fff;
+  background: var(--accent, #2878d0);
+  font-size: 22px;
+}
+
+.psc-new-request > span:nth-child(2) {
+  flex: 1;
+}
+
+.psc-new-request strong {
+  display: block;
+  font-size: 14px;
+}
+
+.psc-new-request small {
+  display: block;
+  font-size: 11px;
+  margin-top: 4px;
+  color: var(--text-muted);
+}
+
+.psc-list-heading {
+  margin: 12px 0 8px;
+}
+
+.psc-panel h3 {
+  font-size: 16px;
+  margin: 5px 0 9px;
+}
+
+.psc-ticket-list,
+.psc-messages {
+  display: grid;
+  gap: 8px;
+}
+
+.psc-ticket {
+  display: grid;
+  gap: 6px;
+  width: 100%;
+  min-width: 0;
+  padding: 11px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface-secondary);
+  color: var(--text-primary);
+  text-align: left;
+}
+
+.psc-ticket strong {
+  font-size: 14px;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.psc-ticket small,
+.psc-message small {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.psc-ticket-bottom {
+  padding-top: 6px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+}
+
+.psc-status {
+  display: inline-flex;
+  border-radius: 6px;
+  padding: 4px 7px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.psc-open {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.psc-in_progress {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.psc-awaiting_student {
+  background: #ede9fe;
+  color: #6d28d9;
+}
+
+.psc-resolved {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.psc-closed {
+  background: #e5e7eb;
+  color: #374151;
+}
+
+.psc-empty {
+  padding: 23px 12px;
+  text-align: center;
+  border: 1px dashed var(--border);
+  border-radius: 10px;
+}
+
+.psc-empty strong {
+  font-size: 14px;
+}
+
+.psc-empty p {
+  margin: 6px 0;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.psc-form {
+  display: grid;
+  gap: 10px;
+  margin: 8px 0;
+}
+
+.psc-form label {
+  display: grid;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 650;
+}
+
+.psc-form input,
+.psc-form select,
+.psc-form textarea {
+  width: 100%;
+  min-height: 44px;
+  min-width: 0;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--surface-secondary);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: 16px;
+  font-weight: 400;
+}
+
+.psc-form textarea {
+  resize: vertical;
+  line-height: 1.5;
+}
+
+.psc-form label small {
+  text-align: right;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.psc-primary {
+  min-height: 44px;
+  padding: 10px 13px;
+  border: 0;
+  border-radius: 9px;
+  background: var(--accent, #2878d0);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.psc-error,
+.psc-notice {
+  padding: 10px;
+  border-radius: 8px;
+  font-size: 13px;
+  margin: 8px 0;
+  line-height: 1.5;
+}
+
+.psc-error {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+.psc-notice {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.psc-conversation-heading {
+  padding: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface-secondary);
+  border-radius: 10px;
+  margin-bottom: 10px;
+}
+
+.psc-conversation-heading h3 {
+  overflow-wrap: anywhere;
+}
+
+.psc-message {
+  padding: 11px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--surface-secondary);
+}
+
+.psc-message-admin {
+  border-left: 3px solid var(--accent, #2878d0);
+}
+
+.psc-message-heading {
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+
+.psc-message-heading strong {
+  font-size: 12px;
+}
+
+.psc-message p {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 8px 0 0;
+}
+
+.psc-footer {
+  padding-top: 10px;
+  margin-top: 12px;
+  border-top: 1px solid var(--border);
+  text-align: center;
+}
+
+@media (max-width: 700px) {
+  .psc-overlay {
+    padding: 8px;
+  }
+
+  .psc-panel {
+    max-height: 92dvh;
+    padding: 12px;
+    border-radius: 12px;
+  }
+
+  .psc-header h2 {
+    font-size: 19px;
+  }
+
+  .psc-ticket,
+  .psc-message {
+    padding: 10px;
+  }
+}
