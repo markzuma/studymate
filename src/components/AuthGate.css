@@ -427,6 +427,11 @@
 
 /* PERIAK UNIVERSAL ACCOUNT MENU V18B */
 
+/* Keep the open Account dropdown above the mobile header. */
+.auth-userbar:has(> .auth-account-menu[open]) {
+  z-index: 40;
+}
+
 /* Same Account dropdown on desktop, tablet and phone. */
 .auth-userbar .auth-account-menu {
   position: relative;
