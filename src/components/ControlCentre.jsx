@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { useBackHandler } from '../context/NavigationProvider'
 import { supabase } from '../lib/supabase'
 import './ControlCentre.css'
@@ -7,7 +7,9 @@ import ControlCentreNavigation from './ControlCentreNavigation'
 import ControlCentreOverview from './ControlCentreOverview'
 import AdminLessonDirectory from './AdminLessonDirectory'
 import AcademicQualityManager from './AcademicQualityManager'
-import Monetization from './Monetization'
+const BusinessIntelligence = lazy(
+  () => import('./BusinessIntelligence')
+)
 import AdminAcademicManager from './AdminAcademicManager'
 import LessonContentEditor from './LessonContentEditor'
 import AdminPastPapersManager from './AdminPastPapersManager'
@@ -1224,7 +1226,13 @@ export default function ControlCentre({ onClose }) {
             <AdminSupportCentre profiles={profiles} />
           )}
 
-          {section === 'monetization' && <Monetization />}
+          {section === 'monetization' && (
+            <Suspense fallback={
+              <p role="status">Preparing Business Intelligence…</p>
+            }>
+              <BusinessIntelligence onNavigate={navigateSection} />
+            </Suspense>
+          )}
 
           {section === 'materials' && (
             <>
