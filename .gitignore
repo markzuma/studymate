@@ -35,3 +35,11 @@ supabase/.temp/
 # Component backup files
 *.backup.*
 backups/
+
+# PERIAK local development backups
+*.before_*
+*.before-*
+*.pre-*
+*.backup.*
+*.bak
+.periak-backups/
