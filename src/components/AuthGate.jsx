@@ -606,7 +606,14 @@ export default function AuthGate({ children }) {
   }
 
   if (loading) {
-    return <div className="auth-loading">Loading PERIAK...</div>
+    return (
+      <div className="periak-startup"
+        role="status" aria-label="Opening PERIAK">
+        <img src="/periak-icon.svg?v=2" alt="" />
+        <strong>PERIAK</strong>
+        <span className="periak-startup-line" />
+      </div>
+    )
   }
 
   if (session) {

@@ -133,8 +133,8 @@ export default function ReferralCentre({
     if (navigator.share) {
       try {
         await navigator.share({
-          title: 'Discover PERIAK',
-          text: 'Learn, practise and excel with PERIAK.',
+          title: 'PERIAK — Learn. Practise. Excel.',
+          text: 'Your nursing learning companion. Study notes, past papers and smart exams. Join for free:',
           url
         })
 
@@ -162,7 +162,7 @@ export default function ReferralCentre({
       facebook: `https://www.facebook.com/sharer/sharer.php?u=${link}`,
       x: `https://twitter.com/intent/tweet?text=${text}`,
       linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${link}`,
-      email: `mailto:?subject=Discover%20PERIAK&body=${text}`,
+      email: `mailto:?subject=PERIAK%20-%20Learn%20Practise%20Excel&body=${text}`,
       sms: `sms:?body=${text}`
     }
 

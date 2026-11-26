@@ -47,11 +47,12 @@ export function referralLink(code, source = 'direct') {
 
 export function referralMessage(code, source = 'direct') {
   return [
-    'Discover PERIAK — your nursing learning companion.',
+    'PERIAK — Learn. Practise. Excel.',
     '',
-    'Access study notes, past papers, smart examinations and clinical learning tools.',
+    'Your nursing learning companion.',
+    'Study notes • Past papers • Smart exams • Clinical learning',
     '',
-    'Join here:',
+    'Join for free:',
     referralLink(code, source)
   ].join('\n')
 }

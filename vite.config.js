@@ -14,7 +14,7 @@ export default defineConfig({
         name: 'PERIAK',
         short_name: 'PERIAK',
         description: 'Learn. Practise. Excel.',
-        theme_color: '#6d28d9',
+        theme_color: '#287dcc',
         background_color: '#ffffff',
         display: 'standalone',
         scope: '/',
@@ -31,7 +31,7 @@ export default defineConfig({
             type: 'image/png'
           },
           {
-            src: '/pwa-512x512.png',
+            src: '/periak-maskable-512.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'maskable'
