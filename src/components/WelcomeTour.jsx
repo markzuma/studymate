@@ -7,108 +7,48 @@ function buildSteps(modern, largeScreen) {
     {
       icon: '👋',
       title: 'Welcome to PERIAK',
-      target: null,
-      description: 'Your complete nursing learning space. Study organised notes, prepare for examinations and strengthen your clinical knowledge.',
-      tip: 'Explore the essential features in this guided tour. You can skip it or replay it whenever you want.'
-    },
-    {
-      icon: '🏠',
-      title: 'Your learning dashboard',
       target: 'learning-dashboard',
-      description: modern
-        ? 'Your dashboard brings together course statistics, study progress, recently studied lessons and quick actions.'
-        : 'Your learning dashboard gives you quick access to study tools, recently studied lessons and your learning activity.',
+      description: 'Your nursing learning space for study notes, exam preparation and clinical practice.',
       tip: modern
-        ? 'Use the persistent sidebar to move between learning sections.'
-        : 'Scroll through the homepage to explore your subjects and available resources.'
+        ? 'Use the sidebar to navigate your workspace.'
+        : 'Scroll through your dashboard to explore learning resources.'
     },
     {
       icon: '📚',
-      title: 'Explore nursing courses',
+      title: 'Study your nursing subjects',
       target: 'courses',
-      description: 'Search available nursing subjects, open a course and select a unit. Your course progress helps you keep track of completed lessons.',
-      tip: 'Published learning materials are available without a Premium subscription.'
-    },
-    {
-      icon: '📖',
-      title: 'Study and revise',
-      target: 'courses',
-      description: 'Lessons may include learning objectives, revision notes, clinical applications, examinable points, practice questions and model answers.',
-      tip: 'Use the available reading tools to improve concentration and mark lessons as completed.'
-    },
-    {
-      icon: '📄',
-      title: 'Past Papers Library',
-      target: 'pastpapers',
-      description: 'Find nursing examination papers using institution, programme, course, unit, academic year and examination type filters.',
-      tip: 'Free accounts can unlock two papers in total. Premium provides broader library access.'
+      description: 'Choose a course and explore its units, revision notes, clinical applications and answered questions.',
+      tip: 'Published learning materials are free. Mark lessons as completed to track your progress.'
     },
     {
       icon: '📝',
-      title: 'Smart Exam Centre',
-      target: 'exams',
-      description: 'Practise questions by course or unit, attempt mock examinations and review explained answers. Track your examination performance as you revise.',
-      tip: 'Free users receive 10 practice answers daily and one free mock per course. CAT mode and advanced revision features require Premium.'
+      title: 'Prepare for examinations',
+      target: 'pastpapers',
+      description: 'Explore the Past Papers Library and Smart Exam Centre for practice questions, mocks and performance tracking.',
+      tip: 'Free access includes two paper unlocks in total, 10 daily practice answers and one mock per course.'
     },
     {
       icon: '🩺',
-      title: 'Interactive learning tools',
-      target: 'clinical',
-      description: 'Explore the Clinical Skills Lab, Virtual Patient Simulator, Study Tutor and Nursing Knowledge Hub to reinforce classroom and clinical learning.',
-      tip: modern
-        ? 'Find these features under Learning Tools in the sidebar. Some tools require Premium.'
-        : 'Find learning tools on your dashboard or through Premium. Access depends on the selected feature.'
-    },
-    {
-      icon: '📅',
-      title: 'Study Planner',
-      target: 'planner',
-      description: 'Organise revision sessions and prepare for upcoming CATs and examinations using the Study Planner.',
-      tip: 'The Study Planner is available through PERIAK Premium.'
-    },
-    {
-      icon: '⭐',
-      title: 'PERIAK Premium',
+      title: 'Learning tools and Premium',
       target: 'premium',
-      description: 'Premium expands your access to examination resources, past papers and specialised learning tools.',
-      tip: 'Open Premium to see current subscription prices, payment instructions and available features. Free learning materials remain accessible.'
+      description: 'Explore Clinical Lab, Patient Simulator, Tutor, Knowledge Hub and Study Planner.',
+      tip: 'Premium unlocks additional tools, CAT mode and expanded examination resources.'
     },
     {
       icon: '🎨',
-      title: 'Personalise your appearance',
+      title: 'Make PERIAK yours',
       target: 'account',
-      description: 'Open Account, then Appearance, to change your colour theme, accent, reading text size, interface density and animation preferences.',
+      description: 'Open Account to manage your profile, notifications, security and appearance.',
       tip: largeScreen
-        ? 'Choose Classic or Modern under Application layout. Classic is the default and your selection is saved.'
-        : 'Mobile uses the Classic layout. You can still personalise your colours, themes and reading preferences.'
-    },
-    {
-      icon: '👤',
-      title: 'Manage your account',
-      target: 'account',
-      description: 'Use the Account menu to access your profile, security settings, notifications and personal preferences.',
-      tip: 'Your account connects you to your learning progress and subscription status.'
-    },
-    {
-      icon: '💬',
-      title: 'Help and feedback',
-      target: null,
-      description: 'Need assistance or have an idea for improving PERIAK? Open Account and use the available support feature to contact the team.',
-      tip: 'Describe the problem clearly and check your support conversation for responses.'
-    },
-    {
-      icon: '📱',
-      title: 'Install PERIAK',
-      target: null,
-      description: 'Access PERIAK through your browser or use the Android installation option where available. You can also install the web app using a supported browser.',
-      tip: 'Always use the official PERIAK installation links. Your existing account works across supported devices.'
+        ? 'Customise your theme, text size and colours. Choose Classic or Modern layout under Appearance.'
+        : 'Customise your theme, text size and colours. Mobile always uses the Classic layout.'
     },
     {
       icon: '🎓',
-      title: 'You are ready to learn',
+      title: 'Ready to learn!',
       target: null,
-      description: 'Explore your nursing courses, practise regularly and make PERIAK part of your daily revision routine.',
-      tip: 'To revisit this guide, open Account and select Take App Tour.'
+      description: 'Use PERIAK in your browser or install the Android app. Access Help and Support through Account whenever needed.',
+      tip: 'Replay this guide anytime through Account → Take App Tour.'
     }
   ]
 }
