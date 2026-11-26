@@ -11,8 +11,8 @@
   "backgroundColor": "#ffffff",
   "enableNotifications": false,
   "startUrl": "/",
-  "iconUrl": "https://studymate-pi-eight.vercel.app/pwa-512x512.png?v=2",
-  "maskableIconUrl": "https://studymate-pi-eight.vercel.app/periak-maskable-512.png?v=2",
+  "iconUrl": "https://studymate-pi-eight.vercel.app/pwa-512x512.png?v=3",
+  "maskableIconUrl": "https://studymate-pi-eight.vercel.app/periak-maskable-512.png?v=3",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
     "path": "./periak-release.jks",

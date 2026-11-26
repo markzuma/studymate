@@ -609,7 +609,7 @@ export default function AuthGate({ children }) {
     return (
       <div className="periak-startup"
         role="status" aria-label="Opening PERIAK">
-        <img src="/periak-icon.svg?v=2" alt="" />
+        <img src="/periak-icon.svg?v=3" alt="" />
         <strong>PERIAK</strong>
         <span className="periak-startup-line" />
       </div>

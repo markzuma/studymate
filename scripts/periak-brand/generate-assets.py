@@ -3,62 +3,89 @@ from PIL import Image, ImageDraw, ImageFont
 
 PUBLIC = Path("public")
 BLUE = "#287dcc"
-NAVY = "#172b40"
 WHITE = "#ffffff"
+NAVY = "#172b40"
 
 SVG = '''<svg xmlns="http://www.w3.org/2000/svg"
-viewBox="0 0 512 512">
-  <rect width="512" height="512"
-    rx="108" fill="#287dcc"/>
-  <path d="M256 132V380M132 256H380"
-    fill="none" stroke="#ffffff"
-    stroke-width="76" stroke-linecap="round"/>
+viewBox="0 0 160 160">
+  <rect width="160" height="160" rx="32" fill="#287dcc"/>
+  <path d="M80 30V88M51 59H109"
+    stroke="#ffffff" stroke-width="17"
+    stroke-linecap="round" fill="none"/>
+  <text x="80" y="128"
+    font-family="Arial, sans-serif"
+    font-size="26" font-weight="750"
+    letter-spacing="1.2"
+    text-anchor="middle"
+    fill="#ffffff">PERIAK</text>
 </svg>
 '''
 
-for name in ["periak-icon.svg", "favicon.svg"]:
-    (PUBLIC / name).write_text(SVG)
+def font(size):
+    return ImageFont.truetype(
+        "DejaVuSans-Bold.ttf", size
+    )
 
 def icon(size, maskable=False):
     s = size * 4
-
     image = Image.new(
-        "RGBA",
-        (s, s),
+        "RGBA", (s, s),
         BLUE if maskable else (0, 0, 0, 0)
     )
 
-    draw = ImageDraw.Draw(image)
+    d = ImageDraw.Draw(image)
 
     if not maskable:
-        draw.rounded_rectangle(
-            (0, 0, s - 1, s - 1),
-            radius=round(s * .21),
+        d.rounded_rectangle(
+            (0, 0, s-1, s-1),
+            radius=int(s * .2),
             fill=BLUE
         )
 
-    cx = s // 2
-    arm = round(s * .242)
-    half = round(s * .074)
+    # Keep the full logo inside the maskable safe zone.
+    scale = .72 if maskable else 1
+    offset = (1 - scale) / 2
 
-    draw.rounded_rectangle(
-        (cx-half, cx-arm-half,
-         cx+half, cx+arm+half),
-        radius=half,
-        fill=WHITE
+    def coord(value):
+        return round(
+            s * (offset + value / 160 * scale)
+        )
+
+    stroke = max(1, round(s * 17 / 160 * scale))
+    radius = stroke // 2
+
+    x = coord(80)
+    y = coord(59)
+
+    d.rounded_rectangle(
+        (x-radius, coord(30)-radius,
+         x+radius, coord(88)+radius),
+        radius=radius, fill=WHITE
     )
 
-    draw.rounded_rectangle(
-        (cx-arm-half, cx-half,
-         cx+arm+half, cx+half),
-        radius=half,
-        fill=WHITE
+    d.rounded_rectangle(
+        (coord(51)-radius, y-radius,
+         coord(109)+radius, y+radius),
+        radius=radius, fill=WHITE
+    )
+
+    f = font(round(s * 26 / 160 * scale))
+
+    d.text(
+        (coord(80), coord(128)),
+        "PERIAK",
+        font=f,
+        fill=WHITE,
+        anchor="ms"
     )
 
     return image.resize(
         (size, size),
         Image.Resampling.LANCZOS
     )
+
+for name in ["periak-icon.svg", "favicon.svg"]:
+    (PUBLIC / name).write_text(SVG)
 
 for size in [192, 512]:
     icon(size).save(
@@ -69,75 +96,20 @@ icon(512, True).convert("RGB").save(
     PUBLIC / "periak-maskable-512.png"
 )
 
-icon(64).save(
+icon(128).save(
     PUBLIC / "favicon.ico",
     sizes=[(16,16), (32,32), (48,48), (64,64)]
 )
 
-# Professional social preview.
-# No referral codes or personal information in the image.
-
-def font(size, bold=False):
-    name = (
-        "DejaVuSans-Bold.ttf"
-        if bold else
-        "DejaVuSans.ttf"
-    )
-    return ImageFont.truetype(name, size)
-
+# Minimal social sharing preview.
 preview = Image.new("RGB", (1200, 630), WHITE)
-draw = ImageDraw.Draw(preview)
+mark = icon(400)
 
-mark = icon(116)
-
-preview.paste(mark, (82, 75), mark)
-
-draw.text(
-    (222, 94),
-    "PERIAK",
-    font=font(63, True),
-    fill=NAVY
-)
-
-draw.text(
-    (82, 259),
-    "Learn. Practise. Excel.",
-    font=font(57, True),
-    fill=NAVY
-)
-
-draw.text(
-    (84, 359),
-    "Your nursing learning companion.",
-    font=font(32),
-    fill="#475569"
-)
-
-draw.text(
-    (84, 425),
-    "Study notes  •  Past papers  •  Smart exams",
-    font=font(28),
-    fill="#475569"
-)
-
-draw.rounded_rectangle(
-    (82, 522, 280, 534),
-    radius=6,
-    fill=BLUE
-)
+preview.paste(mark, (400, 115), mark)
 
 preview.save(
     PUBLIC / "periak-social-preview.png",
     optimize=True
 )
 
-for name in [
-    "periak-icon.svg",
-    "favicon.svg",
-    "favicon.ico",
-    "pwa-192x192.png",
-    "pwa-512x512.png",
-    "periak-maskable-512.png",
-    "periak-social-preview.png"
-]:
-    print("CREATED:", PUBLIC / name)
+print("SUCCESS: All PERIAK branding assets generated.")

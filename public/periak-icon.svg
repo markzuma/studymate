@@ -1,8 +1,13 @@
 <svg xmlns="http://www.w3.org/2000/svg"
-viewBox="0 0 512 512">
-  <rect width="512" height="512"
-    rx="108" fill="#287dcc"/>
-  <path d="M256 132V380M132 256H380"
-    fill="none" stroke="#ffffff"
-    stroke-width="76" stroke-linecap="round"/>
+viewBox="0 0 160 160">
+  <rect width="160" height="160" rx="32" fill="#287dcc"/>
+  <path d="M80 30V88M51 59H109"
+    stroke="#ffffff" stroke-width="17"
+    stroke-linecap="round" fill="none"/>
+  <text x="80" y="128"
+    font-family="Arial, sans-serif"
+    font-size="26" font-weight="750"
+    letter-spacing="1.2"
+    text-anchor="middle"
+    fill="#ffffff">PERIAK</text>
 </svg>
