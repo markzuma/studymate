@@ -11,7 +11,7 @@ import WorkspaceIcon from './WorkspaceIcon'
 import StudentMobileNav from './StudentMobileNav'
 import UserActivityMonitor from './UserActivityMonitor'
 import NotificationCentre from './NotificationCentre'
-import SupportCentre from './SupportCentre'
+const SupportCentre = lazy(() => import('./SupportCentre'))
 import ReferralCentre from './ReferralCentre'
 import { readReferral, clearReferral } from '../lib/referrals'
 const loadPremiumPage = () => import('./PremiumPage')
@@ -364,7 +364,7 @@ export default function AuthGate({ children }) {
     return () => {
       active = false
     }
-  }, [session])
+  }, [session?.user?.id])
 
   const refreshPremiumAccess = useCallback(async () => {
     if (!session?.user?.id) {
@@ -795,7 +795,9 @@ export default function AuthGate({ children }) {
                   onRefreshPremium={refreshPremiumAccess}
                 />
               )}
-              <SupportCentre key={session.user.id} />
+              <Suspense fallback={null}>
+                <SupportCentre key={session.user.id} />
+              </Suspense>
 <div style={{
   display: 'flex',
   flexWrap: 'wrap',

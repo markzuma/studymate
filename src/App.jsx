@@ -594,8 +594,24 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
   useEffect(() => {
     let active = true
 
+    let catalogueOwner = null
+    let catalogueRequest = 0
+
     const loadCatalogue = async (session) => {
-      if (!session?.user) return
+      const owner = session?.user?.id
+
+      if (!active) return
+
+      if (!owner) {
+        catalogueOwner = null
+        catalogueRequest += 1
+        return
+      }
+
+      if (catalogueOwner === owner) return
+
+      catalogueOwner = owner
+      const requestId = ++catalogueRequest
 
       try {
         const { data: courseRows, error: courseError } = await supabase
@@ -632,7 +648,10 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
           materialRows = data || []
         }
 
-        if (!active) return
+        if (
+          !active ||
+          requestId !== catalogueRequest
+        ) return
 
         const legacyByTitle = new Map(
           legacyCourseCatalogue.map(course => [course.title, course])
@@ -699,7 +718,10 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
           }
         }
 
-        if (!active) return
+        if (
+          !active ||
+          requestId !== catalogueRequest
+        ) return
 
         setCatalogueCourses(nextCourses)
         setCatalogueUnits(nextUnits)
@@ -715,6 +737,10 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
           'published materials'
         )
       } catch (error) {
+        if (requestId === catalogueRequest) {
+          catalogueOwner = null
+        }
+
         console.error(
           'Could not load the database catalogue. Keeping the original catalogue:',
           error.message
