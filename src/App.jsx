@@ -6,6 +6,11 @@ import { supabase } from './lib/supabase'
 // PERIAK DASHBOARD SIMPLIFICATION V14
 import './App.css'
 import StudentDashboard from './components/StudentDashboard'
+import { saveOfflineLesson } from './lib/offlineLearning'
+
+const MyLearningLibrary = lazy(() =>
+  import('./components/MyLearningLibrary')
+)
 import ReferralShortcut from './components/ReferralShortcut'
 import WorkspaceIcon from './components/WorkspaceIcon'
 import './components/AcademicWorkspace.css'
@@ -667,7 +672,10 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
           if (!parent) continue
 
           nextUnits[parent.title].push(unit.title)
-          unitTitleById.set(unit.id, unit.title)
+          unitTitleById.set(
+            unit.id,
+            JSON.stringify([parent.id, unit.title])
+          )
         }
 
         const nextLessons = {}
@@ -1330,14 +1338,14 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
         </header>
 
         <main className="lesson-page">
-      {catalogueLessons[selectedUnit] && (
+      {catalogueLessons[JSON.stringify([selectedCourse.id, selectedUnit])] && (
         <Suspense fallback={<div role="status">Preparing reading tools...</div>}>
           <LessonReadingTools
           key={`${selectedCourse?.title}:${selectedUnit}`}
           unitKey={selectedUnit}
           topics={
-            Array.isArray(catalogueLessons[selectedUnit].notes)
-              ? catalogueLessons[selectedUnit].notes
+            Array.isArray(catalogueLessons[JSON.stringify([selectedCourse.id, selectedUnit])].notes)
+              ? catalogueLessons[JSON.stringify([selectedCourse.id, selectedUnit])].notes
               : []
           }
           />
@@ -1372,16 +1380,40 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
               >
                 {bookmarkBusy ? 'Saving…' : isBookmarked ? '★ Bookmarked' : '☆ Save lesson'}
               </button>
+              {!isAdmin && activeLearningUser &&
+                catalogueLessons[JSON.stringify([selectedCourse.id, selectedUnit])] &&
+                !premiumLoading && (
+                <button
+                  type="button"
+                  className="pw-bookmark-button"
+                  onClick={() => {
+                    try {
+                      saveOfflineLesson(
+                        activeLearningUser,
+                        selectedCourse,
+                        selectedUnit,
+                        catalogueLessons[JSON.stringify([selectedCourse.id, selectedUnit])]
+                      )
+
+                      window.alert('Offline notes saved to My Library.')
+                    } catch (error) {
+                      window.alert(error.message)
+                    }
+                  }}
+                >
+                  Save offline notes
+                </button>
+              )}
             </div>
           </div>
 
-          {catalogueLessons[selectedUnit] ? (
+          {catalogueLessons[JSON.stringify([selectedCourse.id, selectedUnit])] ? (
             <>
               <section className="lesson-panel">
                 <h2 id="periak-lesson-objectives">Learning objectives</h2>
                 <p>By the end of this unit, you should be able to:</p>
                 <ul>
-                  {(catalogueLessons[selectedUnit].objectives || []).map((item, index) => <li key={index}>{item}</li>)}
+                  {(catalogueLessons[JSON.stringify([selectedCourse.id, selectedUnit])].objectives || []).map((item, index) => <li key={index}>{item}</li>)}
                 </ul>
               </section>
 
@@ -1393,7 +1425,7 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
                 <>
               <section className="lesson-panel periak-notes-panel">
                 <h2 id="periak-lesson-notes">Comprehensive study notes</h2>
-                {(catalogueLessons[selectedUnit].notes || []).map((item, index) => (
+                {(catalogueLessons[JSON.stringify([selectedCourse.id, selectedUnit])].notes || []).map((item, index) => (
                   <div className="note-topic" id={`periak-note-topic-${index}`} key={index}>
                     <h3>{item.heading || item.title}</h3>
                     {item.content && <StudyText value={item.content} />}
@@ -1412,7 +1444,7 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
               <section className="lesson-panel">
                 <h2 id="periak-lesson-clinical">Clinical application</h2>
                 {(() => {
-                  const lesson = catalogueLessons[selectedUnit]
+                  const lesson = catalogueLessons[JSON.stringify([selectedCourse.id, selectedUnit])]
                   const clinical = lesson.clinical ?? lesson.clinicalApplication
 
                   if (Array.isArray(clinical)) {
@@ -1448,17 +1480,17 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
               <section className="lesson-panel">
                 <h2 id="periak-lesson-revision">High-yield examination points</h2>
                 <ul>
-                  {(catalogueLessons[selectedUnit].examPoints || []).map((item, index) => <li key={index}>{item}</li>)}
+                  {(catalogueLessons[JSON.stringify([selectedCourse.id, selectedUnit])].examPoints || []).map((item, index) => <li key={index}>{item}</li>)}
                 </ul>
               </section>
 
               <section className="lesson-panel">
                 <h2 id="periak-lesson-questions">Practice questions</h2>
                 <p>Choose an answer, then open the explanation to check your understanding.</p>
-                {(Array.isArray(catalogueLessons[selectedUnit].questions)
-                  ? catalogueLessons[selectedUnit].questions
-                  : Array.isArray(catalogueLessons[selectedUnit].mcqs)
-                    ? catalogueLessons[selectedUnit].mcqs
+                {(Array.isArray(catalogueLessons[JSON.stringify([selectedCourse.id, selectedUnit])].questions)
+                  ? catalogueLessons[JSON.stringify([selectedCourse.id, selectedUnit])].questions
+                  : Array.isArray(catalogueLessons[JSON.stringify([selectedCourse.id, selectedUnit])].mcqs)
+                    ? catalogueLessons[JSON.stringify([selectedCourse.id, selectedUnit])].mcqs
                     : []).map((question, index) => {
                       const options = Array.isArray(question.options)
                         ? question.options
@@ -1493,10 +1525,10 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
                     })}
               </section>
 
-              {Array.isArray(catalogueLessons[selectedUnit].clinicalCases) && catalogueLessons[selectedUnit].clinicalCases.length > 0 && (
+              {Array.isArray(catalogueLessons[JSON.stringify([selectedCourse.id, selectedUnit])].clinicalCases) && catalogueLessons[JSON.stringify([selectedCourse.id, selectedUnit])].clinicalCases.length > 0 && (
                 <section className="lesson-panel">
                   <h2>Clinical case studies</h2>
-                  {catalogueLessons[selectedUnit].clinicalCases.map((item, index) => (
+                  {catalogueLessons[JSON.stringify([selectedCourse.id, selectedUnit])].clinicalCases.map((item, index) => (
                     <div className="note-topic" key={index}>
                       <h3>{item.title || item.heading || `Case study ${index + 1}`}</h3>
                       {(item.content || item.body) && <p>{item.content || item.body}</p>}
@@ -1510,11 +1542,11 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
                 </section>
               )}
 
-              {Array.isArray(catalogueLessons[selectedUnit].writtenQuestions) && catalogueLessons[selectedUnit].writtenQuestions.length > 0 && (
+              {Array.isArray(catalogueLessons[JSON.stringify([selectedCourse.id, selectedUnit])].writtenQuestions) && catalogueLessons[JSON.stringify([selectedCourse.id, selectedUnit])].writtenQuestions.length > 0 && (
                 <section className="lesson-panel">
                   <h2>Written and short-answer questions</h2>
                   <p>Attempt each question before revealing the model answer and marking guide.</p>
-                  {catalogueLessons[selectedUnit].writtenQuestions.map((item, index) => (
+                  {catalogueLessons[JSON.stringify([selectedCourse.id, selectedUnit])].writtenQuestions.map((item, index) => (
                     <div className="practice-question" key={index}>
                       <h3>{index + 1}. {item.question || 'Written question'}</h3>
                       <details>
@@ -1812,6 +1844,18 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
             </article>
           </div>
 
+          {!isAdmin && (
+            <Suspense fallback={null}>
+              <MyLearningLibrary
+                key={activeLearningUser || 'guest'}
+                userId={activeLearningUser}
+                courses={catalogueCourses}
+                units={catalogueUnits}
+                onLesson={openUnit}
+              />
+            </Suspense>
+          )}
+
           <div className="dashboard-panels">
             <section className="dashboard-panel recent-panel">
               <div className="dashboard-panel-heading">
@@ -1993,6 +2037,17 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
       ) : (
         <>
           {!isAdmin && <ReferralShortcut compact />}
+          {!isAdmin && (
+            <Suspense fallback={null}>
+              <MyLearningLibrary
+                key={activeLearningUser || 'guest'}
+                userId={activeLearningUser}
+                courses={catalogueCourses}
+                units={catalogueUnits}
+                onLesson={openUnit}
+              />
+            </Suspense>
+          )}
           <StudentDashboard
           courses={catalogueCourses}
           units={catalogueUnits}

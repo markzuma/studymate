@@ -596,7 +596,19 @@ export default function AuthGate({ children }) {
       window.sessionStorage.removeItem('periak_mobile_nav_intent')
     } catch {}
 
+    const offlineOwner = session?.user?.id
     const { error } = await supabase.auth.signOut()
+
+    if (!error && offlineOwner) {
+      try {
+        localStorage.removeItem(
+          `periak_offline_library_v1_${offlineOwner}`
+        )
+      } catch {
+        // Storage may be unavailable.
+      }
+    }
+
 
     if (error) {
       setError(error.message)

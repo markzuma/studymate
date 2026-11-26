@@ -1,0 +1,113 @@
+.periak-my-library {
+  margin: 14px 0;
+  border: 1px solid var(--border, #dbe4ec);
+  background: var(--surface, #fff);
+  color: var(--text-primary, #172b40);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.pml-heading {
+  width: 100%;
+  padding: 16px;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+}
+
+.pml-heading strong,
+.pml-heading small {
+  display: block;
+}
+
+.pml-heading strong {
+  font-size: 16px;
+}
+
+.pml-heading small {
+  margin-top: 4px;
+  font-size: 12px;
+  opacity: .8;
+}
+
+.pml-body {
+  padding: 0 14px 14px;
+  font-size: 14px;
+}
+
+.pml-body nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 0;
+}
+
+.pml-body button {
+  color: inherit;
+  cursor: pointer;
+}
+
+.pml-body nav button,
+.pml-offline-row > button:last-child,
+.pml-reader > button {
+  border: 1px solid var(--border, #dbe4ec);
+  border-radius: 7px;
+  background: transparent;
+  padding: 9px;
+}
+
+.pml-body nav button[aria-pressed="true"] {
+  background: #287dcc;
+  color: white;
+  border-color: #287dcc;
+}
+
+.pml-resource {
+  width: 100%;
+  display: grid;
+  gap: 5px;
+  padding: 12px;
+  margin-top: 7px;
+  text-align: left;
+  border: 1px solid var(--border, #dbe4ec);
+  background: transparent;
+  border-radius: 8px;
+}
+
+.pml-resource small {
+  opacity: .8;
+}
+
+.pml-resource progress {
+  width: 100%;
+  height: 7px;
+  accent-color: #287dcc;
+}
+
+.pml-offline-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pml-reader {
+  max-height: 70vh;
+  overflow-y: auto;
+  line-height: 1.75;
+  overflow-wrap: anywhere;
+}
+
+.pml-reader p {
+  white-space: pre-wrap;
+}
+
+.pml-reader h2,
+.pml-reader h3,
+.pml-reader h4 {
+  margin-top: 18px;
+}

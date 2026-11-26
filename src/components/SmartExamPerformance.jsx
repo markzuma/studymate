@@ -51,6 +51,32 @@ export default function SmartExamPerformance() {
 
   if (!stats) return null
 
+  // Prioritise revision using actual submitted answers.
+  const courseRows = [...(stats.by_course || [])]
+    .sort((a, b) => {
+      const qualifiedA = Number(a.answered) >= 5
+      const qualifiedB = Number(b.answered) >= 5
+
+      if (qualifiedA !== qualifiedB) {
+        return qualifiedA ? -1 : 1
+      }
+
+      return (
+        Number(a.accuracy || 0) -
+        Number(b.accuracy || 0)
+      )
+    })
+
+  function revisionStatus(course) {
+    const answered = Number(course.answered || 0)
+    const accuracy = Number(course.accuracy || 0)
+
+    if (answered < 5) return 'More practice needed'
+    if (accuracy < 70) return 'Revision priority'
+
+    return 'Continue practising'
+  }
+
   const metrics = [
     ['Questions answered', stats.questions_answered],
     [
@@ -85,11 +111,16 @@ export default function SmartExamPerformance() {
         {' '}{stats.cats_completed} CATs completed
       </small>
 
-      {stats.by_course?.length > 0 ? (
+      {courseRows.length > 0 ? (
         <>
-          <h3>Performance by course</h3>
+          <h3>Performance and revision priorities</h3>
+          <p className="sev2-muted">
+            Courses with lower accuracy appear first.
+            Revision priorities require at least five
+            submitted answers.
+          </p>
 
-          {stats.by_course.map(course => (
+          {courseRows.map(course => (
             <div
               className="sev2-course-performance"
               key={course.course_id}
@@ -114,6 +145,7 @@ export default function SmartExamPerformance() {
                 {course.correct}/{course.answered}
                 {' '}correct answers ·
                 {' '}{course.assessments} assessments
+                · {revisionStatus(course)}
               </small>
             </div>
           ))}
