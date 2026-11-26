@@ -38,3 +38,121 @@
 .periak-tour-description{font-size:11px;line-height:1.4}
 .periak-tour-tip{padding:8px}
 }
+
+/* PERIAK adaptive guided tour V2 */
+
+.periak-tour-card {
+  width: min(420px, calc(100vw - 24px));
+  max-height: calc(100dvh - 24px);
+  overscroll-behavior: contain;
+  border-radius: 16px;
+  scrollbar-width: thin;
+}
+
+.periak-tour-layout {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 9px;
+  margin-bottom: 12px;
+  border: 1px solid #d5e2ec;
+  border-radius: 6px;
+  background: #edf3f9;
+  color: #39546c;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.periak-tour-description,
+.periak-tour-tip p,
+.periak-tour-content h2 {
+  overflow-wrap: anywhere;
+}
+
+.periak-tour-progress-track {
+  height: 5px;
+}
+
+.periak-tour-skip {
+  min-height: 40px;
+}
+
+.periak-tour-footer button {
+  min-height: 44px;
+}
+
+@media (max-width: 759px) {
+  .periak-tour-card {
+    width: min(420px, calc(100vw - 20px));
+    max-height: calc(
+      100dvh - 20px - env(safe-area-inset-bottom)
+    );
+  }
+
+  .periak-tour-header {
+    padding: 12px 15px;
+  }
+
+  .periak-tour-content {
+    padding: 15px 17px;
+  }
+
+  .periak-tour-content h2 {
+    font-size: 21px;
+    line-height: 1.25;
+  }
+
+  .periak-tour-description {
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  .periak-tour-tip p {
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .periak-tour-footer {
+    padding: 0 17px 17px;
+  }
+}
+
+@media (max-height: 580px) {
+  .periak-tour-emoji {
+    display: none;
+  }
+
+  .periak-tour-content {
+    padding-top: 10px;
+  }
+}
+
+[data-theme="dark"] .periak-tour-card {
+  background: #172638;
+  color: #edf4fb;
+  border-color: #35485c;
+}
+
+[data-theme="dark"] .periak-tour-content h2 {
+  color: #edf4fb;
+}
+
+[data-theme="dark"] .periak-tour-description {
+  color: #d1dce8;
+}
+
+[data-theme="dark"] .periak-tour-tip,
+[data-theme="dark"] .periak-tour-layout {
+  background: #22374a;
+  border-color: #35485c;
+  color: #d4e4f2;
+}
+
+[data-theme="dark"] .periak-tour-tip p,
+[data-theme="dark"] .periak-tour-skip {
+  color: #cbd9e6;
+}
+
+[data-theme="dark"] .periak-tour-brand,
+[data-theme="dark"] .periak-tour-count {
+  color: #9be5bd;
+}

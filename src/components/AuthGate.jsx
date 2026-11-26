@@ -231,13 +231,13 @@ export default function AuthGate({ children }) {
     premiumFeatureIntent
   ])
 
-  // v1 is new for EVERY account, including students who registered previously.
+  // Show the updated V2 tour once per account on this device.
   // The user ID prevents a skipped/completed tour leaking between accounts.
   useEffect(() => {
     const userId = session?.user?.id
     if (!userId || !profile?.role || (profile?.id && profile.id !== userId)) return
     try {
-      if (window.localStorage.getItem(`periak_app_tour_v1_${userId}`) === 'seen') return
+      if (window.localStorage.getItem(`periak_app_tour_v2_${userId}`) === 'seen') return
     } catch (error) {
       console.warn('Could not check app tour preference:', error)
     }
@@ -251,7 +251,7 @@ export default function AuthGate({ children }) {
   function closeWelcomeTour() {
     if (session?.user?.id) {
       try {
-        window.localStorage.setItem(`periak_app_tour_v1_${session.user.id}`, 'seen')
+        window.localStorage.setItem(`periak_app_tour_v2_${session.user.id}`, 'seen')
       } catch (error) {
         console.warn('Could not store app tour preference:', error)
       }
@@ -715,7 +715,7 @@ export default function AuthGate({ children }) {
               }
             }}
           >
-            <summary aria-label="Account options">
+            <summary aria-label="Account options" data-periak-tour="account">
               {studentWorkspace && (
                 <WorkspaceIcon name="account" size={19}/>
               )}
