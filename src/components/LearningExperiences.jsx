@@ -95,9 +95,29 @@ export function GroundedStudyTutor({ catalogueLessons = {}, catalogueUnits = {},
   const results = useMemo(() => {
     if (!terms.length) return []
     const entries = Object.entries(catalogueLessons)
-    return entries.map(([unit, lesson]) => {
+    return entries.map(([lessonKey, lesson]) => {
       if (!lesson || typeof lesson !== 'object') return null
-      const course = courses.find(c => (catalogueUnits[c.title] || []).includes(unit))
+
+      let unit = lessonKey
+      let course = null
+
+      try {
+        const identity = JSON.parse(lessonKey)
+
+        if (Array.isArray(identity) && identity.length === 2) {
+          unit = identity[1]
+          course = courses.find(c => c.id === identity[0])
+
+          if (!course ||
+              !(catalogueUnits[course.title] || []).includes(unit)) {
+            return null
+          }
+        }
+      } catch {
+        course = courses.find(c =>
+          (catalogueUnits[c.title] || []).includes(unit)
+        )
+      }
       const notes = Array.isArray(lesson.notes) ? lesson.notes : []
       const objectives = Array.isArray(lesson.objectives) ? lesson.objectives : []
       const points = Array.isArray(lesson.examPoints) ? lesson.examPoints : []
@@ -106,7 +126,7 @@ export function GroundedStudyTutor({ catalogueLessons = {}, catalogueUnits = {},
       const score = s => terms.reduce((sum, t) => sum + (normalise(s).includes(t) ? 1 : 0), 0)
       const ranked = sections.map(s=>({...s, relevance: score(`${s.title} ${s.body}`)})).sort((a,b)=>b.relevance-a.relevance)
       const relevance = score(unit)*3 + (ranked[0]?.relevance || 0) + (course ? score(course.title) : 0)
-      return relevance ? {unit,course,lesson,question,sections: ranked.filter(s=>s.relevance).slice(0,2),relevance} : null
+      return relevance ? {lessonKey,unit,course,lesson,question,sections: ranked.filter(s=>s.relevance).slice(0,2),relevance} : null
     }).filter(Boolean).sort((a,b)=>b.relevance-a.relevance).slice(0,8)
   }, [catalogueLessons, catalogueUnits, courses, terms])
   return <div className="xp-root">
@@ -114,9 +134,9 @@ export function GroundedStudyTutor({ catalogueLessons = {}, catalogueUnits = {},
     <div className="xp-disclaimer">This is a structured study search, not a generative AI chatbot. Answers and excerpts come from PERIAK's loaded learning materials; always cross-check clinical practice with current guidance.</div>
     <label className="xp-field">Topic or question keyword<input value={query} onChange={e=>{setQuery(e.target.value);setChosen({})}} placeholder="Try: placenta, iron deficiency, cardiac failure…" /></label>
     <div className="xp-prompts">{['placenta','shock','vitamin B12','asthma'].map(t=><button type="button" key={t} onClick={()=>setQuery(t)}>{t}</button>)}</div>
-    {!query.trim() ? <p className="xp-empty">Enter a topic to search the lessons available to your account.</p> : results.length===0 ? <p className="xp-empty">No matching published lesson text was found. Try a different term or open the Knowledge Hub to browse subjects.</p> : <><p className="xp-search-count">{results.length} matching lesson{results.length===1?'':'s'} (top matches)</p><div className="xp-results">{results.map(result=><article key={result.unit} className="xp-result"><div className="xp-result-title"><div><small>{result.course?.title || 'PERIAK learning material'}</small><h4>{result.unit}</h4></div>{result.course && <button type="button" onClick={()=>onOpenCourse(result.course)}>Open course →</button>}</div>
+    {!query.trim() ? <p className="xp-empty">Enter a topic to search the lessons available to your account.</p> : results.length===0 ? <p className="xp-empty">No matching published lesson text was found. Try a different term or open the Knowledge Hub to browse subjects.</p> : <><p className="xp-search-count">{results.length} matching lesson{results.length===1?'':'s'} (top matches)</p><div className="xp-results">{results.map(result=><article key={result.lessonKey} className="xp-result"><div className="xp-result-title"><div><small>{result.course?.title || 'PERIAK learning material'}</small><h4>{result.unit}</h4></div>{result.course && <button type="button" onClick={()=>onOpenCourse(result.course)}>Open course →</button>}</div>
       {result.sections.map((s,i)=><div className="xp-excerpt" key={i}><b>{s.title}</b><p>{s.body}</p></div>)}
-      {result.question && <div className="xp-mini-quiz"><b>Quick knowledge check</b><p>{result.question.question||result.question.q}</p><div className="xp-choices">{result.question.options.map((option,i)=><button key={i} type="button" className={`xp-choice ${chosen[result.unit]===i?'is-chosen':''}`} disabled={chosen[result.unit]!==undefined} onClick={()=>setChosen(prev=>({...prev,[result.unit]:i}))}><span>{String.fromCharCode(65+i)}</span>{option}</button>)}</div>{chosen[result.unit]!==undefined && <p className="xp-quiz-feedback" role="status">{(()=>{const answer=result.question.answer;const correct=typeof answer==='number'?answer:/^[A-D]$/i.test(String(answer||''))?String(answer).toUpperCase().charCodeAt(0)-65:-1;return correct<0?'Review the explanation in the full lesson.':chosen[result.unit]===correct?'Correct. ':'Review this answer. '})()}{result.question.explanation || 'Open the lesson to review the topic in context.'}</p>}</div>}
+      {result.question && <div className="xp-mini-quiz"><b>Quick knowledge check</b><p>{result.question.question||result.question.q}</p><div className="xp-choices">{result.question.options.map((option,i)=><button key={i} type="button" className={`xp-choice ${chosen[result.lessonKey]===i?'is-chosen':''}`} disabled={chosen[result.lessonKey]!==undefined} onClick={()=>setChosen(prev=>({...prev,[result.lessonKey]:i}))}><span>{String.fromCharCode(65+i)}</span>{option}</button>)}</div>{chosen[result.lessonKey]!==undefined && <p className="xp-quiz-feedback" role="status">{(()=>{const answer=result.question.answer;const correct=typeof answer==='number'?answer:/^[A-D]$/i.test(String(answer||''))?String(answer).toUpperCase().charCodeAt(0)-65:-1;return correct<0?'Review the explanation in the full lesson.':chosen[result.lessonKey]===correct?'Correct. ':'Review this answer. '})()}{result.question.explanation || 'Open the lesson to review the topic in context.'}</p>}</div>}
     </article>)}</div></>}
   </div>
 }

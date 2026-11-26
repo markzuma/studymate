@@ -654,6 +654,10 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
           return {
             id: course.id,
             title: course.title,
+            description: course.description || '',
+            programme: course.programme,
+            year_of_study: course.year_of_study,
+            semester: course.semester,
             icon: legacy?.icon || '📘',
             desc: legacy?.desc || course.description || 'Explore this nursing course and its learning materials.',
             level: legacy?.level || course.programme || 'NURSING'
@@ -1672,7 +1676,7 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
                   </div>
                   <div className="unit-info">
                     <h3>{unit}</h3>
-                    <p>{catalogueLessons[unit] ? 'Study notes, clinical applications and practice questions available.' : 'Study notes and revision materials coming soon.'}</p>
+                    <p>{catalogueLessons[JSON.stringify([selectedCourse.id, unit])] ? 'Study notes, clinical applications and practice questions available.' : 'Study notes and revision materials coming soon.'}</p>
                   </div>
                   <span className="unit-arrow">→</span>
                 </button>

@@ -796,6 +796,18 @@ export default function AuthGate({ children }) {
                 />
               )}
               <SupportCentre key={session.user.id} />
+<div style={{
+  display: 'flex',
+  flexWrap: 'wrap',
+  justifyContent: 'center',
+  gap: '12px',
+  fontSize: '12px',
+  padding: '10px 0'
+}}>
+  <a href="/privacy.html">Privacy policy</a>
+  <a href="/delete-account.html">Account deletion</a>
+</div>
+
               <button type="button" className="auth-account-logout"
                 onClick={(event) => {
                   event.currentTarget.closest('details')?.removeAttribute('open')
@@ -907,6 +919,18 @@ export default function AuthGate({ children }) {
         </div>
 
         <p className="auth-tagline">Learn. Practise. Excel.</p>
+<div style={{
+  display: 'flex',
+  flexWrap: 'wrap',
+  justifyContent: 'center',
+  gap: '12px',
+  fontSize: '12px',
+  padding: '10px 0'
+}}>
+  <a href="/privacy.html">Privacy policy</a>
+  <a href="/delete-account.html">Account deletion</a>
+</div>
+
 
         <h1>
           {mode === 'register'
