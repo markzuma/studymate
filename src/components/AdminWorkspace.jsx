@@ -7,12 +7,13 @@ import {
 
 import { supabase } from '../lib/supabase'
 import './AdminWorkspace.css'
+import AdminMfaGate from './AdminMfaGate'
 
 const ControlCentre = lazy(
   () => import('./ControlCentre')
 )
 
-export default function AdminWorkspace({
+function AuthorizedAdminWorkspace({
   userId,
   onClose
 }) {
@@ -125,5 +126,16 @@ export default function AdminWorkspace({
         </main>
       )}
     </div>
+  )
+}
+
+export default function AdminWorkspace(props) {
+  return (
+    <AdminMfaGate
+      userId={props.userId}
+      onClose={props.onClose}
+    >
+      <AuthorizedAdminWorkspace {...props} />
+    </AdminMfaGate>
   )
 }

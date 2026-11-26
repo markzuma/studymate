@@ -1,0 +1,113 @@
+.periak-mfa {
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 24px 16px;
+  background: #eef3f9;
+  color: #172b46;
+}
+
+.periak-mfa-card {
+  width: min(100%, 460px);
+  padding: 30px;
+  background: #fff;
+  border: 1px solid #dce5ef;
+  border-radius: 20px;
+  box-shadow: 0 18px 60px #172b4614;
+  display: grid;
+  gap: 16px;
+}
+
+.periak-mfa-brand {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  text-align: center;
+}
+
+.periak-mfa-brand img {
+  width: 55px;
+  height: 55px;
+}
+
+.periak-mfa-brand strong {
+  color: #287dcc;
+  letter-spacing: 2px;
+  font-size: 25px;
+}
+
+.periak-mfa-card h2,
+.periak-mfa-card p {
+  margin: 0;
+}
+
+.periak-mfa-card p,
+.periak-mfa-card li {
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+.periak-mfa-card small {
+  color: #596d85;
+  line-height: 1.5;
+}
+
+.periak-mfa-card form {
+  display: grid;
+  gap: 12px;
+}
+
+.periak-mfa-card label {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.periak-mfa-card input {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #c1d0df;
+  border-radius: 10px;
+  padding: 14px;
+  font-size: 26px;
+  letter-spacing: 8px;
+  text-align: center;
+  color: #172b46;
+  background: #fff;
+}
+
+.periak-mfa-card button {
+  border: 0;
+  border-radius: 10px;
+  min-height: 46px;
+  padding: 12px 16px;
+  background: #287dcc;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.periak-mfa-card button:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+.periak-mfa-card .periak-mfa-back {
+  background: #edf3f9;
+  color: #244b77;
+}
+
+.periak-mfa-secret {
+  padding: 15px;
+  background: #edf3f9;
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+  user-select: all;
+  font-size: 15px;
+}
+
+.periak-mfa-error {
+  color: #a42626;
+  background: #fff0f0;
+  border-radius: 8px;
+  padding: 12px;
+}
