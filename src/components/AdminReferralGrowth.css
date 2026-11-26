@@ -1,0 +1,178 @@
+.prg {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+
+.prg-header,
+.prg-row,
+.prg-chart-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.prg-header h2 {
+  margin: 0 0 5px;
+  font-size: 23px;
+}
+
+.prg-header p,
+.prg-panel p {
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 4px 0;
+}
+
+.prg-header button {
+  padding: 10px 16px;
+  min-height: 40px;
+  border: 1px solid #94a3b870;
+  border-radius: 7px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.prg-updated {
+  font-size: 12px;
+  opacity: .75;
+}
+
+.prg-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.prg-stat,
+.prg-panel {
+  background: var(--surface, transparent);
+  border: 1px solid #94a3b84d;
+  border-radius: 10px;
+  padding: 16px;
+  min-width: 0;
+}
+
+.prg-stat {
+  display: grid;
+  gap: 10px;
+}
+
+.prg-stat span {
+  font-size: 12px;
+  line-height: 1.5;
+  opacity: .85;
+}
+
+.prg-stat strong {
+  font-size: 25px;
+  font-variant-numeric: tabular-nums;
+}
+
+.prg-columns {
+  display: grid;
+  grid-template-columns: 1.25fr 1fr;
+  gap: 12px;
+}
+
+.prg-panel h3 {
+  margin: 0 0 14px;
+  font-size: 15px;
+}
+
+.prg-panel small {
+  font-size: 11px;
+  opacity: .75;
+}
+
+.prg-row {
+  border-bottom: 1px solid #94a3b830;
+  padding: 12px 0;
+  font-size: 13px;
+}
+
+.prg-chart {
+  display: grid;
+  gap: 10px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.prg-chart-row {
+  font-size: 12px;
+}
+
+.prg-track {
+  flex: 1;
+  height: 9px;
+  border-radius: 5px;
+  background: #94a3b825;
+  overflow: hidden;
+}
+
+.prg-track > div {
+  background: #2878c1;
+  height: 100%;
+  border-radius: 5px;
+}
+
+.prg-table-wrap {
+  overflow-x: auto;
+}
+
+.prg table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  text-align: left;
+}
+
+.prg th,
+.prg td {
+  padding: 11px 10px;
+  border-bottom: 1px solid #94a3b830;
+}
+
+.prg th {
+  font-size: 12px;
+  background: #94a3b812;
+}
+
+.prg-error {
+  border: 1px solid #dc262680;
+  border-radius: 8px;
+  padding: 12px;
+}
+
+@media (max-width: 1100px) {
+  .prg-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 700px) {
+  .prg-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .prg-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .prg-stat,
+  .prg-panel {
+    padding: 12px;
+  }
+
+  .prg-stat strong {
+    font-size: 23px;
+  }
+
+  .prg-header h2 {
+    font-size: 19px;
+  }
+}

@@ -6,6 +6,7 @@ import { supabase } from './lib/supabase'
 // PERIAK DASHBOARD SIMPLIFICATION V14
 import './App.css'
 import StudentDashboard from './components/StudentDashboard'
+import ReferralShortcut from './components/ReferralShortcut'
 import WorkspaceIcon from './components/WorkspaceIcon'
 import './components/AcademicWorkspace.css'
 import './components/LearningWorkspace.css'
@@ -1751,6 +1752,7 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
           <section className="dashboard-premium-ad" data-periak-tour="pastpapers">
             <div className="dashboard-premium-ad-copy">
               <span className="dashboard-premium-ad-label">PERIAK PREMIUM · FLAGSHIP</span>
+              {!isAdmin && <ReferralShortcut compact />}
               <h2>Past Papers &amp; Exam Practice</h2>
               <p>Search past papers and exam-style practice papers by course, unit,
                 year, semester and exam type.</p>
@@ -1989,7 +1991,9 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
         </section>
         </main>
       ) : (
-        <StudentDashboard
+        <>
+          {!isAdmin && <ReferralShortcut compact />}
+          <StudentDashboard
           courses={catalogueCourses}
           units={catalogueUnits}
           learningData={learningData}
@@ -2006,6 +2010,7 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
           }}
           onFeature={onOpenPremiumFeature}
         />
+        </>
       )}
     </div>
   )

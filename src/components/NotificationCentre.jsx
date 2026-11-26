@@ -6,6 +6,7 @@ import './Engagement.css'
 
 const icons = {
   general: '📢',
+  referral: '🎁',
   learning: '📚',
   exam: '📝',
   premium: '✦',
@@ -29,13 +30,29 @@ export default function NotificationCentre({ onOpenPremium, menuMode = false }) 
     try {
       const results = await Promise.all([
         supabase.rpc('my_notifications'),
-        supabase.rpc('my_engagement_summary')
+        supabase.rpc('my_engagement_summary'),
+        supabase.rpc('my_referral_notifications')
       ])
 
       if (results[0].error) throw results[0].error
 
-      setItems(results[0].data?.items || [])
-      setUnread(Number(results[0].data?.unread_count || 0))
+      const referralFeed = results[2].error
+        ? null
+        : results[2].data
+
+      const combined = [
+        ...(results[0].data?.items || []),
+        ...(referralFeed?.items || [])
+      ].sort((a, b) =>
+        new Date(b.published_at) - new Date(a.published_at)
+      )
+
+      setItems(combined)
+
+      setUnread(
+        Number(results[0].data?.unread_count || 0) +
+        Number(referralFeed?.unread_count || 0)
+      )
 
       if (!results[1].error) {
         setExpiry(results[1].data?.premium_expiry || null)
@@ -81,9 +98,15 @@ export default function NotificationCentre({ onOpenPremium, menuMode = false }) 
     setBusy(item.id)
 
     try {
-      const { error } = await supabase.rpc('read_notification', {
-        p_announcement_id: item.id
-      })
+      const isReferral = item.category === 'referral'
+
+      const { error } = isReferral
+        ? await supabase.rpc('read_referral_notification', {
+            p_referral_id: item.id.replace('referral:', '')
+          })
+        : await supabase.rpc('read_notification', {
+            p_announcement_id: item.id
+          })
 
       if (error) throw error
 

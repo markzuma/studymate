@@ -37,7 +37,8 @@ const GROUPS = [
   {
     title: 'Business',
     items: [
-      ['monetization', 'Monetization', '◆']
+      ['monetization', 'Monetization', '◆'],
+      ['growth', 'Growth & Referrals', '↗']
     ]
   }
 ]

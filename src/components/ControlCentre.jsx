@@ -12,6 +12,7 @@ import AdminAcademicManager from './AdminAcademicManager'
 import LessonContentEditor from './LessonContentEditor'
 import AdminPastPapersManager from './AdminPastPapersManager'
 import AdminUsageStats from './AdminUsageStats'
+import AdminReferralGrowth from './AdminReferralGrowth'
 import SmartExamAdmin from './SmartExamAdmin'
 import AdminAnnouncements from './AdminAnnouncements'
 import AdminSupportCentre from './AdminSupportCentre'
@@ -28,6 +29,7 @@ const SECTIONS = [
   { id: 'announcements', label: 'Announcements' },
   { id: 'pastpapers', label: 'Past Papers Library' },
   { id: 'usage', label: 'Usage Stats' },
+  { id: 'growth', label: 'Growth & Referrals' },
   { id: 'exam-quality', label: 'Question Bank' },
   { id: 'support', label: 'Support & Feedback' },
   { id: 'monetization', label: 'Monetization' }
@@ -1209,6 +1211,8 @@ export default function ControlCentre({ onClose }) {
           {section === 'pastpapers' && <AdminPastPapersManager />}
 
           {section === 'usage' && <AdminUsageStats />}
+
+          {section === 'growth' && <AdminReferralGrowth />}
 
           {section === 'exam-quality' && (
             <div className="smart-exam-v2">

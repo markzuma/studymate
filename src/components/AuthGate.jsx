@@ -12,6 +12,8 @@ import StudentMobileNav from './StudentMobileNav'
 import UserActivityMonitor from './UserActivityMonitor'
 import NotificationCentre from './NotificationCentre'
 import SupportCentre from './SupportCentre'
+import ReferralCentre from './ReferralCentre'
+import { readReferral, clearReferral } from '../lib/referrals'
 const loadPremiumPage = () => import('./PremiumPage')
 const PremiumPage = lazy(loadPremiumPage)
 const ControlCentre = lazy(() => import('./ControlCentre'))
@@ -477,6 +479,13 @@ export default function AuthGate({ children }) {
     }
   }, [session?.user?.id])
 
+  // Automatically open registration for referral visitors.
+  useEffect(() => {
+    if (!session && readReferral()) {
+      setMode('register')
+    }
+  }, [session?.user?.id])
+
   async function handleSubmit(event) {
     event.preventDefault()
     setError('')
@@ -495,6 +504,8 @@ export default function AuthGate({ children }) {
           throw new Error('Username must be 3–24 characters and contain only letters, numbers, dots or underscores.')
         }
 
+        const referral = readReferral()
+
         const { data, error } = await supabase.auth.signUp({
           email: email.trim(),
           password,
@@ -502,12 +513,18 @@ export default function AuthGate({ children }) {
             data: {
               full_name: fullName.trim(),
               username: cleanUsername,
+              ...(referral ? {
+                referral_code: referral.code,
+                referral_source: referral.source
+              } : {}),
             },
             emailRedirectTo: window.location.origin
           }
         })
 
         if (error) throw error
+
+        clearReferral()
 
         if (data.session) {
           setMessage('Your PERIAK account has been created successfully.')
@@ -545,6 +562,7 @@ export default function AuthGate({ children }) {
         const signedInUserId = sessionData?.session?.user?.id
 
         if (signedInUserId) {
+          clearReferral()
           localStorage.setItem(
             `periak_last_activity_${signedInUserId}`,
             String(Date.now())
@@ -752,6 +770,12 @@ export default function AuthGate({ children }) {
               setShowPremium(true)
             }}
           />
+              {profile?.role === 'student' && (
+                <ReferralCentre
+                  key={`referral-${session.user.id}`}
+                  onRefreshPremium={refreshPremiumAccess}
+                />
+              )}
               <SupportCentre key={session.user.id} />
               <button type="button" className="auth-account-logout"
                 onClick={(event) => {
@@ -787,6 +811,7 @@ export default function AuthGate({ children }) {
         ) : (profile?.role === 'student' || profile?.role === 'admin') && showPremium ? (
           <Suspense fallback={<div className="premium-page">Opening Premium...</div>}>
             <PremiumPage
+              referralsEnabled={profile?.role === 'student'}
               user={session.user}
               onBack={() => {
                 refreshPremiumAccess()
@@ -882,6 +907,13 @@ export default function AuthGate({ children }) {
 
         {error && <div className="auth-error">{error}</div>}
         {message && <div className="auth-message">{message}</div>}
+
+        {mode === 'register' && readReferral() && (
+          <p className="auth-message">
+            You have been invited to join PERIAK.
+            Create your free account to get started.
+          </p>
+        )}
 
         <form onSubmit={handleSubmit}>
           {mode === 'register' && (

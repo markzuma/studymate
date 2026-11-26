@@ -1,0 +1,249 @@
+.periak-referral-dialog {
+  box-sizing: border-box;
+  width: min(520px, calc(100vw - 24px));
+  max-height: 88dvh;
+  padding: 0;
+  border: 1px solid #94a3b84d;
+  border-radius: 14px;
+  background: Canvas;
+  color: CanvasText;
+  overflow: auto;
+  overscroll-behavior: contain;
+}
+
+.periak-referral-dialog::backdrop {
+  background: rgba(15, 23, 42, .55);
+}
+
+.prf-body {
+  padding: 20px;
+  display: grid;
+  gap: 16px;
+}
+
+.prf-header,
+.prf-history-header,
+.prf-history-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.prf-header h2 {
+  font-size: 24px;
+  margin: 4px 0 0;
+}
+
+.prf-eyebrow {
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: 1.2px;
+  color: #3984cf;
+}
+
+.prf-description,
+.prf-muted {
+  margin: 0;
+  line-height: 1.55;
+}
+
+.prf-muted {
+  font-size: 12px;
+  opacity: .8;
+}
+
+.prf-stats,
+.prf-actions,
+.prf-platforms {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.prf-stats > div {
+  border: 1px solid #94a3b84d;
+  padding: 14px;
+  border-radius: 10px;
+  display: grid;
+  gap: 7px;
+}
+
+.prf-stats span {
+  font-size: 12px;
+  opacity: .85;
+}
+
+.prf-stats strong {
+  font-size: 26px;
+}
+
+.prf-section {
+  display: grid;
+  gap: 10px;
+  padding-top: 14px;
+  border-top: 1px solid #94a3b840;
+}
+
+.prf-section h3 {
+  margin: 0;
+  font-size: 14px;
+}
+
+.periak-referral-dialog button,
+.prf-qr a {
+  min-height: 44px;
+  border: 1px solid #94a3b870;
+  border-radius: 7px;
+  padding: 8px 12px;
+  color: inherit;
+  background: transparent;
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.periak-referral-dialog .prf-primary {
+  background: #205f99;
+  color: white;
+  font-weight: 650;
+  border-color: transparent;
+}
+
+.periak-referral-dialog .prf-close {
+  min-width: 44px;
+  font-size: 24px;
+}
+
+.prf-section input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 11px;
+  border: 1px solid #94a3b870;
+  border-radius: 7px;
+  background: transparent;
+  color: inherit;
+  font-size: 13px;
+}
+
+.prf-qr {
+  justify-items: center;
+}
+
+.prf-qr img {
+  background: white;
+  border-radius: 6px;
+}
+
+.prf-qr a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.prf-history-row {
+  border-bottom: 1px solid #94a3b830;
+  padding: 9px 0;
+  font-size: 13px;
+}
+
+.prf-history-row small {
+  display: block;
+  opacity: .75;
+  margin-top: 4px;
+}
+
+.prf-reward,
+.prf-message,
+.prf-error {
+  padding: 12px;
+  font-size: 13px;
+  border: 1px solid #3984cf60;
+  border-radius: 8px;
+}
+
+.prf-error {
+  border-color: #dc262680;
+}
+
+@media (max-width: 480px) {
+  .prf-body {
+    padding: 15px;
+    gap: 12px;
+  }
+
+  .prf-header h2 {
+    font-size: 21px;
+  }
+}
+
+/* PERIAK universal growth shortcuts */
+
+.prf-shortcut {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  margin: 12px 0;
+  border: 1px solid #3984cf50;
+  border-radius: 10px;
+  color: inherit;
+  background: #3984cf08;
+  text-align: left;
+  box-sizing: border-box;
+}
+
+.prf-shortcut-icon {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
+  border-radius: 9px;
+  color: #3984cf;
+  background: #3984cf15;
+}
+
+.prf-shortcut-text {
+  flex: 1;
+  display: grid;
+  gap: 4px;
+  min-width: 0;
+}
+
+.prf-shortcut-text strong {
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.prf-shortcut-text small {
+  font-size: 12px;
+  line-height: 1.5;
+  opacity: .85;
+}
+
+.prf-shortcut button {
+  flex-shrink: 0;
+  min-height: 40px;
+  padding: 8px 14px;
+  border: 0;
+  border-radius: 7px;
+  color: #fff;
+  background: #205f99;
+  font-size: 12px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+@media (max-width: 600px) {
+  .prf-shortcut {
+    flex-wrap: wrap;
+    gap: 9px;
+    padding: 11px;
+  }
+
+  .prf-shortcut button {
+    width: 100%;
+    min-height: 44px;
+  }
+}

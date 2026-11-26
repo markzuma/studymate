@@ -1,3 +1,4 @@
+import ReferralShortcut from './ReferralShortcut'
 import { useEffect, useRef, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import './PremiumPage.css'
@@ -61,7 +62,7 @@ const PAYMENT_METHODS = [
   }
 ]
 
-export default function PremiumPage({ user, onBack, onSubscriptionUpdated = () => {}, hasPremiumAccess = false, onOpenFeature = () => {}, onRegisterBackHandler = () => {}, initialFeatureId = null }) {
+export default function PremiumPage({ referralsEnabled = false, user, onBack, onSubscriptionUpdated = () => {}, hasPremiumAccess = false, onOpenFeature = () => {}, onRegisterBackHandler = () => {}, initialFeatureId = null }) {
   const launchHandled = useRef(false)
   const premiumViewRecorded = useRef(false)
 
@@ -474,6 +475,7 @@ export default function PremiumPage({ user, onBack, onSubscriptionUpdated = () =
       <section className="premium-hero">
         <p className="premium-eyebrow">TAKE YOUR LEARNING FURTHER</p>
         <h1>Unlock your nursing potential.</h1>
+        {referralsEnabled && <ReferralShortcut compact />}
         <p>Get more from your PERIAK learning experience with Premium.</p>
         <a className="premium-hero-cta" href="#premium-plans">
           View plans and pricing ↓
@@ -481,6 +483,28 @@ export default function PremiumPage({ user, onBack, onSubscriptionUpdated = () =
       </section>
 
       {error && <p className="premium-error" role="alert">{error}</p>}
+
+      {referralsEnabled && hasPremiumAccess && !activeSubscription && (
+        <section className="premium-status premium-membership-panel">
+          <span className="premium-membership-eyebrow">
+            YOUR MEMBERSHIP
+          </span>
+          <h2>PERIAK Premium is active</h2>
+          <p>
+            Your promotional Premium access is available.
+            Open Invite &amp; Earn to view referral rewards
+            and their expiry date.
+          </p>
+          <button
+            type="button"
+            onClick={() => window.dispatchEvent(
+              new Event('periak:open-referrals')
+            )}
+          >
+            View referral rewards
+          </button>
+        </section>
+      )}
 
       {activeSubscription && (
         <section className="premium-status premium-membership-panel">
@@ -526,7 +550,7 @@ export default function PremiumPage({ user, onBack, onSubscriptionUpdated = () =
         </section>
       )}
 
-      {expiredSubscription && !pendingSubscription && (
+      {expiredSubscription && !pendingSubscription && !hasPremiumAccess && (
         <section className="premium-membership-expired">
           <div>
             <span className="premium-membership-eyebrow">
