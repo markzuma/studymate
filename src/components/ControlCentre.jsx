@@ -10,6 +10,10 @@ import AcademicQualityManager from './AcademicQualityManager'
 const BusinessIntelligence = lazy(
   () => import('./BusinessIntelligence')
 )
+
+const Monetization = lazy(
+  () => import('./Monetization')
+)
 import AdminAcademicManager from './AdminAcademicManager'
 import LessonContentEditor from './LessonContentEditor'
 import AdminPastPapersManager from './AdminPastPapersManager'
@@ -20,7 +24,9 @@ import AdminAnnouncements from './AdminAnnouncements'
 import AdminSupportCentre from './AdminSupportCentre'
 
 const SECTIONS = [
-  { id: 'overview', label: 'Overview' },
+  { id: 'overview', label: 'Executive Dashboard' },
+  { id: 'business', label: 'Business Intelligence' },
+  { id: 'operations', label: 'Platform Operations' },
   { id: 'users', label: 'Users' },
   { id: 'courses', label: 'Courses & Units' },
   { id: 'materials', label: 'Learning Materials' },
@@ -763,14 +769,20 @@ export default function ControlCentre({ onClose }) {
   })
 
   return (
-    <main className="control-centre ccv2">
+    <main className="control-centre ccv2 paw-control">
       <header className="cc-header">
         <div>
-          <span className="cc-eyebrow">PERIAK ADMINISTRATION</span>
-          <h1>Control Centre</h1>
-          <p>Manage, monitor and improve PERIAK.</p>
+          <span className="cc-eyebrow">✚ PERIAK</span>
+          <h1>Administrator Workspace</h1>
+          <p>Business intelligence, academics and platform operations.</p>
         </div>
-        <button onClick={onClose}>Back to Learning</button>
+        <button
+          type="button"
+          className="paw-student-switch"
+          onClick={onClose}
+        >
+          ← Student View
+        </button>
       </header>
 
 
@@ -804,6 +816,17 @@ export default function ControlCentre({ onClose }) {
       ) : (
         <section className="cc-content">
           {section === 'overview' && (
+            <Suspense fallback={
+              <p role="status">Loading executive dashboard…</p>
+            }>
+              <BusinessIntelligence
+                executiveOnly
+                onNavigate={navigateSection}
+              />
+            </Suspense>
+          )}
+
+          {section === 'operations' && (
             <ControlCentreOverview
               profiles={profiles}
               announcements={announcements}
@@ -1226,11 +1249,19 @@ export default function ControlCentre({ onClose }) {
             <AdminSupportCentre profiles={profiles} />
           )}
 
-          {section === 'monetization' && (
+          {section === 'business' && (
             <Suspense fallback={
               <p role="status">Preparing Business Intelligence…</p>
             }>
               <BusinessIntelligence onNavigate={navigateSection} />
+            </Suspense>
+          )}
+
+          {section === 'monetization' && (
+            <Suspense fallback={
+              <p role="status">Opening payment management…</p>
+            }>
+              <Monetization />
             </Suspense>
           )}
 

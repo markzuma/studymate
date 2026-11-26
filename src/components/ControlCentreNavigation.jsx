@@ -4,7 +4,8 @@ const GROUPS = [
   {
     title: 'Workspace',
     items: [
-      ['overview', 'Overview', '⌂']
+      ['overview', 'Executive Dashboard', '⌂'],
+      ['operations', 'Platform Operations', '▦']
     ]
   },
   {
@@ -37,7 +38,8 @@ const GROUPS = [
   {
     title: 'Business',
     items: [
-      ['monetization', 'Monetization', '◆'],
+      ['business', 'Business Intelligence', '▥'],
+      ['monetization', 'Monetization & Payments', '◆'],
       ['growth', 'Growth & Referrals', '↗']
     ]
   }
@@ -57,11 +59,12 @@ export default function ControlCentreNavigation({
         'ccv2-sidebar cc3-navigation' +
         (mobileOpen ? ' ccv2-sidebar-open' : '')
       }
+      id="ccv2-navigation"
       aria-label="Administration navigation"
     >
       <div className="cc3-nav-heading">
-        <strong>Administration</strong>
-        <small>Manage PERIAK</small>
+        <strong>Admin Workspace</strong>
+        <small>Management navigation</small>
       </div>
 
       <input

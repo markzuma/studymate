@@ -1,0 +1,139 @@
+.periak-admin-workspace {
+  min-height: 100dvh;
+  width: 100%;
+  background: var(--page-bg, #f5f7fb);
+  color: var(--text-primary, #172b40);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.periak-admin-workspace .paw-control {
+  max-width: 1800px;
+  padding: 22px 24px;
+  grid-template-columns: 245px minmax(0,1fr);
+  gap: 20px;
+}
+
+.paw-control .cc-header {
+  padding: 18px 20px;
+  border: 1px solid var(--border, #dce3eb);
+  background: var(--surface, #fff);
+  border-radius: 14px;
+  align-items: center;
+}
+
+.paw-control .cc-header h1 {
+  margin: 7px 0;
+  font-size: clamp(1.25rem, 2.8vw, 1.8rem);
+}
+
+.paw-control .cc-header .cc-eyebrow {
+  font-size: .9rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+.paw-control .cc-header p {
+  opacity: .7;
+  line-height: 1.5;
+}
+
+.paw-control .paw-student-switch {
+  background: transparent;
+  color: var(--text-primary, inherit);
+  border: 1px solid var(--border, #dce3eb);
+  border-radius: 10px;
+  padding: 10px 16px;
+  font-size: .85rem;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.periak-admin-workspace .cc-content {
+  min-width: 0;
+}
+
+.periak-admin-workspace .pbi-metric {
+  padding: 18px;
+}
+
+.periak-admin-workspace .pbi-metric strong {
+  letter-spacing: -.035em;
+}
+
+.periak-admin-workspace .pbi-header h2 {
+  margin-top: 8px;
+}
+
+.periak-admin-workspace .pbi-header small {
+  font-size: .7rem;
+  letter-spacing: .1em;
+}
+
+.paw-status {
+  min-height: 80dvh;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 15px;
+}
+
+.paw-brand {
+  font-weight: 800;
+  font-size: 1.4rem;
+  color: var(--accent, #287dcc);
+}
+
+.paw-status button {
+  padding: 12px 20px;
+  border-radius: 9px;
+  background: var(--surface, #fff);
+  color: inherit;
+  border: 1px solid var(--border, #dce3eb);
+  cursor: pointer;
+  font: inherit;
+}
+
+.periak-admin-switch {
+  font-weight: 700 !important;
+}
+
+@media(max-width:1000px) {
+  .periak-admin-workspace .paw-control {
+    grid-template-columns: minmax(0,1fr);
+    padding: 12px;
+    gap: 13px;
+  }
+
+  .paw-control .cc-header {
+    padding: 15px;
+  }
+}
+
+@media(max-width:600px) {
+  .periak-admin-workspace .paw-control {
+    padding: 9px;
+  }
+
+  .paw-control .cc-header {
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .paw-control .paw-student-switch {
+    font-size: .75rem;
+    min-height: 38px;
+    padding: 8px 12px;
+  }
+
+  .periak-admin-workspace .pbi-metric {
+    padding: 12px;
+  }
+
+  .periak-admin-workspace .pbi-metric strong {
+    font-size: clamp(1.15rem,5vw,1.6rem);
+    overflow-wrap: anywhere;
+  }
+}

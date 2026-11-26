@@ -277,7 +277,8 @@ function Ranked({title,rows,field,description}) {
 }
 
 export default function BusinessIntelligence({
-  onNavigate
+  onNavigate,
+  executiveOnly = false
 }) {
   const [tab,setTab] = useState('overview')
   const [days,setDays] = useState(30)
@@ -428,8 +429,16 @@ export default function BusinessIntelligence({
     <div className="pbi-page">
       <header className="pbi-header">
         <div>
-          <small>PERIAK BUSINESS INTELLIGENCE</small>
-          <h2>Business &amp; Monetization</h2>
+          <small>
+            {executiveOnly
+              ? 'MANAGEMENT COMMAND CENTRE'
+              : 'PERIAK BUSINESS INTELLIGENCE'}
+          </small>
+          <h2>
+            {executiveOnly
+              ? 'Executive Dashboard'
+              : 'Business Intelligence'}
+          </h2>
           <p>
             Revenue, growth, engagement and
             academic performance.
@@ -438,6 +447,7 @@ export default function BusinessIntelligence({
         <span className="pbi-access">Administrator only</span>
       </header>
 
+      {!executiveOnly && (
       <nav className="pbi-tabs" aria-label="Business reports">
         {TABS.map(([id,label]) => (
           <button
@@ -451,6 +461,7 @@ export default function BusinessIntelligence({
           </button>
         ))}
       </nav>
+      )}
 
       {tab === 'payments' ? (
         authorized ? <Monetization /> :
@@ -561,6 +572,30 @@ export default function BusinessIntelligence({
                       value={number(current.interactions)}
                       detail="Student feature and paper events"
                     />
+                    {executiveOnly && (
+                      <>
+                        <Metric
+                          label="Published courses"
+                          value={number(totals.published_courses)}
+                          detail="Available academic subjects"
+                        />
+                        <Metric
+                          label="Published lessons"
+                          value={number(totals.published_lessons)}
+                          detail="Available learning materials"
+                        />
+                        <Metric
+                          label="Published past papers"
+                          value={number(totals.published_papers)}
+                          detail="Examination resources"
+                        />
+                        <Metric
+                          label="Memberships expiring soon"
+                          value={number(totals.expiring_7_days)}
+                          detail="Within the next seven days"
+                        />
+                      </>
+                    )}
                   </div>
 
                   <Panel title="Today so far">
@@ -595,6 +630,22 @@ export default function BusinessIntelligence({
                     />
                   </div>
 
+                  {executiveOnly && (
+                    <div className="pbi-two">
+                      <Trend
+                        title="Student engagement trend"
+                        rows={currentRows}
+                        field="active_students"
+                        trackingStart={coverage.activity_first_record}
+                      />
+                      <Ranked
+                        title="Most used features"
+                        rows={data.features}
+                        field="opens"
+                      />
+                    </div>
+                  )}
+
                   <Panel
                     title="Business comparison"
                     description="Equal-length previous reporting period. N/A indicates no valid non-zero baseline."
@@ -612,9 +663,25 @@ export default function BusinessIntelligence({
 
                   <Panel title="Management shortcuts">
                     <div className="pbi-toolbar">
-                      <button onClick={() => setTab('payments')}>
+                      <button
+                        onClick={() => onNavigate?.('monetization')}
+                      >
                         Manage payments
                       </button>
+                      {executiveOnly && (
+                        <>
+                          <button
+                            onClick={() => onNavigate?.('business')}
+                          >
+                            Full Business Intelligence
+                          </button>
+                          <button
+                            onClick={() => onNavigate?.('operations')}
+                          >
+                            Platform operations
+                          </button>
+                        </>
+                      )}
                       <button onClick={() => onNavigate?.('usage')}>
                         Detailed usage
                       </button>

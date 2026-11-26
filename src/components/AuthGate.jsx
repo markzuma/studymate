@@ -16,7 +16,7 @@ import ReferralCentre from './ReferralCentre'
 import { readReferral, clearReferral } from '../lib/referrals'
 const loadPremiumPage = () => import('./PremiumPage')
 const PremiumPage = lazy(loadPremiumPage)
-const ControlCentre = lazy(() => import('./ControlCentre'))
+const AdminWorkspace = lazy(() => import('./AdminWorkspace'))
 import { useBackHandler } from '../context/NavigationProvider'
 
 // PERIAK ON-DEMAND LOADING V1
@@ -60,7 +60,7 @@ export default function AuthGate({ children }) {
   const [profile, setProfile] = useState(null)
   const [premiumAccess, setPremiumAccess] = useState(false)
   const [premiumLoading, setPremiumLoading] = useState(true)
-  const [showControlCentre, setShowControlCentre] = useState(() => savedPeriakAccount() === 'control')
+  const [showControlCentre, setShowControlCentre] = useState(false)
   const [showPremium, setShowPremium] = useState(() => savedPeriakAccount() === 'premium')
   const [premiumLaunch, setPremiumLaunch] = useState(null)
   const [premiumFeatureIntent, setPremiumFeatureIntent] = useState(null)
@@ -79,7 +79,7 @@ export default function AuthGate({ children }) {
   useEffect(() => {
     if (!session?.user?.id || !profile?.role) return
 
-    const current = showControlCentre ? 'control'
+    const current = showControlCentre ? ''
       : showAppearance ? 'appearance'
       : showProfile ? 'profile'
       : showPremium ? 'premium' : ''
@@ -633,6 +633,36 @@ export default function AuthGate({ children }) {
       profile?.role === 'admin' &&
       showControlCentre
 
+    // Administration is a separate authenticated workspace.
+    // No student sidebar, account bar or learning dashboard
+    // is mounted while the administrator is working here.
+    if (
+      adminWorkspace &&
+      profile?.id === session.user.id
+    ) {
+      return (
+        <>
+          <UserActivityMonitor userId={session.user.id} />
+          <Suspense fallback={
+            <div className="premium-page" role="status">
+              Opening Admin View…
+            </div>
+          }>
+            <AdminWorkspace
+              key={session.user.id}
+              userId={session.user.id}
+              onClose={() => {
+                setShowControlCentre(false)
+                setShowPremium(false)
+                setShowAppearance(false)
+                setShowProfile(false)
+              }}
+            />
+          </Suspense>
+        </>
+      )
+    }
+
     const studentWorkspace =
       modernLayout &&
       !adminWorkspace &&
@@ -724,9 +754,22 @@ export default function AuthGate({ children }) {
             <strong>{profile?.role === 'admin' ? 'Administrator' : 'Student'}</strong>
           </span>
 
-          {profile?.role === 'admin' && (
-            <button onClick={() => setShowControlCentre(!showControlCentre)}>
-              {showControlCentre ? 'Back to Learning' : 'Control Centre'}
+          {profile?.role === 'admin' &&
+            profile?.id === session.user.id && (
+            <button
+              type="button"
+              className="periak-admin-switch"
+              onClick={() => {
+                setShowPremium(false)
+                setShowAppearance(false)
+                setShowProfile(false)
+                setPremiumLaunch(null)
+                setPremiumFeatureIntent(null)
+                setPremiumModuleReturn(false)
+                setShowControlCentre(true)
+              }}
+            >
+              Admin View ↗
             </button>
           )}
 
@@ -839,9 +882,7 @@ export default function AuthGate({ children }) {
           </Suspense>
         )}
 
-        {profile?.role === 'admin' && showControlCentre ? (
-          <Suspense fallback={<div className="premium-page">Loading Control Centre...</div>}><ControlCentre onClose={() => setShowControlCentre(false)} /></Suspense>
-        ) : (profile?.role === 'student' || profile?.role === 'admin') && showPremium ? (
+        {(profile?.role === 'student' || profile?.role === 'admin') && showPremium ? (
           <Suspense fallback={<div className="premium-page">Opening Premium...</div>}>
             <PremiumPage
               referralsEnabled={profile?.role === 'student'}
