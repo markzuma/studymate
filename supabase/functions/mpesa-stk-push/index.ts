@@ -36,20 +36,14 @@ export default {
     // Hiding the frontend STK button is NOT access control.
     // Until live business credentials and successful payment
     // verification are ready, only admins may test this API.
-    const { data: callerProfile, error: roleError } =
-      await ctx.supabaseAdmin
-        .from("profiles")
-        .select("role")
-        .eq("id", studentId)
-        .maybeSingle();
+    // Require administrator role AND verified MFA.
+    // Use the authenticated caller, never the service-role client.
+    const { data: isAdmin, error: adminError } =
+      await ctx.supabase.rpc("is_admin");
 
-    if (
-      roleError ||
-      !callerProfile ||
-      callerProfile.role !== "admin"
-    ) {
+    if (adminError || isAdmin !== true) {
       return json({
-        error: "Automatic M-Pesa is not yet available to students."
+        error: "Verified administrator access required."
       }, 403);
     }
 
