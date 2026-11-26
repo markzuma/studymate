@@ -11,6 +11,7 @@ const CATEGORIES = {
   suggestion: 'Suggestion',
   payment: 'Payment assistance',
   account: 'Account assistance',
+  account_deletion: 'Account deletion',
   other: 'Other'
 }
 
@@ -428,6 +429,18 @@ export default function AdminSupportCentre({ profiles = [] }) {
               {STATUSES[selected.status]}
             </span>
           </div>
+
+          {selected.category === 'account_deletion' && (
+            <div className="psc-error" role="note">
+              <strong>Account deletion request</strong>
+              <p>
+                Confirm account ownership and review payments,
+                subscriptions and retention obligations before
+                processing permanent deletion. Updating this
+                ticket status does not delete the account.
+              </p>
+            </div>
+          )}
 
           <form className="psc-form pas-manage" onSubmit={saveTicket}>
             <label>

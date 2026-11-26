@@ -11,6 +11,7 @@ const CATEGORIES = {
   suggestion: 'Suggest an improvement',
   payment: 'Payment assistance',
   account: 'Account assistance',
+  account_deletion: 'Account deletion request',
   other: 'Other request'
 }
 
@@ -244,6 +245,46 @@ export default function SupportCentre() {
     void loadConversation(ticket.id)
   }
 
+  async function requestDeletion() {
+    if (busy) return
+
+    const confirmation = window.prompt(
+      'Account deletion is permanent once processed. ' +
+      'You may lose account access, Premium access, examination history, ' +
+      'bookmarks and learning progress. Necessary financial records may be retained. ' +
+      'To submit a request for administrator review, type DELETE MY ACCOUNT.'
+    )
+
+    if (confirmation !== 'DELETE MY ACCOUNT') return
+
+    setBusy(true)
+    setError('')
+    setNotice('')
+
+    try {
+      const { data, error: rpcError } = await supabase.rpc(
+        'request_my_account_deletion',
+        { p_confirmation: confirmation }
+      )
+
+      if (rpcError) throw rpcError
+
+      setView('conversation')
+      await loadConversation(data)
+      setNotice(
+        'Your deletion request has been submitted for review. ' +
+        'Your account remains active until processing is completed.'
+      )
+    } catch {
+      setError(
+        'Unable to submit the deletion request. ' +
+        'Please contact periaksupport@gmail.com.'
+      )
+    } finally {
+      setBusy(false)
+    }
+  }
+
   async function submitRequest(event) {
     event.preventDefault()
     if (busy) return
@@ -403,6 +444,16 @@ export default function SupportCentre() {
                   <span aria-hidden="true">›</span>
                 </button>
 
+                <button
+                  type="button"
+                  className="psc-secondary"
+                  disabled={busy || loading}
+                  onClick={requestDeletion}
+                  style={{ color: '#b45353' }}
+                >
+                  Request account deletion
+                </button>
+
                 <div className="psc-list-heading">
                   <h3>My requests</h3>
 
@@ -479,7 +530,9 @@ export default function SupportCentre() {
                     onChange={e => setCategory(e.target.value)}
                     required
                   >
-                    {Object.entries(CATEGORIES).map(
+                    {Object.entries(CATEGORIES).filter(
+                      ([value]) => value !== 'account_deletion'
+                    ).map(
                       ([value, label]) => (
                         <option value={value} key={value}>
                           {label}
