@@ -6,8 +6,8 @@ const STORAGE_KEY = 'periak_appearance_v1'
 
 export const DEFAULT_APPEARANCE = {
   layout: 'classic',
-  mode: 'system',
-  palette: null,
+  mode: 'light',
+  palette: 'classic',
   accent: 'ocean',
   density: 'comfortable',
   corners: 'rounded',
