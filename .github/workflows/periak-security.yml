@@ -1,0 +1,65 @@
+name: PERIAK Security and Build Verification
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+  schedule:
+    - cron: '0 4 * * 1'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: periak-security-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  security:
+    name: Dependency Security and Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+
+      - name: Configure Node.js
+        uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install locked dependencies
+        run: npm ci
+
+      - name: Production dependency audit
+        run: npm audit --omit=dev --audit-level=moderate
+
+      - name: Full dependency audit
+        run: npm audit --audit-level=moderate
+
+      - name: Academic regression tests
+        run: node scripts/periak-performance/learning-catalogue-test.mjs
+
+      - name: Statistical regression tests
+        run: node scripts/periak-business/statistics-test.mjs
+
+      - name: Production build
+        env:
+          VITE_SUPABASE_URL: https://example.supabase.co
+          VITE_SUPABASE_ANON_KEY: build-verification-placeholder
+        run: npm run build
+
+      - name: Verify production artifacts
+        run: |
+          test -s dist/index.html
+          test -s dist/sw.js
+          test -s dist/manifest.webmanifest
+          echo "PERIAK production artifacts verified."
