@@ -30,7 +30,7 @@ export default function SmartWrittenRevision({
 
       try {
         let query = supabase
-          .from('live_written_question_bank')
+          .from('student_written_question_catalogue')
           .select(
             'question_id,question_text,' +
             'unit_title,unit_order'

@@ -671,7 +671,7 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
 
         // Metadata only. No lesson content in this request.
         const materialRows = await readPublishedRows(
-          'learning_materials',
+          'student_learning_materials',
           'id,unit_id,sort_order,status',
           { signal: controller.signal }
         )
@@ -1111,7 +1111,7 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
     async function loadLesson() {
       try {
         const rows = await readPublishedRows(
-          'learning_materials',
+          'student_learning_materials',
           'id,unit_id,content,sort_order,status',
           {
             unitId: requestedUnitId,
@@ -1206,7 +1206,7 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
     async function loadTutorContent() {
       try {
         const rows = await readPublishedRows(
-          'learning_materials',
+          'student_learning_materials',
           'id,unit_id,content,sort_order,status',
           { signal: controller.signal }
         )
