@@ -473,3 +473,529 @@
     transition: none;
   }
 }
+
+/* PERIAK Control Centre 3.0 — Data-first navigation */
+
+.ccv2 .cc3-navigation {
+  gap: 12px;
+  padding: 12px;
+  scrollbar-width: thin;
+  overscroll-behavior: contain;
+}
+
+.cc3-nav-heading {
+  display: flex;
+  flex-direction: column;
+  padding: 5px 7px;
+  gap: 4px;
+}
+
+.cc3-nav-heading strong {
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+.cc3-nav-heading small {
+  font-size: .72rem;
+  color: var(--text-muted);
+}
+
+.cc3-nav-search {
+  width: 100%;
+  min-width: 0;
+  min-height: 38px;
+  box-sizing: border-box;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  padding: 8px 10px;
+  background: var(--page-bg);
+  color: var(--text-primary);
+  font: inherit;
+  font-size: .8rem;
+}
+
+.cc3-nav-group {
+  display: grid;
+  gap: 3px;
+}
+
+.cc3-nav-group h3 {
+  margin: 3px 0 5px;
+  padding: 0 8px;
+  font-size: .65rem;
+  line-height: 1.5;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.ccv2 .cc3-navigation .cc3-nav-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 36px;
+  padding: 8px 10px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: 7px;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.cc3-nav-link > span {
+  flex-shrink: 0;
+  width: 18px;
+  font-size: 1rem;
+  text-align: center;
+  color: var(--accent);
+}
+
+.cc3-nav-link strong {
+  min-width: 0;
+  font-size: .78rem;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.ccv2 .cc3-navigation .cc3-nav-link.active {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.ccv2 .cc3-navigation .cc3-nav-link:hover {
+  background: var(--accent-soft);
+}
+
+.cc3-nav-empty {
+  padding: 10px;
+  color: var(--text-muted);
+}
+
+@media (min-width: 851px) {
+  .ccv2 .cc3-navigation {
+    position: sticky;
+    top: 12px;
+    max-height: calc(100dvh - 24px);
+    overflow-y: auto;
+  }
+}
+
+@media (max-width: 850px) {
+  .ccv2 .cc3-navigation {
+    max-height: min(65dvh, 520px);
+    overflow-y: auto;
+  }
+
+  .ccv2 .cc3-navigation .cc3-nav-link {
+    min-height: 44px;
+  }
+}
+
+/* Control Centre 3.0 — Live platform overview */
+
+.cc3-overview {
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+}
+
+.cc3-overview-header,
+.cc3-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.cc3-overview-header h2 {
+  font-size: clamp(1.4rem, 3vw, 2rem);
+  margin: 6px 0;
+}
+
+.cc3-eyebrow {
+  color: var(--accent);
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .08em;
+}
+
+.cc3-overview-header p,
+.cc3-panel-header p,
+.cc3-muted {
+  color: var(--text-muted);
+  font-size: .78rem;
+  line-height: 1.6;
+  margin: 5px 0;
+}
+
+.cc3-update-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 9px 12px;
+  border: 1px solid var(--border);
+  border-radius: 7px;
+  color: var(--text-muted);
+  background: var(--surface);
+  font-size: .73rem;
+}
+
+.cc3-metrics {
+  display: grid;
+  grid-template-columns: repeat(4,minmax(0,1fr));
+  gap: 12px;
+}
+
+.cc3-metric {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+  min-width: 0;
+  padding: 15px;
+  background: var(--surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+
+.cc3-metric:hover {
+  border-color: var(--accent);
+}
+
+.cc3-metric-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  color: var(--text-muted);
+  font-size: .76rem;
+}
+
+.cc3-metric-top span:last-child {
+  display: grid;
+  place-items: center;
+  width: 29px;
+  height: 29px;
+  flex-shrink: 0;
+  border-radius: 7px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.cc3-metric > strong {
+  font-size: clamp(1.15rem, 2vw, 1.8rem);
+  font-variant-numeric: tabular-nums;
+  overflow-wrap: anywhere;
+}
+
+.cc3-metric > small {
+  color: var(--text-muted);
+  font-size: .68rem;
+  line-height: 1.5;
+}
+
+.cc3-metric-link {
+  margin-top: auto;
+  color: var(--accent);
+  font-size: .7rem;
+  font-weight: 600;
+}
+
+.cc3-dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  align-items: start;
+  gap: 15px;
+}
+
+.cc3-panel {
+  display: grid;
+  min-width: 0;
+  gap: 10px;
+  padding: 18px;
+  background: var(--surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.cc3-panel-header {
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+}
+
+.cc3-panel-header h3 {
+  font-size: 1rem;
+  margin: 0;
+}
+
+.cc3-data-row {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) auto 10px;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 43px;
+  padding: 9px 3px;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-primary);
+  text-align: left;
+  font: inherit;
+  font-size: .8rem;
+  cursor: pointer;
+}
+
+.cc3-data-row:hover {
+  background: var(--accent-soft);
+}
+
+.cc3-data-row strong {
+  font-variant-numeric: tabular-nums;
+}
+
+.cc3-data-row > span:last-child {
+  color: var(--accent);
+}
+
+.cc3-chart {
+  display: grid;
+  gap: 13px;
+  padding: 8px 0;
+}
+
+.cc3-chart-row {
+  display: grid;
+  grid-template-columns: 78px minmax(0,1fr) auto;
+  align-items: center;
+  gap: 9px;
+  font-size: .72rem;
+}
+
+.cc3-chart-row > span {
+  color: var(--text-muted);
+}
+
+.cc3-chart-track {
+  height: 12px;
+  background: var(--accent-soft);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.cc3-chart-bar {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 4px;
+}
+
+.cc3-revenue-summary {
+  display: grid;
+  gap: 7px;
+  padding: 14px;
+  background: var(--accent-soft);
+  border-radius: 8px;
+}
+
+.cc3-revenue-summary small {
+  color: var(--text-muted);
+  font-size: .78rem;
+}
+
+.cc3-revenue-summary strong {
+  font-size: 1.65rem;
+}
+
+@media (max-width: 1250px) {
+  .cc3-metrics {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+  }
+}
+
+@media (max-width: 1100px) {
+  .cc3-dashboard-grid {
+    grid-template-columns: minmax(0,1fr);
+  }
+}
+
+@media (max-width: 520px) {
+  .cc3-overview {
+    gap: 12px;
+  }
+
+  .cc3-panel,
+  .cc3-metric {
+    padding: 12px;
+  }
+
+  .cc3-metrics {
+    gap: 8px;
+  }
+
+  .cc3-metric-top {
+    align-items: flex-start;
+    font-size: .72rem;
+  }
+
+  .cc3-metric-top span:last-child {
+    width: 24px;
+    height: 24px;
+  }
+
+  .cc3-metric > strong {
+    font-size: 1.2rem;
+  }
+
+  .cc3-data-row {
+    min-height: 44px;
+  }
+}
+
+/* Control Centre 3.0 — Academic directory */
+
+.cc3-lesson-directory {
+  display: grid;
+  min-width: 0;
+  gap: 15px;
+  padding: 16px;
+  margin: 14px 0 22px;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: var(--surface);
+}
+
+.cc3-directory-stats {
+  display: grid;
+  grid-template-columns: repeat(4,minmax(0,1fr));
+  gap: 9px;
+}
+
+.cc3-directory-stats > div {
+  display: grid;
+  gap: 7px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.cc3-directory-stats small {
+  color: var(--text-muted);
+  font-size: .74rem;
+}
+
+.cc3-directory-stats strong {
+  font-size: 1.5rem;
+}
+
+.cc3-directory-filters {
+  display: flex;
+  align-items: stretch;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 10px 0;
+}
+
+.cc3-directory-filters input,
+.cc3-directory-filters select {
+  min-width: 0;
+  min-height: 42px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-primary);
+  border-radius: 8px;
+  font: inherit;
+  font-size: .8rem;
+}
+
+.cc3-directory-filters input {
+  flex: 2 1 220px;
+}
+
+.cc3-directory-filters select {
+  flex: 1 1 150px;
+  max-width: 100%;
+}
+
+.cc3-directory-table td {
+  vertical-align: middle;
+  line-height: 1.5;
+}
+
+.cc3-directory-table td > strong {
+  display: block;
+  font-size: .83rem;
+}
+
+.cc3-directory-table td > small {
+  display: block;
+  color: var(--text-muted);
+  font-size: .72rem;
+  margin-top: 4px;
+}
+
+.cc3-record-status {
+  display: inline-block;
+  padding: 4px 7px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  font-size: .7rem;
+  text-transform: capitalize;
+}
+
+.cc3-record-status.status-published {
+  color: #16834b;
+  background: rgba(22,131,75,.08);
+}
+
+.cc3-record-status.status-missing,
+.cc3-record-status.status-draft {
+  color: var(--text-primary);
+  background: var(--accent-soft);
+}
+
+.cc3-directory-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.cc3-directory-pagination small {
+  color: var(--text-muted);
+  font-size: .75rem;
+}
+
+#cc3-lesson-editor {
+  scroll-margin-top: 24px;
+}
+
+@media (max-width: 650px) {
+  .cc3-directory-stats {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+  }
+
+  .cc3-lesson-directory {
+    padding: 12px;
+  }
+
+  .cc3-directory-filters input,
+  .cc3-directory-filters select {
+    flex-basis: 100%;
+    width: 100%;
+  }
+
+  .cc3-directory-table {
+    min-width: 550px;
+  }
+}

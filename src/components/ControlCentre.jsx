@@ -3,7 +3,9 @@ import { useBackHandler } from '../context/NavigationProvider'
 import { supabase } from '../lib/supabase'
 import './ControlCentre.css'
 import './ControlCentreV2.css'
+import ControlCentreNavigation from './ControlCentreNavigation'
 import ControlCentreOverview from './ControlCentreOverview'
+import AdminLessonDirectory from './AdminLessonDirectory'
 import AcademicQualityManager from './AcademicQualityManager'
 import Monetization from './Monetization'
 import AdminAcademicManager from './AdminAcademicManager'
@@ -31,64 +33,17 @@ const SECTIONS = [
   { id: 'monetization', label: 'Monetization' }
 ]
 
-const NAV_GROUPS = [
-  {
-    id: 'academics',
-    label: 'Academics',
-    icon: '▤',
-    sections: [
-      'courses',
-      'materials',
-      'outlines',
-      'academic-quality'
-    ]
-  },
-  {
-    id: 'assessments',
-    label: 'Assessments',
-    icon: '✓',
-    sections: [
-      'exams',
-      'exam-quality',
-      'results'
-    ]
-  },
-  {
-    id: 'library',
-    label: 'Content & Library',
-    icon: '▧',
-    sections: [
-      'pastpapers',
-      'announcements'
-    ]
-  },
-  {
-    id: 'students',
-    label: 'Students & Operations',
-    icon: '◉',
-    sections: [
-      'users',
-      'support',
-      'usage'
-    ]
-  },
-  {
-    id: 'business',
-    label: 'Business',
-    icon: '◆',
-    sections: [
-      'monetization'
-    ]
-  }
-]
 
 export default function ControlCentre({ onClose }) {
   const [section, setSection] = useState('overview')
-  const [expandedGroup, setExpandedGroup] = useState('')
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const [sectionHistory, setSectionHistory] = useState([])
   const [profiles, setProfiles] = useState([])
   const [courses, setCourses] = useState([])
+  const [courseSearchAdmin, setCourseSearchAdmin] = useState('')
+  const [courseStatusAdmin, setCourseStatusAdmin] = useState('')
+  const [directoryCourseId, setDirectoryCourseId] = useState('')
+  const [directoryVersion, setDirectoryVersion] = useState(0)
   const [announcements, setAnnouncements] = useState([])
   const [userSearch, setUserSearch] = useState('')
   const [userFilter, setUserFilter] = useState('all')
@@ -198,11 +153,6 @@ export default function ControlCentre({ onClose }) {
 
     setMobileNavOpen(false)
 
-    const nextGroup = NAV_GROUPS.find(
-      group => group.sections.includes(nextSection)
-    )
-
-    setExpandedGroup(nextGroup?.id || '')
 
     if (nextSection === section) return
     setSectionHistory(previous => [...previous, section])
@@ -215,11 +165,6 @@ export default function ControlCentre({ onClose }) {
     setSectionHistory(previous => previous.slice(0, -1))
     setSection(previousSection)
 
-    const previousGroup = NAV_GROUPS.find(
-      group => group.sections.includes(previousSection)
-    )
-
-    setExpandedGroup(previousGroup?.id || '')
     setMobileNavOpen(false)
 
     return true
@@ -769,6 +714,7 @@ export default function ControlCentre({ onClose }) {
       }
 
       setMaterialMessage('Lesson saved successfully.')
+      setDirectoryVersion(value => value + 1)
       const refreshed = await loadUnitMaterials(materialUnitId)
       const savedMaterial = refreshed.find(item => item.id === savedId)
 
@@ -779,6 +725,15 @@ export default function ControlCentre({ onClose }) {
       setSavingMaterial(false)
     }
   }
+
+  const filteredAdminCourses = courses.filter(course =>
+    (!courseStatusAdmin || course.status === courseStatusAdmin) &&
+    [course.title, course.code, course.programme]
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase()
+      .includes(courseSearchAdmin.trim().toLowerCase())
+  )
 
   const selectedCourse = courses.find(course => course.id === selectedCourseId)
   const selectedMaterialCourse = courses.find(
@@ -830,97 +785,11 @@ export default function ControlCentre({ onClose }) {
         </span>
       </button>
 
-      <nav
-        id="ccv2-navigation"
-        aria-label="Administration navigation"
-        className={`cc-navigation ccv2-sidebar ${
-          mobileNavOpen ? 'ccv2-sidebar-open' : ''
-        }`}
-      >
-        <button
-          type="button"
-          className={`ccv2-nav-overview ${
-            section === 'overview' ? 'active' : ''
-          }`}
-          aria-current={
-            section === 'overview' ? 'page' : undefined
-          }
-          onClick={() => navigateSection('overview')}
-        >
-          <span aria-hidden="true">⌂</span>
-          <span>Overview</span>
-        </button>
-
-        {NAV_GROUPS.map(group => {
-          const containsActive =
-            group.sections.includes(section)
-
-          const expanded =
-            expandedGroup === group.id
-
-          return (
-            <div
-              className="ccv2-nav-group"
-              key={group.id}
-            >
-              <button
-                type="button"
-                className={`ccv2-group-toggle ${
-                  containsActive ? 'group-active' : ''
-                }`}
-                aria-expanded={expanded}
-                aria-controls={`ccv2-group-${group.id}`}
-                onClick={() => setExpandedGroup(
-                  expanded ? '' : group.id
-                )}
-              >
-                <span aria-hidden="true">
-                  {group.icon}
-                </span>
-
-                <span>{group.label}</span>
-
-                <span aria-hidden="true">
-                  {expanded ? '−' : '+'}
-                </span>
-              </button>
-
-              {expanded && (
-                <div
-                  className="ccv2-subnav"
-                  id={`ccv2-group-${group.id}`}
-                >
-                  {group.sections.map(id => {
-                    const item = SECTIONS.find(
-                      entry => entry.id === id
-                    )
-
-                    return (
-                      <button
-                        type="button"
-                        key={id}
-                        className={
-                          section === id ? 'active' : ''
-                        }
-                        aria-current={
-                          section === id
-                            ? 'page'
-                            : undefined
-                        }
-                        onClick={() =>
-                          navigateSection(id)
-                        }
-                      >
-                        {item.label}
-                      </button>
-                    )
-                  })}
-                </div>
-              )}
-            </div>
-          )
-        })}
-      </nav>
+      <ControlCentreNavigation
+          section={section}
+          onNavigate={navigateSection}
+          mobileOpen={mobileNavOpen}
+        />
 
       <div className="ccv2-workspace">
 
@@ -1048,6 +917,27 @@ export default function ControlCentre({ onClose }) {
                 </button>
               </div>
 
+              <div className="cc3-directory-filters">
+                <input
+                  type="search"
+                  aria-label="Search academic courses"
+                  placeholder="Search courses..."
+                  value={courseSearchAdmin}
+                  onChange={e => setCourseSearchAdmin(e.target.value)}
+                />
+
+                <select
+                  aria-label="Filter course status"
+                  value={courseStatusAdmin}
+                  onChange={e => setCourseStatusAdmin(e.target.value)}
+                >
+                  <option value="">All statuses</option>
+                  <option value="published">Published</option>
+                  <option value="draft">Draft</option>
+                  <option value="archived">Archived</option>
+                </select>
+              </div>
+
               {courseMessage && <p className="cc-course-message">{courseMessage}</p>}
 
               {showCourseForm && (
@@ -1132,10 +1022,10 @@ export default function ControlCentre({ onClose }) {
               <div className="cc-table-wrap">
                 <table className="cc-table">
                   <thead>
-                    <tr><th>Course</th><th>Code</th><th>Status</th><th>Manage</th><th>Edit</th><th>Publish</th></tr>
+                    <tr><th>Course</th><th>Code</th><th>Status</th><th>Units</th><th>Lessons</th><th>Edit</th><th>Publish</th></tr>
                   </thead>
                   <tbody>
-                    {courses.map(course => (
+                    {filteredAdminCourses.map(course => (
                       <tr key={course.id}>
                         <td>{course.title}</td>
                         <td>{course.code || '—'}</td>
@@ -1161,6 +1051,18 @@ export default function ControlCentre({ onClose }) {
                           <button
                             type="button"
                             className="cc-unit-action"
+                            onClick={() => {
+                              setDirectoryCourseId(course.id)
+                              navigateSection('materials')
+                            }}
+                          >
+                            View lessons
+                          </button>
+                        </td>
+                        <td>
+                          <button
+                            type="button"
+                            className="cc-unit-action"
                             onClick={() => editCourse(course)}
                           >
                             Edit
@@ -1178,8 +1080,8 @@ export default function ControlCentre({ onClose }) {
                         </td>
                       </tr>
                     ))}
-                    {courses.length === 0 && (
-                      <tr><td colSpan="6">No courses have been created.</td></tr>
+                    {filteredAdminCourses.length === 0 && (
+                      <tr><td colSpan="7">No matching courses.</td></tr>
                     )}
                   </tbody>
                 </table>
@@ -1328,7 +1230,18 @@ export default function ControlCentre({ onClose }) {
                 Changes are saved to the database.
               </p>
 
-              <div className="cc-materials-panel">
+              <AdminLessonDirectory
+                key={directoryVersion}
+                courses={courses}
+                initialCourseId={directoryCourseId}
+                onOpenLesson={openAuditLesson}
+                onOpenUnit={async (courseId, unitId) => {
+                  await handleMaterialCourseChange(courseId)
+                  await handleMaterialUnitChange(unitId)
+                }}
+              />
+
+              <div className="cc-materials-panel" id="cc3-lesson-editor">
                 <div className="cc-materials-selectors">
                   <label>
                     Select course

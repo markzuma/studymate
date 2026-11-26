@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import './AcademicQualityManager.css'
 
@@ -10,7 +10,7 @@ export default function AcademicQualityManager({
   const [audit, setAudit] = useState(null)
   const [courseId, setCourseId] = useState('')
   const [findingFilter, setFindingFilter] = useState('')
-  const [busy, setBusy] = useState(false)
+  const [busy, setBusy] = useState(true)
   const [error, setError] = useState('')
 
   async function runAudit() {
@@ -35,6 +35,38 @@ export default function AcademicQualityManager({
       setBusy(false)
     }
   }
+
+  // Load the audit immediately when the section opens.
+  useEffect(() => {
+    let active = true
+
+    async function loadInitialAudit() {
+      setBusy(true)
+      setError('')
+
+      try {
+        const { data, error } = await supabase.rpc(
+          'admin_academic_quality_audit'
+        )
+
+        if (error) throw error
+
+        if (active) setAudit(data)
+      } catch (err) {
+        if (active) {
+          setError(err.message || 'Academic audit failed.')
+        }
+      } finally {
+        if (active) setBusy(false)
+      }
+    }
+
+    loadInitialAudit()
+
+    return () => {
+      active = false
+    }
+  }, [])
 
   const summary = audit?.summary
 
@@ -104,7 +136,7 @@ export default function AcademicQualityManager({
             ? 'Auditing…'
             : audit
               ? 'Refresh audit'
-              : 'Run academic audit'}
+              : 'Retry audit'}
         </button>
       </header>
 
