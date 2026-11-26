@@ -85,7 +85,7 @@ jobs:
           config.appVersion = version;
           config.appVersionCode = Number(process.env.GITHUB_RUN_NUMBER) + 1;
 
-          fs.writeFileSync(file, JSON.stringify(config, null, 2) + '\\n');
+          fs.writeFileSync(file, JSON.stringify(config, null, 2) + '\n');
 
           console.log('Android release:', config.appVersion);
           console.log('Version code:', config.appVersionCode);
