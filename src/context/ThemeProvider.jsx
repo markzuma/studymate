@@ -5,6 +5,7 @@ const ThemeContext = createContext(null)
 const STORAGE_KEY = 'periak_appearance_v1'
 
 export const DEFAULT_APPEARANCE = {
+  layout: 'classic',
   mode: 'system',
   palette: null,
   accent: 'ocean',
@@ -29,7 +30,13 @@ export const ACCENTS = {
 function readStoredAppearance() {
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY))
-    return { ...DEFAULT_APPEARANCE, ...(saved || {}) }
+    return {
+      ...DEFAULT_APPEARANCE,
+      ...(saved || {}),
+      layout: saved?.layout === 'modern'
+        ? 'modern'
+        : 'classic'
+    }
   } catch {
     return DEFAULT_APPEARANCE
   }
@@ -87,7 +94,13 @@ export function ThemeProvider({ children }) {
         if (!active) return
 
         if (!error && data?.appearance) {
-          const merged = { ...DEFAULT_APPEARANCE, ...data.appearance }
+          const merged = {
+            ...DEFAULT_APPEARANCE,
+            ...data.appearance,
+            layout: data.appearance.layout === 'modern'
+              ? 'modern'
+              : 'classic'
+          }
           setAppearance(merged)
           localStorage.setItem(STORAGE_KEY, JSON.stringify(merged))
         }

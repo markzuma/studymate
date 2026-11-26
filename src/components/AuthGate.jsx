@@ -6,6 +6,7 @@ import './AuthGate.css'
 import './StudentWorkspace.css'
 import './WorkspaceFinishing.css'
 import StudentWorkspaceNav from './StudentWorkspaceNav'
+import { useAppearance } from '../context/ThemeProvider'
 import WorkspaceIcon from './WorkspaceIcon'
 import StudentMobileNav from './StudentMobileNav'
 import UserActivityMonitor from './UserActivityMonitor'
@@ -40,6 +41,9 @@ function savedPeriakAccount() {
 }
 
 export default function AuthGate({ children }) {
+  const { appearance } = useAppearance()
+  const modernLayout = appearance.layout === 'modern'
+
   const [session, setSession] = useState(null)
   const [loading, setLoading] = useState(true)
   const [mode, setMode] = useState('login')
@@ -593,7 +597,9 @@ export default function AuthGate({ children }) {
       showControlCentre
 
     const studentWorkspace =
-      !adminWorkspace && Boolean(profile?.role)
+      modernLayout &&
+      !adminWorkspace &&
+      Boolean(profile?.role)
 
     const activeWorkspaceScreen =
       showAppearance || showProfile
@@ -644,6 +650,28 @@ export default function AuthGate({ children }) {
             />
           )}
 
+        {!modernLayout && !showControlCentre && !showAppearance &&
+          !showProfile && !showWelcomeTour && (
+          <nav className="periak-global-mobile-nav"
+            aria-label="Mobile quick navigation">
+            {[
+              ['home', '⌂', 'Home'],
+              ['courses', '▤', 'Courses'],
+              ['papers', '▣', 'Papers'],
+              ['exams', '▧', 'Exams'],
+              ['premium', '♛', 'Premium']
+            ].map(([id, icon, label]) => (
+              <button
+                type="button"
+                key={id}
+                onClick={() => handlePeriakMobileNav(id)}
+              >
+                <span aria-hidden="true">{icon}</span>
+                <small>{label}</small>
+              </button>
+            ))}
+          </nav>
+        )}
         <div className="auth-userbar">
 
           {studentWorkspace && (
@@ -781,6 +809,7 @@ export default function AuthGate({ children }) {
         ) : (
           <div className="authenticated-app-shell">
             {cloneElement(children, {
+              layout: modernLayout ? 'modern' : 'classic',
               isPremium: premiumAccess,
               premiumLoading,
               isAdmin: profile?.role === 'admin',

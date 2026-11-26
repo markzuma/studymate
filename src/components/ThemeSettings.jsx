@@ -59,6 +59,78 @@ export default function ThemeSettings({ onClose }) {
             aria-label="Close appearance settings">×</button>
         </header>
 
+        <div className="appearance-section periak-layout-section">
+          <h3>Application layout</h3>
+          <p>Choose your preferred PERIAK interface.</p>
+
+          <div className="periak-layout-options">
+            {[
+              {
+                id: 'classic',
+                title: 'Classic',
+                description: 'Original PERIAK learning interface'
+              },
+              {
+                id: 'modern',
+                title: 'Modern',
+                description: 'Dashboard and sidebar workspace'
+              }
+            ].map(layout => {
+              const selected =
+                (appearance.layout || 'classic') === layout.id
+
+              return (
+                <button
+                  type="button"
+                  key={layout.id}
+                  className={
+                    'periak-layout-option' +
+                    (selected ? ' selected' : '')
+                  }
+                  aria-pressed={selected}
+                  onClick={() =>
+                    updateAppearance('layout', layout.id)
+                  }
+                >
+                  <span
+                    className={
+                      'periak-layout-preview layout-' + layout.id
+                    }
+                    aria-hidden="true"
+                  >
+                    <span className="layout-preview-sidebar">
+                      <i/><i/><i/><i/>
+                    </span>
+
+                    <span className="layout-preview-main">
+                      <span className="layout-preview-header"/>
+                      <span className="layout-preview-banner"/>
+                      <span className="layout-preview-cards">
+                        <i/><i/><i/><i/>
+                      </span>
+                      <span className="layout-preview-panels">
+                        <i/><i/>
+                      </span>
+                    </span>
+                  </span>
+
+                  <span className="layout-option-title">
+                    <strong>{layout.title}</strong>
+                    {selected && <span>✓</span>}
+                  </span>
+
+                  <small>{layout.description}</small>
+                </button>
+              )
+            })}
+          </div>
+
+          <p className="periak-layout-note">
+            Switching layouts does not affect your courses,
+            progress, examinations or Premium membership.
+          </p>
+        </div>
+
         <div className="appearance-preview">
           <div className="preview-top">
             <span className="preview-logo">✚ PERIAK</span>

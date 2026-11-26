@@ -414,3 +414,140 @@
     padding: 7px;
   }
 }
+
+/* PERIAK — Application layout preferences */
+
+.periak-layout-options {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 12px;
+  margin: 15px 0;
+}
+
+.periak-layout-option {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  min-width: 0;
+  padding: 10px;
+  background: var(--surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.periak-layout-option.selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.periak-layout-option:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.periak-layout-preview {
+  display: flex;
+  width: 100%;
+  aspect-ratio: 1.5;
+  overflow: hidden;
+  background: #f4f7fb;
+  border: 1px solid #dce5ee;
+  border-radius: 6px;
+}
+
+.layout-preview-sidebar {
+  width: 24%;
+  padding: 9px 4px;
+  background: #14324b;
+  flex-shrink: 0;
+}
+
+.layout-preview-sidebar i {
+  display: block;
+  height: 7px;
+  margin: 0 0 7px;
+  background: #3a5970;
+  border-radius: 2px;
+}
+
+.layout-preview-sidebar i:first-child {
+  background: #1678c9;
+}
+
+.layout-preview-main {
+  flex: 1;
+  min-width: 0;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.layout-preview-header {
+  height: 10px;
+  background: white;
+  border-radius: 2px;
+}
+
+.layout-preview-banner {
+  display: block;
+  height: 24px;
+  background: #dcecff;
+  border-radius: 3px;
+}
+
+.layout-preview-cards,
+.layout-preview-panels {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 5px;
+}
+
+.layout-preview-cards i,
+.layout-preview-panels i {
+  display: block;
+  min-height: 18px;
+  border-radius: 3px;
+  background: #fff;
+  border: 1px solid #dce5ee;
+}
+
+.layout-modern .layout-preview-banner,
+.layout-classic .layout-preview-sidebar {
+  display: none;
+}
+
+.layout-modern .layout-preview-cards {
+  grid-template-columns: repeat(4,minmax(0,1fr));
+}
+
+.layout-modern .layout-preview-panels {
+  flex: 1;
+}
+
+.layout-classic .layout-preview-cards {
+  flex: 1;
+}
+
+.layout-option-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--text-primary);
+  font-size: 14px;
+}
+
+.layout-option-title > span {
+  color: var(--accent);
+}
+
+.periak-layout-option > small,
+.periak-layout-note {
+  color: var(--text-muted);
+  font-size: 12px;
+  line-height: 1.55;
+}
