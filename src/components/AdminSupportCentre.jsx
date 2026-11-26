@@ -58,8 +58,46 @@ export default function AdminSupportCentre({ profiles = [] }) {
   const [priority, setPriority] = useState('normal')
   const [reply, setReply] = useState('')
   const [authorized, setAuthorized] = useState(false)
+  const [deletionReview, setDeletionReview] = useState(null)
+  const [deletionChecking, setDeletionChecking] = useState(false)
 
   const requestRef = useRef(0)
+
+  useEffect(() => {
+    setDeletionReview(null)
+    setDeletionChecking(false)
+  }, [selected?.id, selected?.status])
+
+  async function checkDeletionEligibility() {
+    if (!selected || deletionChecking || busy) return
+
+    const ticketId = selected.id
+    const requestId = requestRef.current
+
+    setDeletionChecking(true)
+    setDeletionReview(null)
+    setError('')
+
+    try {
+      const { data, error: rpcError } = await supabase.rpc(
+        'admin_account_deletion_check',
+        { p_ticket_id: ticketId }
+      )
+
+      if (rpcError) throw rpcError
+      if (requestId !== requestRef.current) return
+
+      setDeletionReview({ ...data, ticketId })
+    } catch {
+      if (requestId === requestRef.current) {
+        setError('Unable to verify account deletion eligibility.')
+      }
+    } finally {
+      if (requestId === requestRef.current) {
+        setDeletionChecking(false)
+      }
+    }
+  }
 
   function studentName(userId) {
     const profile = profiles.find(p => p.id === userId)
@@ -439,6 +477,72 @@ export default function AdminSupportCentre({ profiles = [] }) {
                 processing permanent deletion. Updating this
                 ticket status does not delete the account.
               </p>
+            </div>
+          )}
+
+          {selected.category === 'account_deletion' && (
+            <div className="psc-form pas-manage">
+              <h3>Deletion eligibility</h3>
+
+              <p className="psc-muted">
+                Change the request status to In progress
+                before checking eligibility.
+              </p>
+
+              <button
+                type="button"
+                className="psc-secondary"
+                disabled={busy || loading || deletionChecking}
+                onClick={checkDeletionEligibility}
+              >
+                {deletionChecking
+                  ? 'Checking account…'
+                  : 'Check deletion eligibility'}
+              </button>
+
+              {deletionReview?.ticketId === selected.id && (
+                <div>
+                  <p role="status">
+                    <strong>
+                      {deletionReview.eligible
+                        ? 'Eligible for restricted administrator processing'
+                        : 'Deletion currently blocked'}
+                    </strong>
+                  </p>
+
+                  <p>
+                    Student account:
+                    {' '}{deletionReview.student_account ? 'Yes' : 'No'}
+                  </p>
+
+                  <p>
+                    Payment records:
+                    {' '}{deletionReview.payment_records}
+                  </p>
+
+                  <p>
+                    Subscription records:
+                    {' '}{deletionReview.subscription_records}
+                  </p>
+
+                  <p>
+                    Reviewed payments:
+                    {' '}{deletionReview.reviewed_payments}
+                  </p>
+
+                  <p>
+                    Owned storage objects:
+                    {' '}{deletionReview.owned_storage_objects}
+                  </p>
+
+                  <p className="psc-muted">
+                    Eligibility is not final approval.
+                    Permanent deletion requires separate
+                    authorized processing and verification.
+                    No account has been deleted.
+                  </p>
+                </div>
+              )}
             </div>
           )}
 
