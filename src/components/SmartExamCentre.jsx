@@ -1,5 +1,9 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { supabase } from '../lib/supabase'
+import {
+  getCachedCatalogue,
+  loadExamCatalogue
+} from '../lib/examCatalogue'
 import { useBackHandler } from '../context/NavigationProvider'
 import DatabaseExamCentre from './DatabaseExamCentre'
 import ExamHistory from './ExamHistory'
@@ -81,11 +85,21 @@ export default function SmartExamCentre({
   const premium = hasPremiumAccess || isAdmin
 
   const [screen, setScreen] = useState('home')
-  const [courses, setCourses] = useState([])
-  const [units, setUnits] = useState([])
-  const [courseId, setCourseId] = useState('')
+  const [courses, setCourses] = useState(
+    () => getCachedCatalogue()?.courses || []
+  )
+  const [allUnits, setAllUnits] = useState(
+    () => getCachedCatalogue()?.units || []
+  )
+  const [courseId, setCourseId] = useState(
+    () => getCachedCatalogue()?.courses?.[0]?.course_id || ''
+  )
   const [unitId, setUnitId] = useState('')
   const [search, setSearch] = useState('')
+  const [searchOpen, setSearchOpen] = useState(false)
+  const [catalogueError, setCatalogueError] = useState('')
+  const [historyError, setHistoryError] = useState('')
+  const [refreshing, setRefreshing] = useState(false)
   const [mode, setMode] = useState('practice')
   const [count, setCount] = useState(20)
   const [duration, setDuration] = useState(30)
@@ -97,8 +111,10 @@ export default function SmartExamCentre({
   const [remaining, setRemaining] = useState(null)
   const [seconds, setSeconds] = useState(null)
 
-  const [loading, setLoading] = useState(true)
-  const [unitLoading, setUnitLoading] = useState(false)
+  const [loading, setLoading] = useState(
+    () => !getCachedCatalogue()
+  )
+  const unitLoading = loading
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
 
@@ -110,36 +126,40 @@ export default function SmartExamCentre({
     return () => { alive.current = false }
   }, [])
 
-  const load = useCallback(async () => {
-    setLoading(true)
-    setError('')
+  const load = useCallback(async (force = false) => {
+    setCatalogueError('')
+    setRefreshing(true)
+
+    if (!getCachedCatalogue()) setLoading(true)
 
     try {
-      const [catalogue, records] = await Promise.all([
-        supabase
-          .from('smart_exam_course_catalogue')
-          .select('*')
-          .order('course_title'),
-        call('smart_exam_history')
-      ])
+      const catalogue = await loadExamCatalogue({
+        force: force === true
+      })
 
-      if (catalogue.error) throw catalogue.error
       if (!alive.current) return
 
-      const rows = catalogue.data || []
-
-      setCourses(rows)
-      setHistory(records || [])
+      setCourses(catalogue.courses)
+      setAllUnits(catalogue.units)
 
       setCourseId(previous =>
-        rows.some(item => item.course_id === previous)
+        catalogue.courses.some(
+          item => item.course_id === previous
+        )
           ? previous
-          : rows[0]?.course_id || ''
+          : catalogue.courses[0]?.course_id || ''
       )
     } catch (err) {
-      if (alive.current) setError(err.message)
+      if (alive.current) {
+        setCatalogueError(
+          err.message || 'Unable to load academic catalogue.'
+        )
+      }
     } finally {
-      if (alive.current) setLoading(false)
+      if (alive.current) {
+        setLoading(false)
+        setRefreshing(false)
+      }
     }
   }, [])
 
@@ -148,39 +168,39 @@ export default function SmartExamCentre({
   }, [load])
 
   useEffect(() => {
-    let cancelled = false
+    let active = true
 
-    async function loadUnits() {
-      setUnitLoading(true)
-      setUnits([])
-      setUnitId('')
-
-      if (!courseId) {
-        setUnitLoading(false)
-        return
-      }
-
+    async function loadHistory() {
       try {
-        const { data, error } = await supabase
-          .from('smart_exam_unit_catalogue')
-          .select('*')
-          .eq('course_id', courseId)
-          .order('sort_order')
-
-        if (error) throw error
-
-        if (!cancelled) setUnits(data || [])
+        const records = await call('smart_exam_history')
+        if (active) {
+          setHistory(records || [])
+          setHistoryError('')
+        }
       } catch (err) {
-        if (!cancelled) setError(err.message)
-      } finally {
-        if (!cancelled) setUnitLoading(false)
+        if (active) {
+          setHistoryError(
+            err.message || 'Unable to load assessment history.'
+          )
+        }
       }
     }
 
-    loadUnits()
+    loadHistory()
 
-    return () => { cancelled = true }
-  }, [courseId])
+    return () => { active = false }
+  }, [])
+
+  const units = useMemo(
+    () => allUnits.filter(u => u.course_id === courseId),
+    [allUnits, courseId]
+  )
+
+  useEffect(() => {
+    if (unitId && !units.some(u => u.unit_id === unitId)) {
+      setUnitId('')
+    }
+  }, [units, unitId])
 
   const course = courses.find(c =>
     c.course_id === courseId
@@ -478,10 +498,51 @@ export default function SmartExamCentre({
     setError('')
   }
 
-  const filtered = courses.filter(c =>
-    c.course_title.toLowerCase()
-      .includes(search.trim().toLowerCase())
-  )
+  const suggestions = useMemo(() => {
+    const query = search.trim().toLowerCase()
+    if (!query) return []
+
+    const courseNames = new Map(
+      courses.map(c => [c.course_id, c.course_title])
+    )
+
+    const records = [
+      ...courses.map(c => ({
+        key: 'course-' + c.course_id,
+        type: 'Course',
+        title: c.course_title,
+        courseId: c.course_id,
+        unitId: ''
+      })),
+      ...allUnits
+        .filter(u => courseNames.has(u.course_id))
+        .map(u => ({
+          key: 'unit-' + u.unit_id,
+          type: 'Unit',
+          title: u.unit_title,
+          parent: courseNames.get(u.course_id),
+          courseId: u.course_id,
+          unitId: u.unit_id
+        }))
+    ]
+
+    return records
+      .filter(item =>
+        item.title.toLowerCase().includes(query)
+      )
+      .sort((a, b) =>
+        Number(b.title.toLowerCase().startsWith(query)) -
+        Number(a.title.toLowerCase().startsWith(query)) ||
+        a.title.localeCompare(b.title)
+      )
+  }, [search, courses, allUnits])
+
+  function chooseSuggestion(item) {
+    setCourseId(item.courseId)
+    setUnitId(item.unitId)
+    setSearch('')
+    setSearchOpen(false)
+  }
 
   if (screen === 'published' && premium) {
     return (
@@ -529,14 +590,20 @@ export default function SmartExamCentre({
 
       {screen === 'home' && (
         <>
-          {error && (
-            <button
-              className="sev2-back"
-              onClick={load}
-              disabled={loading}
-            >
-              Refresh catalogue
-            </button>
+          {catalogueError && (
+            <div className="sev2-error" role="alert">
+              {catalogueError}
+              <button onClick={() => load(true)}
+                disabled={refreshing}>
+                Retry catalogue
+              </button>
+            </div>
+          )}
+
+          {historyError && (
+            <p className="sev2-muted" role="status">
+              Assessment history: {historyError}
+            </p>
           )}
           {activeSessions.map(item => (
             <button
@@ -551,48 +618,108 @@ export default function SmartExamCentre({
           ))}
 
           <section className="sev2-card">
-            <label htmlFor="sev2-search">
-              Course
-            </label>
+            <div className="sev2-catalogue-toolbar">
+              <label htmlFor="sev2-search">
+                Find a course or unit
+              </label>
 
-            <input
-              id="sev2-search"
-              type="search"
-              placeholder="Search courses…"
-              value={search}
-              onChange={e => {
-                const value = e.target.value
-                setSearch(value)
+              <button
+                type="button"
+                className="sev2-catalogue-refresh"
+                onClick={() => load(true)}
+                disabled={refreshing}
+              >
+                {refreshing ? 'Updating…' : '↻ Refresh'}
+              </button>
+            </div>
 
-                if (
-                  course &&
-                  !course.course_title.toLowerCase()
-                    .includes(value.trim().toLowerCase())
-                ) {
-                  setCourseId('')
-                  setUnitId('')
-                  setUnits([])
+            <div className="sev2-search-wrap">
+              <input
+                id="sev2-search"
+                type="search"
+                autoComplete="off"
+                placeholder="Search courses or units…"
+                value={search}
+                aria-controls="sev2-search-results"
+                aria-expanded={
+                  searchOpen && Boolean(search.trim())
                 }
-              }}
-            />
+                onFocus={() => setSearchOpen(true)}
+                onChange={e => {
+                  setSearch(e.target.value)
+                  setSearchOpen(true)
+                }}
+                onKeyDown={e => {
+                  if (e.key === 'Escape') {
+                    setSearchOpen(false)
+                  }
+
+                  if (e.key === 'Enter' && suggestions.length) {
+                    e.preventDefault()
+                    chooseSuggestion(suggestions[0])
+                  }
+                }}
+              />
+
+              {searchOpen && search.trim() && (
+                <div
+                  id="sev2-search-results"
+                  className="sev2-search-results"
+                >
+                  <small role="status">
+                    {loading
+                      ? 'Loading catalogue…'
+                      : `${suggestions.length} matching results`}
+                  </small>
+
+                  {suggestions.map(item => (
+                    <button
+                      type="button"
+                      key={item.key}
+                      className="sev2-search-result"
+                      onClick={() => chooseSuggestion(item)}
+                    >
+                      <span aria-hidden="true">
+                        {item.type === 'Course' ? '📚' : '📄'}
+                      </span>
+
+                      <span>
+                        <strong>{item.title}</strong>
+                        <small>
+                          {item.type}
+                          {item.parent
+                            ? ' · ' + item.parent
+                            : ''}
+                        </small>
+                      </span>
+
+                      <span aria-hidden="true">›</span>
+                    </button>
+                  ))}
+
+                  {!loading && !suggestions.length && (
+                    <p>No matching courses or units.</p>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <label htmlFor="sev2-course">Course</label>
 
             <select
-              aria-label="Select course"
-              value={
-                filtered.some(c => c.course_id === courseId)
-                  ? courseId
-                  : ''
-              }
+              id="sev2-course"
+              value={courseId}
               onChange={e => {
                 setCourseId(e.target.value)
                 setUnitId('')
-                setUnits([])
+                setSearch('')
+                setSearchOpen(false)
               }}
               disabled={loading}
             >
               <option value="">Select course</option>
 
-              {filtered.map(c => (
+              {courses.map(c => (
                 <option
                   key={c.course_id}
                   value={c.course_id}

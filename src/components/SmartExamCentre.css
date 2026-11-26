@@ -381,3 +381,116 @@
 .sev2-admin-launch {
   margin-bottom: 12px;
 }
+
+/* Compact instant academic search */
+
+.smart-exam-v2 .sev2-catalogue-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.smart-exam-v2 .sev2-catalogue-refresh {
+  background: transparent;
+  border: 0;
+  color: var(--accent);
+  font: inherit;
+  font-size: .76rem;
+  font-weight: 600;
+  padding: 8px;
+  cursor: pointer;
+}
+
+.smart-exam-v2 .sev2-search-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 340px;
+  min-width: 0;
+}
+
+.smart-exam-v2 #sev2-search {
+  width: 100% !important;
+  min-height: 36px !important;
+  height: 36px !important;
+  padding: 7px 10px !important;
+  font-size: .8rem !important;
+  border-radius: 7px;
+}
+
+.smart-exam-v2 .sev2-search-results {
+  display: grid;
+  gap: 0;
+  max-height: 270px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  margin-top: 6px;
+  padding: 5px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface);
+  scrollbar-width: thin;
+}
+
+.sev2-search-results > small,
+.sev2-search-results > p {
+  padding: 8px;
+  color: var(--text-muted);
+  font-size: .72rem;
+}
+
+.smart-exam-v2 .sev2-search-result {
+  display: grid;
+  grid-template-columns: 20px minmax(0,1fr) 10px;
+  align-items: center;
+  gap: 9px;
+  min-height: 42px;
+  padding: 8px;
+  background: transparent;
+  color: var(--text-primary);
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  border-radius: 5px;
+  text-align: left;
+  font: inherit;
+  cursor: pointer;
+}
+
+.sev2-search-result:hover,
+.sev2-search-result:focus-visible {
+  background: var(--accent-soft);
+}
+
+.sev2-search-result strong {
+  display: block;
+  font-size: .8rem;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.sev2-search-result small {
+  display: block;
+  color: var(--text-muted);
+  font-size: .7rem;
+  line-height: 1.4;
+  margin-top: 3px;
+}
+
+@media (max-width: 700px) {
+  .smart-exam-v2 .sev2-search-wrap {
+    max-width: 100%;
+  }
+
+  .smart-exam-v2 #sev2-search {
+    min-height: 44px !important;
+    height: 44px !important;
+  }
+
+  .smart-exam-v2 .sev2-search-result {
+    min-height: 44px;
+  }
+
+  .smart-exam-v2 .sev2-catalogue-refresh {
+    min-height: 44px;
+  }
+}
