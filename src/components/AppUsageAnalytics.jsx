@@ -40,26 +40,75 @@ export default function AppUsageAnalytics({ days, refreshKey }) {
 
     setReleaseError(false)
 
-    fetch(
-      'https://api.github.com/repos/markzuma/studymate/releases/tags/android-v1.0.0',
-      { signal: controller.signal }
-    )
-      .then(response => {
-        if (!response.ok) throw new Error('Release unavailable')
-        return response.json()
-      })
-      .then(data => {
-        const apk = data.assets?.find(item =>
-          item.name.endsWith('.apk')
+    setRelease(null)
+
+    async function loadReleases() {
+      const releases = []
+      let page = 1
+
+      while (true) {
+        const response = await fetch(
+          `https://api.github.com/repos/markzuma/studymate/releases?per_page=100&page=${page}`,
+          { signal: controller.signal }
         )
 
-        if (!apk) throw new Error('APK unavailable')
+        if (!response.ok) {
+          throw new Error('Release statistics unavailable')
+        }
 
+        const batch = await response.json()
+
+        if (!Array.isArray(batch)) {
+          throw new Error('Invalid release data')
+        }
+
+        releases.push(...batch)
+
+        if (batch.length < 100) break
+        page += 1
+      }
+
+      const android = releases
+        .filter(item =>
+          /^android-v\d+\.\d+\.\d+$/.test(item.tag_name) &&
+          !item.draft &&
+          !item.prerelease
+        )
+        .map(item => ({
+          version: item.tag_name.replace('android-v', ''),
+          apks: (item.assets || []).filter(asset =>
+            asset.name.toLowerCase().endsWith('.apk')
+          )
+        }))
+        .filter(item => item.apks.length > 0)
+        .sort((a, b) =>
+          b.version.localeCompare(
+            a.version, undefined, { numeric: true }
+          )
+        )
+
+      if (!android.length) {
+        throw new Error('No Android releases available')
+      }
+
+      const downloads = android.reduce(
+        (total, item) => total + item.apks.reduce(
+          (sum, apk) => sum + Number(apk.download_count || 0),
+          0
+        ),
+        0
+      )
+
+      if (!controller.signal.aborted) {
         setRelease({
-          version: data.tag_name.replace('android-v', ''),
-          downloads: apk.download_count
+          version: android[0].version,
+          downloads,
+          releaseCount: android.length
         })
-      })
+      }
+    }
+
+    loadReleases()
       .catch(error => {
         if (error.name !== 'AbortError') {
           setReleaseError(true)
@@ -70,7 +119,7 @@ export default function AppUsageAnalytics({ days, refreshKey }) {
   }, [refreshKey])
 
   const metrics = [
-    ['APK downloads', release?.downloads, 'Current release · all time'],
+    ['APK downloads', release?.downloads, 'All Android releases · all time'],
     ['Android app accounts', stats?.android_users, `Detected in ${days} days`],
     ['Browser accounts', stats?.browser_users, `Within ${days} days`],
     ['Installed web app accounts', stats?.pwa_users, `Within ${days} days`]
