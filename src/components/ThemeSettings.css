@@ -551,3 +551,11 @@
   font-size: 12px;
   line-height: 1.55;
 }
+
+/* Application layout selection is desktop-only. */
+
+@media (max-width: 900px) {
+  .periak-layout-section {
+    display: none !important;
+  }
+}

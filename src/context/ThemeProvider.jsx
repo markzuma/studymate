@@ -64,6 +64,26 @@ function resolvePalette(appearance, systemDark) {
 
 export function ThemeProvider({ children }) {
   const [appearance, setAppearance] = useState(readStoredAppearance)
+
+  const [largeScreen, setLargeScreen] = useState(
+    () => window.matchMedia('(min-width: 901px)').matches
+  )
+
+  useEffect(() => {
+    const media = window.matchMedia('(min-width: 901px)')
+    const update = () => setLargeScreen(media.matches)
+
+    media.addEventListener('change', update)
+    update()
+
+    return () => media.removeEventListener('change', update)
+  }, [])
+
+  const effectiveLayout =
+    largeScreen && appearance.layout === 'modern'
+      ? 'modern'
+      : 'classic'
+
   const [userId, setUserId] = useState(null)
   const [loaded, setLoaded] = useState(false)
   const [systemDark, setSystemDark] = useState(
@@ -181,10 +201,17 @@ export function ThemeProvider({ children }) {
 
   const value = useMemo(() => ({
     appearance,
+    largeScreen,
+    effectiveLayout,
     updateAppearance,
     resetAppearance,
     isDark: resolvePalette(appearance, systemDark).dark,
-  }), [appearance, systemDark])
+  }), [
+    appearance,
+    systemDark,
+    largeScreen,
+    effectiveLayout
+  ])
 
   return (
     <ThemeContext.Provider value={value}>

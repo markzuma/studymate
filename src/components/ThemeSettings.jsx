@@ -61,7 +61,7 @@ export default function ThemeSettings({ onClose }) {
 
         <div className="appearance-section periak-layout-section">
           <h3>Application layout</h3>
-          <p>Choose your preferred PERIAK interface.</p>
+          <p>Choose your preferred layout for larger screens.</p>
 
           <div className="periak-layout-options">
             {[
@@ -126,8 +126,9 @@ export default function ThemeSettings({ onClose }) {
           </div>
 
           <p className="periak-layout-note">
-            Switching layouts does not affect your courses,
-            progress, examinations or Premium membership.
+            Mobile devices always use Classic. Your desktop
+            preference is saved separately from the active
+            mobile layout. Learning progress is shared.
           </p>
         </div>
 

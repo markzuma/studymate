@@ -41,8 +41,8 @@ function savedPeriakAccount() {
 }
 
 export default function AuthGate({ children }) {
-  const { appearance } = useAppearance()
-  const modernLayout = appearance.layout === 'modern'
+  const { effectiveLayout } = useAppearance()
+  const modernLayout = effectiveLayout === 'modern'
 
   const [session, setSession] = useState(null)
   const [loading, setLoading] = useState(true)
