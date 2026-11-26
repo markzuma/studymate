@@ -22,6 +22,7 @@ export default function LearningSuite({
   tutorContentState = 'ready',
   onRetryTutor = () => {},
   onOpenCourse = () => {}, onOpenExams = () => {},
+  onOpenRevision = () => {},
   hasPremiumAccess = false, premiumLoading = false, isAdmin = false,
   onOpenPremium = () => {}, onOpenPremiumFeature = () => onOpenPremium(),
   initialActive = '', standalone = false, onBack = () => {}
@@ -78,6 +79,7 @@ export default function LearningSuite({
             catalogueUnits={catalogueUnits}
             catalogueLessons={catalogueLessons}
             onOpenCourse={onOpenCourse}
+            onOpenRevision={onOpenRevision}
           />
         ) : tutorContentState === 'error' ? (
           <div className="xp-empty" role="alert">

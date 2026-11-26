@@ -1082,6 +1082,31 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
       ? JSON.stringify([selectedCourse.id, selectedUnit])
       : null
 
+  const [revisionIntent, setRevisionIntent] = useState(null)
+
+  function openSecureRevision(course, unit, mode = 'practice') {
+    const key = JSON.stringify([course?.id, unit])
+    const unitId = lessonDirectory[key]
+
+    if (!course?.id || !unitId) {
+      window.alert('Revision is not available for this unit yet.')
+      return
+    }
+
+    setSelectedCourse(course)
+    setSelectedUnit(unit)
+    setRevisionIntent({
+      courseId: course.id,
+      unitId,
+      mode
+    })
+
+    setActivePremiumModule('')
+    setShowExams(true)
+
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
   const requestedUnitId = requestedLessonKey
     ? lessonDirectory[requestedLessonKey]
     : null
@@ -1342,6 +1367,13 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
   }
 
   const returnFromPremiumModule = () => {
+    if (revisionIntent) {
+      setRevisionIntent(null)
+      setShowExams(false)
+      setActivePremiumModule('')
+      return
+    }
+
     setActivePremiumModule('')
     setShowExams(false)
     onPremiumModuleBack()
@@ -1494,6 +1526,7 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
           </nav>
         </header>
         <ExamCentre
+          initialRevision={revisionIntent}
           hasPremiumAccess={isPremium}
           premiumLoading={premiumLoading}
           isAdmin={isAdmin}
@@ -1562,6 +1595,7 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
             setActivePremiumModule('')
             setSelectedCourse(course)
           }}
+          onOpenRevision={openSecureRevision}
           onOpenExams={() => {
             setActivePremiumModule('exams')
             setShowExams(true)
@@ -1728,7 +1762,24 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
 
                   return clinical
                     ? <p>{clinical}</p>
-                    : <p>Clinical application not yet available.</p>
+                    : isPremium || isAdmin
+                      ? <p>Clinical application not yet available.</p>
+                      : (
+                        <div>
+                          <p>
+                            Clinical applications are available
+                            with PERIAK Premium.
+                            Your study notes remain free.
+                          </p>
+                          <button
+                            type="button"
+                            className="primary-button"
+                            onClick={onOpenPremium}
+                          >
+                            Explore Premium
+                          </button>
+                        </div>
+                      )
                 })()}
               </section>
 
@@ -1740,44 +1791,54 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
               </section>
 
               <section className="lesson-panel">
-                <h2 id="periak-lesson-questions">Practice questions</h2>
-                <p>Choose an answer, then open the explanation to check your understanding.</p>
-                {(Array.isArray(catalogueLessons[JSON.stringify([selectedCourse.id, selectedUnit])].questions)
-                  ? catalogueLessons[JSON.stringify([selectedCourse.id, selectedUnit])].questions
-                  : Array.isArray(catalogueLessons[JSON.stringify([selectedCourse.id, selectedUnit])].mcqs)
-                    ? catalogueLessons[JSON.stringify([selectedCourse.id, selectedUnit])].mcqs
-                    : []).map((question, index) => {
-                      const options = Array.isArray(question.options)
-                        ? question.options
-                        : ['A', 'B', 'C', 'D']
-                            .map(key => question.options?.[key])
-                            .filter(value => typeof value === 'string')
-                      const answerIndex = typeof question.answer === 'number'
-                        ? question.answer
-                        : /^[A-D]$/i.test(String(question.answer || '').trim())
-                          ? String(question.answer).trim().toUpperCase().charCodeAt(0) - 65
-                          : -1
+                <p className="eyebrow">SMART EXAM CENTRE</p>
 
-                      return (
-                        <div className="practice-question" key={index}>
-                          <h3>{index + 1}. {question.question || question.q || 'Question'}</h3>
-                          {options.map((option, optionIndex) => (
-                            <p className="question-option" key={optionIndex}>
-                              {String.fromCharCode(65 + optionIndex)}. {option}
-                            </p>
-                          ))}
-                          <details>
-                            <summary>Reveal answer and explanation</summary>
-                            {answerIndex >= 0 && answerIndex < options.length && (
-                              <p><strong>
-                                Correct answer: {String.fromCharCode(65 + answerIndex)}. {options[answerIndex]}
-                              </strong></p>
-                            )}
-                            {question.explanation && <p>{question.explanation}</p>}
-                          </details>
-                        </div>
-                      )
-                    })}
+                <h2 id="periak-lesson-questions">
+                  Test your understanding
+                </h2>
+
+                <p>
+                  Practise questions from this unit.
+                  Receive explained answers through
+                  the secure examination system.
+                </p>
+
+                <button
+                  type="button"
+                  className="primary-button"
+                  onClick={() => openSecureRevision(
+                    selectedCourse,
+                    selectedUnit,
+                    'practice'
+                  )}
+                >
+                  Practise MCQs →
+                </button>
+
+                <h3>Written revision</h3>
+
+                <p>
+                  Attempt short-answer and essay questions,
+                  then compare your responses with model answers.
+                </p>
+
+                <button
+                  type="button"
+                  className="primary-button"
+                  onClick={() => openSecureRevision(
+                    selectedCourse,
+                    selectedUnit,
+                    'written'
+                  )}
+                >
+                  Open written revision →
+                </button>
+
+                <p>
+                  {isPremium || isAdmin
+                    ? 'Premium revision access.'
+                    : 'Your shared daily allowance of 10 free answers applies.'}
+                </p>
               </section>
 
               {Array.isArray(catalogueLessons[JSON.stringify([selectedCourse.id, selectedUnit])].clinicalCases) && catalogueLessons[JSON.stringify([selectedCourse.id, selectedUnit])].clinicalCases.length > 0 && (
@@ -1797,32 +1858,6 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
                 </section>
               )}
 
-              {Array.isArray(catalogueLessons[JSON.stringify([selectedCourse.id, selectedUnit])].writtenQuestions) && catalogueLessons[JSON.stringify([selectedCourse.id, selectedUnit])].writtenQuestions.length > 0 && (
-                <section className="lesson-panel">
-                  <h2>Written and short-answer questions</h2>
-                  <p>Attempt each question before revealing the model answer and marking guide.</p>
-                  {catalogueLessons[JSON.stringify([selectedCourse.id, selectedUnit])].writtenQuestions.map((item, index) => (
-                    <div className="practice-question" key={index}>
-                      <h3>{index + 1}. {item.question || 'Written question'}</h3>
-                      <details>
-                        <summary>Reveal model answer and marking guide</summary>
-                        {item.modelAnswer && (
-                          <>
-                            <h4>Model answer</h4>
-                            <p>{item.modelAnswer}</p>
-                          </>
-                        )}
-                        {item.markingGuide && (
-                          <>
-                            <h4>Marking guide</h4>
-                            <p>{item.markingGuide}</p>
-                          </>
-                        )}
-                      </details>
-                    </div>
-                  ))}
-                </section>
-              )}
                 </>
               ) : (
                 <section className="lesson-panel premium-preview">

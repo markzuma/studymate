@@ -80,11 +80,13 @@ export default function SmartExamCentre({
   onUpgrade = () => {},
   hasPremiumAccess = false,
   premiumLoading = false,
-  isAdmin = false
+  isAdmin = false,
+  initialRevision = null
 }) {
   const premium = hasPremiumAccess || isAdmin
 
   const [screen, setScreen] = useState('home')
+  const initialRevisionApplied = useRef(false)
   const [courses, setCourses] = useState(
     () => getCachedCatalogue()?.courses || []
   )
@@ -201,6 +203,62 @@ export default function SmartExamCentre({
       setUnitId('')
     }
   }, [units, unitId])
+
+  useEffect(() => {
+    if (
+      !initialRevision ||
+      initialRevisionApplied.current ||
+      loading ||
+      refreshing ||
+      !courses.length
+    ) return
+
+    const targetCourse = courses.find(
+      item => item.course_id === initialRevision.courseId
+    )
+
+    const targetUnit = allUnits.find(
+      item =>
+        item.course_id === initialRevision.courseId &&
+        item.unit_id === initialRevision.unitId
+    )
+
+    initialRevisionApplied.current = true
+
+    if (!targetCourse || !targetUnit) {
+      setError('Revision is not available for this unit.')
+      return
+    }
+
+    setCourseId(targetCourse.course_id)
+    setUnitId(targetUnit.unit_id)
+
+    if (initialRevision.mode === 'written') {
+      if (Number(targetUnit.written_count) > 0) {
+        setScreen('written')
+      } else {
+        setError('No written questions are available for this unit yet.')
+      }
+      return
+    }
+
+    if (Number(targetUnit.mcq_count) <= 0) {
+      setError('No practice questions are available for this unit yet.')
+      return
+    }
+
+    setMode('practice')
+    setCount(Math.min(10, Number(targetUnit.mcq_count)))
+    setDuration(30)
+    setScreen('configure')
+
+  }, [
+    initialRevision,
+    loading,
+    refreshing,
+    courses,
+    allUnits
+  ])
 
   const course = courses.find(c =>
     c.course_id === courseId
