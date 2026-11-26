@@ -346,7 +346,7 @@ export default function AuthGate({ children }) {
     async function loadProfile() {
       const { data, error } = await supabase
         .from('profiles')
-        .select('role, full_name')
+        .select('id, role, full_name')
         .eq('id', session.user.id)
         .maybeSingle()
 
