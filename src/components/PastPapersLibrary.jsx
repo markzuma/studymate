@@ -121,6 +121,7 @@ export default function PastPapersLibrary({
   })
 
   async function openPaper(paper) {
+    if (opening || loading || premiumLoading) return
     if (!isAdmin && !hasPremiumAccess &&
         !unlockedIds.includes(paper.id) && remainingUnlocks <= 0) {
       onUpgrade?.()
@@ -175,7 +176,11 @@ export default function PastPapersLibrary({
 
     if (error || !data?.signedUrl) {
       if (pdfWindow) pdfWindow.close()
-      setMessage(error?.message || 'Unable to securely open PDF.')
+      setMessage(
+        'Unable to securely open this PDF. ' +
+        'Check your access and try again. ' +
+        'Administrators should complete Admin View verification.'
+      )
       return
     }
 
@@ -307,7 +312,7 @@ export default function PastPapersLibrary({
                   </div>
                   {paper.notes && <p className="papers-card-notes">{paper.notes}</p>}
                   <button type="button" onClick={() => openPaper(paper)}
-                    disabled={opening === paper.id || !paper.storage_path}>
+                    disabled={Boolean(opening) || loading || premiumLoading || !paper.storage_path}>
                     {opening === paper.id ? 'Preparing secure PDF…'
                       : !hasPremiumAccess && !isAdmin && !unlockedIds.includes(paper.id)
                         ? 'Unlock & open PDF →'

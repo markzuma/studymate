@@ -58,6 +58,14 @@ export default function AuthGate({ children }) {
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
   const [profile, setProfile] = useState(null)
+  const [verifiedAdminToken, setVerifiedAdminToken] = useState(null)
+
+  const verifiedAdmin = Boolean(
+    profile?.role === 'admin' &&
+    profile?.id === session?.user?.id &&
+    session?.access_token &&
+    verifiedAdminToken === session.access_token
+  )
   const [premiumAccess, setPremiumAccess] = useState(false)
   const [premiumLoading, setPremiumLoading] = useState(true)
   const [showControlCentre, setShowControlCentre] = useState(false)
@@ -131,7 +139,7 @@ export default function AuthGate({ children }) {
 
     const allowed =
       premiumAccess ||
-      profile?.role === 'admin' ||
+      verifiedAdmin ||
       freeModules.includes(moduleId) ||
       (premiumLoading
         ? await refreshPremiumAccess()
@@ -365,6 +373,84 @@ export default function AuthGate({ children }) {
       active = false
     }
   }, [session?.user?.id])
+
+  // Administrator role identifies the account.
+  // Only backend-verified MFA grants elevated access.
+  useEffect(() => {
+    let active = true
+    let checking = false
+
+    const token = session?.access_token
+
+    setVerifiedAdminToken(null)
+
+    if (
+      !token ||
+      profile?.role !== 'admin' ||
+      profile?.id !== session?.user?.id
+    ) return undefined
+
+    async function verifyAdministrator() {
+      if (!active || checking) return
+
+      checking = true
+
+      try {
+        const { data, error } =
+          await supabase.rpc('is_admin')
+
+        if (!active) return
+
+        setVerifiedAdminToken(
+          !error && data === true ? token : null
+        )
+      } catch {
+        if (active) setVerifiedAdminToken(null)
+      } finally {
+        checking = false
+      }
+    }
+
+    void verifyAdministrator()
+
+    const timer = window.setInterval(
+      verifyAdministrator,
+      60000
+    )
+
+    const onFocus = () => {
+      if (!document.hidden) {
+        void verifyAdministrator()
+      }
+    }
+
+    window.addEventListener('focus', onFocus)
+
+    document.addEventListener(
+      'visibilitychange',
+      onFocus
+    )
+
+    return () => {
+      active = false
+
+      window.clearInterval(timer)
+
+      window.removeEventListener(
+        'focus', onFocus
+      )
+
+      document.removeEventListener(
+        'visibilitychange', onFocus
+      )
+    }
+
+  }, [
+    session?.access_token,
+    session?.user?.id,
+    profile?.id,
+    profile?.role
+  ])
 
   const refreshPremiumAccess = useCallback(async () => {
     if (!session?.user?.id) {
@@ -893,11 +979,11 @@ export default function AuthGate({ children }) {
                 setShowPremium(false)
               }}
               onSubscriptionUpdated={refreshPremiumAccess}
-              hasPremiumAccess={premiumAccess || profile?.role === 'admin'}
+              hasPremiumAccess={premiumAccess || verifiedAdmin}
               initialFeatureId={premiumFeatureIntent}
               onRegisterBackHandler={registerPremiumBackHandler}
               onOpenFeature={(moduleId) => {
-                if (!premiumAccess && profile?.role !== 'admin') return
+                if (!premiumAccess && !verifiedAdmin) return
                 setPremiumModuleReturn(true)
                 setPremiumFeatureIntent(null)
                 setShowPremium(false)
@@ -911,7 +997,7 @@ export default function AuthGate({ children }) {
               layout: modernLayout ? 'modern' : 'classic',
               isPremium: premiumAccess,
               premiumLoading,
-              isAdmin: profile?.role === 'admin',
+              isAdmin: verifiedAdmin,
               welcomeName:
                 profile?.full_name ||
                 profile?.first_name ||
@@ -932,7 +1018,7 @@ export default function AuthGate({ children }) {
               },
               onOpenPremiumFeature: async (moduleId) => {
                 const freeModules = ['pastpapers', 'dashboard', 'hub', 'exams']
-                const allowed = premiumAccess || profile?.role === 'admin' || freeModules.includes(moduleId) ||
+                const allowed = premiumAccess || verifiedAdmin || freeModules.includes(moduleId) ||
                   (premiumLoading ? await refreshPremiumAccess() : false)
                 if (allowed) {
                   setPremiumModuleReturn(false)
