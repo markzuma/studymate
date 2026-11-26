@@ -3,7 +3,7 @@ import './InstallApp.css'
 
 // PERIAK ANDROID INSTALL V22
 const APK_URL =
-  'https://github.com/markzuma/studymate/releases/download/android-v1.0.0/PERIAK-1.0.0.apk'
+  'https://github.com/markzuma/studymate/releases/download/android-v1.0.1/PERIAK-1.0.1.apk'
 
 function isAndroid() {
   return /Android/i.test(navigator.userAgent)
