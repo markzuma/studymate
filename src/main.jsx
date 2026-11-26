@@ -12,6 +12,10 @@ import './components/AppErrorBoundary.css'
 
 const App = lazy(() => import('./App.jsx'))
 
+const AndroidReleaseNotice = lazy(() =>
+  import('./components/AndroidReleaseNotice.jsx')
+)
+
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <AppErrorBoundary>
@@ -35,6 +39,9 @@ createRoot(document.getElementById('root')).render(
         </Suspense>
         <SmartRefresh />
         <InstallApp />
+        <Suspense fallback={null}>
+          <AndroidReleaseNotice />
+        </Suspense>
       </NavigationProvider>
     </ThemeProvider>
     </AppErrorBoundary>

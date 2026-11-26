@@ -1,0 +1,54 @@
+.periak-release-notice {
+  position: fixed;
+  top: max(12px, env(safe-area-inset-top));
+  right: 12px;
+  z-index: 1000;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  width: min(350px, calc(100vw - 24px));
+  box-sizing: border-box;
+  padding: 14px;
+  color: var(--text-primary, #172b40);
+  background: var(--surface, #fff);
+  border: 1px solid #287dcc;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px #0002;
+}
+
+.periak-release-notice img {
+  width: 40px;
+  height: 40px;
+}
+
+.periak-release-copy {
+  display: grid;
+  gap: 5px;
+  flex: 1;
+  min-width: 0;
+}
+
+.periak-release-copy strong {
+  font-size: 14px;
+}
+
+.periak-release-copy span {
+  font-size: 12px;
+}
+
+.periak-release-copy a {
+  color: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.periak-release-notice button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font-size: 22px;
+  min-width: 32px;
+  min-height: 32px;
+}

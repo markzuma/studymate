@@ -1,9 +1,8 @@
 import { useEffect, useState } from 'react'
 import './InstallApp.css'
+import { useAndroidRelease } from '../lib/androidRelease'
 
 // PERIAK ANDROID INSTALL V22
-const APK_URL =
-  'https://github.com/markzuma/studymate/releases/download/android-v1.0.1/PERIAK-1.0.1.apk'
 
 function isAndroid() {
   return /Android/i.test(navigator.userAgent)
@@ -41,6 +40,7 @@ function dismissedRecently() {
 
 export default function InstallApp() {
   const [installed, setInstalled] = useState(installedMode)
+  const release = useAndroidRelease(isAndroid() && !installed)
   const [dismissed, setDismissed] = useState(dismissedRecently)
   const [promptEvent, setPromptEvent] = useState(null)
   const [showHelp, setShowHelp] = useState(false)
@@ -167,7 +167,7 @@ export default function InstallApp() {
         <>
           <a
             className="periak-apk-download"
-            href={APK_URL}
+            href={release.url}
           >
             <svg
               width="17"
@@ -185,7 +185,7 @@ export default function InstallApp() {
           </a>
 
           <div className="periak-install-meta">
-            <span>1.1 MB · Android 7+</span>
+            <span>Version {release.version} · Android 7+</span>
             <button
               type="button"
               onClick={() => setShowHelp(value => !value)}
