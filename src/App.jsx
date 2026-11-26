@@ -3,6 +3,10 @@ import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import useContentRefresh from './hooks/useContentRefresh.js'
 import { useBackHandler } from './context/NavigationProvider'
 import { supabase } from './lib/supabase'
+import {
+  readPublishedRows,
+  parsePublishedLessons
+} from './lib/learningCatalogue'
 // PERIAK DASHBOARD SIMPLIFICATION V14
 import './App.css'
 import StudentDashboard from './components/StudentDashboard'
@@ -486,6 +490,15 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
   // PERIAK CONTENT AUTO-SYNC V2
   const contentRefreshVersion = useContentRefresh()
   const [catalogueLessons, setCatalogueLessons] = useState({})
+  const [lessonDirectory, setLessonDirectory] = useState({})
+  const [catalogueReady, setCatalogueReady] = useState(false)
+  const [catalogueError, setCatalogueError] = useState('')
+  const [lessonRequestState, setLessonRequestState] = useState({})
+  const [lessonRetry, setLessonRetry] = useState(0)
+  const [tutorContentState, setTutorContentState] = useState('idle')
+  const catalogueGeneration = useRef(0)
+  const lessonCacheRef = useRef({})
+  const catalogueAbortRef = useRef(null)
 
   // PERIAK SAFE AUTO UPDATE V1
   useEffect(() => {
@@ -597,6 +610,21 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
     let catalogueOwner = null
     let catalogueRequest = 0
 
+    const resetContent = () => {
+      catalogueGeneration.current += 1
+      catalogueAbortRef.current?.abort()
+      catalogueAbortRef.current = null
+      lessonCacheRef.current = {}
+      setCatalogueLessons({})
+      setLessonDirectory({})
+      setLessonRequestState({})
+      setTutorContentState('idle')
+      setCatalogueReady(false)
+      setCatalogueError('')
+    }
+
+    resetContent()
+
     const loadCatalogue = async (session) => {
       const owner = session?.user?.id
 
@@ -605,6 +633,7 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
       if (!owner) {
         catalogueOwner = null
         catalogueRequest += 1
+        resetContent()
         return
       }
 
@@ -613,40 +642,39 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
       catalogueOwner = owner
       const requestId = ++catalogueRequest
 
+      resetContent()
+
+      const controller = new AbortController()
+      catalogueAbortRef.current = controller
+
       try {
-        const { data: courseRows, error: courseError } = await supabase
-          .from('courses')
-          .select('id, title, description, programme, year_of_study, semester, status')
-          .eq('status', 'published')
+        const [courseRows, allUnits] = await Promise.all([
+          readPublishedRows(
+            'courses',
+            'id,title,description,programme,year_of_study,semester,status',
+            { signal: controller.signal }
+          ),
+          readPublishedRows(
+            'course_units',
+            'id,course_id,title,sort_order,status',
+            { signal: controller.signal }
+          )
+        ])
 
-        if (courseError) throw courseError
-        if (!courseRows?.length) return
+        const courseIds = new Set(
+          courseRows.map(course => course.id)
+        )
 
-        const courseIds = courseRows.map(course => course.id)
+        const unitRows = allUnits.filter(unit =>
+          courseIds.has(unit.course_id)
+        )
 
-        const { data: unitRows, error: unitError } = await supabase
-          .from('course_units')
-          .select('id, course_id, title, sort_order, status')
-          .in('course_id', courseIds)
-          .eq('status', 'published')
-          .order('sort_order', { ascending: true })
-
-        if (unitError) throw unitError
-
-        const unitIds = (unitRows || []).map(unit => unit.id)
-        let materialRows = []
-
-        if (unitIds.length) {
-          const { data, error } = await supabase
-            .from('learning_materials')
-            .select('unit_id, content, sort_order, status')
-            .in('unit_id', unitIds)
-            .eq('status', 'published')
-            .order('sort_order', { ascending: true })
-
-          if (error) throw error
-          materialRows = data || []
-        }
+        // Metadata only. No lesson content in this request.
+        const materialRows = await readPublishedRows(
+          'learning_materials',
+          'id,unit_id,sort_order,status',
+          { signal: controller.signal }
+        )
 
         if (
           !active ||
@@ -701,20 +729,13 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
           )
         }
 
-        const nextLessons = {}
+        const nextDirectory = {}
 
         for (const material of materialRows) {
-          const unitTitle = unitTitleById.get(material.unit_id)
-          if (!unitTitle || !material.content) continue
+          const key = unitTitleById.get(material.unit_id)
 
-          try {
-            const parsed = JSON.parse(material.content)
-
-            if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
-              nextLessons[unitTitle] = parsed
-            }
-          } catch {
-            console.warn('A published lesson could not be parsed:', unitTitle)
+          if (key) {
+            nextDirectory[key] = material.unit_id
           }
         }
 
@@ -725,7 +746,9 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
 
         setCatalogueCourses(nextCourses)
         setCatalogueUnits(nextUnits)
-        setCatalogueLessons(nextLessons)
+        setLessonDirectory(nextDirectory)
+        setCatalogueReady(true)
+        setCatalogueError('')
 
         console.info(
           'PERIAK catalogue loaded:',
@@ -737,9 +760,16 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
           'published materials'
         )
       } catch (error) {
-        if (requestId === catalogueRequest) {
-          catalogueOwner = null
-        }
+        if (
+          !active ||
+          requestId !== catalogueRequest ||
+          controller.signal.aborted
+        ) return
+
+        catalogueOwner = null
+        setCatalogueError(
+          'Unable to load the course catalogue. Check your connection and try again.'
+        )
 
         console.error(
           'Could not load the database catalogue. Keeping the original catalogue:',
@@ -760,6 +790,8 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
 
     return () => {
       active = false
+      catalogueGeneration.current += 1
+      catalogueAbortRef.current?.abort()
       subscription.unsubscribe()
     }
   }, [contentRefreshVersion])
@@ -1044,6 +1076,185 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
       )
     } catch {}
   }, [showExams, activePremiumModule, selectedCourse, selectedUnit])
+
+  const requestedLessonKey =
+    selectedCourse?.id && selectedUnit
+      ? JSON.stringify([selectedCourse.id, selectedUnit])
+      : null
+
+  const requestedUnitId = requestedLessonKey
+    ? lessonDirectory[requestedLessonKey]
+    : null
+
+  useEffect(() => {
+    if (
+      !catalogueReady ||
+      !requestedLessonKey ||
+      !requestedUnitId ||
+      showExams ||
+      activePremiumModule
+    ) return undefined
+
+    if (lessonCacheRef.current[requestedLessonKey]) {
+      return undefined
+    }
+
+    let active = true
+    const generation = catalogueGeneration.current
+    const controller = new AbortController()
+
+    setLessonRequestState(prev => ({
+      ...prev,
+      [requestedLessonKey]: 'loading'
+    }))
+
+    async function loadLesson() {
+      try {
+        const rows = await readPublishedRows(
+          'learning_materials',
+          'id,unit_id,content,sort_order,status',
+          {
+            unitId: requestedUnitId,
+            signal: controller.signal
+          }
+        )
+
+        const parsed = parsePublishedLessons(
+          rows,
+          new Map([[requestedUnitId, requestedLessonKey]])
+        )
+
+        if (
+          !active ||
+          generation !== catalogueGeneration.current
+        ) return
+
+        lessonCacheRef.current = {
+          ...lessonCacheRef.current,
+          ...parsed
+        }
+
+        setCatalogueLessons(prev => ({
+          ...prev,
+          ...parsed
+        }))
+
+        setLessonRequestState(prev => ({
+          ...prev,
+          [requestedLessonKey]:
+            parsed[requestedLessonKey] ? 'ready' : 'empty'
+        }))
+      } catch {
+        if (
+          !active ||
+          generation !== catalogueGeneration.current
+        ) return
+
+        setLessonRequestState(prev => ({
+          ...prev,
+          [requestedLessonKey]: 'error'
+        }))
+      }
+    }
+
+    void loadLesson()
+
+    return () => {
+      active = false
+      controller.abort()
+    }
+  }, [
+    catalogueReady,
+    requestedLessonKey,
+    requestedUnitId,
+    showExams,
+    activePremiumModule,
+    contentRefreshVersion,
+    lessonRetry
+  ])
+
+  // The grounded Tutor needs all published lesson text.
+  // Load it only when the Tutor is actually opened.
+
+  useEffect(() => {
+    if (
+      !['tutor', 'dashboard', 'hub'].includes(activePremiumModule) ||
+      !catalogueReady
+    ) return undefined
+
+    const unitKeys = new Map(
+      Object.entries(lessonDirectory).map(
+        ([key, unitId]) => [unitId, key]
+      )
+    )
+
+    if (
+      Object.keys(lessonDirectory).every(
+        key => lessonCacheRef.current[key]
+      )
+    ) {
+      setTutorContentState('ready')
+      return undefined
+    }
+
+    let active = true
+    const generation = catalogueGeneration.current
+    const controller = new AbortController()
+
+    setTutorContentState('loading')
+
+    async function loadTutorContent() {
+      try {
+        const rows = await readPublishedRows(
+          'learning_materials',
+          'id,unit_id,content,sort_order,status',
+          { signal: controller.signal }
+        )
+
+        const parsed = parsePublishedLessons(
+          rows,
+          unitKeys
+        )
+
+        if (
+          !active ||
+          generation !== catalogueGeneration.current
+        ) return
+
+        lessonCacheRef.current = {
+          ...lessonCacheRef.current,
+          ...parsed
+        }
+
+        setCatalogueLessons(prev => ({
+          ...prev,
+          ...parsed
+        }))
+
+        setTutorContentState('ready')
+      } catch {
+        if (
+          active &&
+          generation === catalogueGeneration.current
+        ) {
+          setTutorContentState('error')
+        }
+      }
+    }
+
+    void loadTutorContent()
+
+    return () => {
+      active = false
+      controller.abort()
+    }
+  }, [
+    activePremiumModule,
+    catalogueReady,
+    lessonDirectory,
+    contentRefreshVersion,
+    lessonRetry
+  ])
 
   // Resolve a saved course against the published catalogue.
   useEffect(() => {
@@ -1333,6 +1544,20 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
           learningData={learningData}
           catalogueUnits={catalogueUnits}
           catalogueLessons={catalogueLessons}
+          tutorContentState={
+            catalogueError ? 'error' :
+            !catalogueReady ? 'loading' :
+            tutorContentState
+          }
+          onRetryTutor={() => {
+            if (catalogueError) {
+              window.dispatchEvent(
+                new Event('periak:content-refresh')
+              )
+            } else {
+              setLessonRetry(value => value + 1)
+            }
+          }}
           onOpenCourse={(course) => {
             setActivePremiumModule('')
             setSelectedCourse(course)
@@ -1626,7 +1851,43 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
               </section>
               <section className="lesson-panel">
                 <h2>Study notes</h2>
-                <p className="coming-soon">This lesson is being prepared. Its full notes and revision materials are coming soon.</p>
+                {catalogueError ? (
+                  <div role="alert">
+                    <p>{catalogueError}</p>
+                    <button
+                      type="button"
+                      className="primary-button"
+                      onClick={() => window.dispatchEvent(
+                        new Event('periak:content-refresh')
+                      )}
+                    >
+                      Retry catalogue
+                    </button>
+                  </div>
+                ) : !catalogueReady ? (
+                  <p role="status">Loading course information…</p>
+                ) : lessonRequestState[requestedLessonKey] === 'error' ? (
+                  <div role="alert">
+                    <p>
+                      Unable to load this lesson.
+                      Check your internet connection.
+                    </p>
+                    <button
+                      type="button"
+                      className="primary-button"
+                      onClick={() => setLessonRetry(value => value + 1)}
+                    >
+                      Retry lesson
+                    </button>
+                  </div>
+                ) : requestedUnitId &&
+                    lessonRequestState[requestedLessonKey] !== 'empty' ? (
+                  <p role="status">Loading study notes…</p>
+                ) : (
+                  <p className="coming-soon">
+                    Published study notes are not available for this unit yet.
+                  </p>
+                )}
               </section>
             </>
           )}
@@ -1702,7 +1963,7 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
                   </div>
                   <div className="unit-info">
                     <h3>{unit}</h3>
-                    <p>{catalogueLessons[JSON.stringify([selectedCourse.id, unit])] ? 'Study notes, clinical applications and practice questions available.' : 'Study notes and revision materials coming soon.'}</p>
+                    <p>{lessonDirectory[JSON.stringify([selectedCourse.id, unit])] ? 'Study notes, clinical applications and practice questions available.' : 'Study notes and revision materials coming soon.'}</p>
                   </div>
                   <span className="unit-arrow">→</span>
                 </button>

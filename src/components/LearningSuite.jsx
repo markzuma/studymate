@@ -18,7 +18,10 @@ const items = [
 
 export default function LearningSuite({
   courses = [], learningData = {}, catalogueUnits = {},
-  catalogueLessons = {}, onOpenCourse = () => {}, onOpenExams = () => {},
+  catalogueLessons = {},
+  tutorContentState = 'ready',
+  onRetryTutor = () => {},
+  onOpenCourse = () => {}, onOpenExams = () => {},
   hasPremiumAccess = false, premiumLoading = false, isAdmin = false,
   onOpenPremium = () => {}, onOpenPremiumFeature = () => onOpenPremium(),
   initialActive = '', standalone = false, onBack = () => {}
@@ -68,7 +71,31 @@ export default function LearningSuite({
       )}
     </div> : <div className="suite-content" key={`${active}-${visit}`}>
       {active === 'dashboard' && <ProgressOverview courses={courses} learningData={learningData} catalogueUnits={catalogueUnits} onOpenCourse={onOpenCourse} />}
-      {active === 'tutor' && <GroundedStudyTutor courses={courses} catalogueUnits={catalogueUnits} catalogueLessons={catalogueLessons} onOpenCourse={onOpenCourse} />}
+      {active === 'tutor' && (
+        tutorContentState === 'ready' ? (
+          <GroundedStudyTutor
+            courses={courses}
+            catalogueUnits={catalogueUnits}
+            catalogueLessons={catalogueLessons}
+            onOpenCourse={onOpenCourse}
+          />
+        ) : tutorContentState === 'error' ? (
+          <div className="xp-empty" role="alert">
+            <p>Unable to prepare the study search. Check your connection.</p>
+            <button
+              type="button"
+              className="xp-primary"
+              onClick={onRetryTutor}
+            >
+              Retry
+            </button>
+          </div>
+        ) : (
+          <p className="xp-empty" role="status">
+            Preparing published learning materials for the Study Tutor…
+          </p>
+        )
+      )}
       {active === 'clinical' && <ClinicalSkillsLab />}
       {active === 'hub' && <KnowledgeExplorer courses={courses} catalogueUnits={catalogueUnits} onOpenCourse={onOpenCourse} />}
       {active === 'simulator' && <VirtualPatientSimulator />}
