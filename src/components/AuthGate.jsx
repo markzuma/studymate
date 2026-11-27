@@ -1184,6 +1184,8 @@ export default function AuthGate({ children }) {
   fontSize: '12px',
   padding: '10px 0'
 }}>
+  <a href="/about">About</a>
+  <a href="/terms">Terms</a>
   <a href="/privacy.html">Privacy policy</a>
   <a href="/delete-account.html">Account deletion</a>
 </div>

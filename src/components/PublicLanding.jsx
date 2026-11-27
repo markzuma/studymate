@@ -254,6 +254,8 @@ export default function PublicLanding({ onLogin, onRegister }) {
         <strong>PERIAK</strong>
         <p>Learn. Practise. Excel.</p>
         <nav aria-label="Legal and support">
+          <a href="/about">About PERIAK</a>
+          <a href="/terms">Terms of Service</a>
           <a href="/privacy">Privacy policy</a>
           <a href="/delete-account">Account deletion</a>
           <a href="mailto:periaksupport@gmail.com">Contact support</a>
