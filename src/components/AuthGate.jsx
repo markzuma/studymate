@@ -923,17 +923,17 @@ export default function AuthGate({ children }) {
             </button>
           )}
 
-          {(profile?.role === 'student' || profile?.role === 'admin') && (
-            <button data-periak-tour="premium" onClick={() => {
-              if (showPremium) {
-                setShowPremium(false)
-              } else {
-                setShowControlCentre(false)
-                setShowPremium(true)
-              }
-            }}>
-              {showPremium ? 'Back to Learning' : 'Premium'}
-            </button>
+          {!showPremium &&
+            (profile?.role === 'student' || profile?.role === 'admin') && (
+              <button
+                data-periak-tour="premium"
+                onClick={() => {
+                  setShowControlCentre(false)
+                  setShowPremium(true)
+                }}
+              >
+                Premium
+              </button>
           )}
 
           {/* PERIAK UNIVERSAL ACCOUNT MENU V18B */}

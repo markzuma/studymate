@@ -257,14 +257,6 @@ export default function PremiumPage({ referralsEnabled = false, user, onBack, on
     onSubscriptionUpdated
   ])
 
-  // Normal Premium entry scrolls to plans; feature-specific entry starts at the feature.
-  useEffect(() => {
-    if (loading || initialFeatureId) return
-    document.getElementById('premium-plans')?.scrollIntoView({
-      behavior: 'smooth',
-      block: 'start'
-    })
-  }, [loading, initialFeatureId])
 
   useEffect(() => {
     if (initialFeatureId || !selectedPlan || pendingSubscription) return
@@ -324,6 +316,24 @@ export default function PremiumPage({ referralsEnabled = false, user, onBack, on
     pendingSubscription ||
     (activeSubscription &&
       (!EARLY_RENEWALS_ENABLED || membership.unlimited))
+
+  function scrollToPremiumPlans() {
+    if (initialFeatureId) {
+      setPurchaseStep('plans')
+    }
+
+    setSelectedPremiumFeature(null)
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        document.getElementById('premium-plans')
+          ?.scrollIntoView({
+            behavior: 'smooth',
+            block: 'start'
+          })
+      })
+    })
+  }
 
   function handlePremiumBack() {
     if (!initialFeatureId && selectedPlan) {
@@ -503,13 +513,7 @@ export default function PremiumPage({ referralsEnabled = false, user, onBack, on
   return (
     <main className={initialFeatureId && selectedPremiumFeature && !hasPremiumAccess ? `premium-page feature-purchase-flow purchase-step-${purchaseStep}` : 'premium-page'}>
       <header className="premium-header">
-        <button type="button" onClick={handlePremiumBack}>
-          {initialFeatureId && purchaseStep === 'payment'
-            ? '← Back to plans'
-            : initialFeatureId && purchaseStep === 'plans'
-              ? '← Back to feature'
-              : '← Back to Learning'}
-        </button>
+
         <span>PERIAK PREMIUM</span>
       </header>
 
@@ -537,9 +541,13 @@ export default function PremiumPage({ referralsEnabled = false, user, onBack, on
         <h1>Unlock your nursing potential.</h1>
         {referralsEnabled && <ReferralShortcut compact />}
         <p>Get more from your PERIAK learning experience with Premium.</p>
-        <a className="premium-hero-cta" href="#premium-plans">
+        <button
+          type="button"
+          className="premium-hero-cta"
+          onClick={scrollToPremiumPlans}
+        >
           View plans and pricing ↓
-        </a>
+        </button>
       </section>
 
       {error && <p className="premium-error" role="alert">{error}</p>}
@@ -624,18 +632,12 @@ export default function PremiumPage({ referralsEnabled = false, user, onBack, on
               after payment verification.
             </p>
           </div>
-          {initialFeatureId ? (
-            <button
-              type="button"
-              onClick={() => setPurchaseStep('plans')}
-            >
-              View renewal plans
-            </button>
-          ) : (
-            <a href="#premium-plans">
-              View renewal plans
-            </a>
-          )}
+          <button
+            type="button"
+            onClick={scrollToPremiumPlans}
+          >
+            View renewal plans
+          </button>
         </section>
       )}
 
@@ -690,10 +692,10 @@ export default function PremiumPage({ referralsEnabled = false, user, onBack, on
             <h3>{selectedPremiumFeature.title}</h3>
             <p>{selectedPremiumFeature.desc}</p>
             <p>Premium access is required to launch this learning tool.</p>
-            <button type="button" onClick={() => {
-              setSelectedPremiumFeature(null)
-              document.getElementById('premium-plans')?.scrollIntoView({ behavior: 'smooth' })
-            }}>
+            <button
+              type="button"
+              onClick={scrollToPremiumPlans}
+            >
               View subscription plans ↓
             </button>
             <button type="button" className="premium-feature-dismiss"
@@ -706,7 +708,7 @@ export default function PremiumPage({ referralsEnabled = false, user, onBack, on
         <h2>Choose your plan</h2>
         <p>Affordable plans designed for nursing students.</p>
         <p className="premium-pricing-explainer">
-          Prices can be displayed in your preferred currency.
+          Prices are automatically displayed in your local currency where available.
           Membership activates after payment verification.
         </p>
 

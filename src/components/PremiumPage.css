@@ -1106,3 +1106,30 @@
     align-items: flex-start;
   }
 }
+
+/* PERIAK Premium direct navigation */
+.premium-plans {
+  scroll-margin-top: 80px;
+}
+
+.premium-header {
+  justify-content: flex-end;
+}
+
+button.premium-hero-cta {
+  font-family: inherit;
+  border: 0;
+  cursor: pointer;
+  min-height: 44px;
+}
+
+button.premium-hero-cta:focus-visible {
+  outline: 2px solid var(--accent, #237bc5);
+  outline-offset: 3px;
+}
+
+@media (max-width: 600px) {
+  .premium-plans {
+    scroll-margin-top: 64px;
+  }
+}
