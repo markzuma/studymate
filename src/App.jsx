@@ -489,7 +489,13 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
   const [catalogueUnits, setCatalogueUnits] = useState(legacyUnitCatalogue)
   // PERIAK CONTENT AUTO-SYNC V2
   const contentRefreshVersion = useContentRefresh()
-  const [catalogueLessons, setCatalogueLessons] = useState({})
+  const [loadedCatalogueLessons, setCatalogueLessons] = useState({})
+  const entitlementKey = JSON.stringify([isPremium, isAdmin])
+  const [lessonEntitlementKey, setLessonEntitlementKey] = useState(entitlementKey)
+  const catalogueLessons =
+    lessonEntitlementKey === entitlementKey
+      ? loadedCatalogueLessons
+      : {}
   const [lessonDirectory, setLessonDirectory] = useState({})
   const [catalogueReady, setCatalogueReady] = useState(false)
   const [catalogueError, setCatalogueError] = useState('')
@@ -616,6 +622,7 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
       catalogueAbortRef.current = null
       lessonCacheRef.current = {}
       setCatalogueLessons({})
+      setLessonEntitlementKey(entitlementKey)
       setLessonDirectory({})
       setLessonRequestState({})
       setTutorContentState('idle')
@@ -794,7 +801,7 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
       catalogueAbortRef.current?.abort()
       subscription.unsubscribe()
     }
-  }, [contentRefreshVersion])
+  }, [contentRefreshVersion, isPremium, isAdmin])
 
   useEffect(() => {
     let active = true
@@ -1203,7 +1210,8 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
 
   useEffect(() => {
     if (
-      !['tutor', 'dashboard', 'hub'].includes(activePremiumModule) ||
+      activePremiumModule !== 'tutor' ||
+      (!isPremium && !isAdmin) ||
       !catalogueReady
     ) return undefined
 
@@ -1275,6 +1283,8 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
     }
   }, [
     activePremiumModule,
+    isPremium,
+    isAdmin,
     catalogueReady,
     lessonDirectory,
     contentRefreshVersion,
@@ -1547,6 +1557,35 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
           onBack={returnFromPremiumModule}
           onUpgrade={() => onOpenPremium()}
         />
+      </div>
+    )
+  }
+
+  if (
+    !showExams &&
+    ['planner', 'tutor', 'clinical', 'simulator'].includes(activePremiumModule) &&
+    !isPremium &&
+    !isAdmin
+  ) {
+    return (
+      <div className="app premium-module-page">
+        <section className="lesson-panel premium-preview">
+          <p className="eyebrow">PERIAK PREMIUM</p>
+          <h2>{premiumLoading ? 'Checking access…' : 'Premium access required'}</h2>
+          <p>
+            {premiumLoading
+              ? 'Please wait while we verify your access.'
+              : 'An active Premium subscription is required for this learning tool.'}
+          </p>
+          {!premiumLoading && (
+            <button type="button" className="nav-button" onClick={onOpenPremium}>
+              Explore Premium
+            </button>
+          )}
+          <button type="button" className="nav-button" onClick={returnFromPremiumModule}>
+            Back
+          </button>
+        </section>
       </div>
     )
   }

@@ -66,7 +66,17 @@ export default function AuthGate({ children }) {
     session?.access_token &&
     verifiedAdminToken === session.access_token
   )
-  const [premiumAccess, setPremiumAccess] = useState(false)
+  const [premiumEntitlement, setPremiumEntitlement] = useState(null)
+  const premiumRequestRef = useRef(0)
+  const premiumOwnerRef = useRef(null)
+
+  const premiumOwner = session?.user?.id || null
+
+  const premiumAccess = Boolean(
+    premiumOwner &&
+    premiumEntitlement?.owner === premiumOwner &&
+    premiumEntitlement?.active === true
+  )
   const [premiumLoading, setPremiumLoading] = useState(true)
   const [showControlCentre, setShowControlCentre] = useState(false)
   const [showPremium, setShowPremium] = useState(() => savedPeriakAccount() === 'premium')
@@ -453,31 +463,85 @@ export default function AuthGate({ children }) {
   ])
 
   const refreshPremiumAccess = useCallback(async () => {
-    if (!session?.user?.id) {
-      setPremiumAccess(false)
+    const owner = session?.user?.id || null
+
+    if (premiumOwnerRef.current !== owner) return false
+
+    const request = ++premiumRequestRef.current
+
+    if (!owner) {
+      setPremiumEntitlement(null)
       setPremiumLoading(false)
       return false
     }
 
-    const { data, error } = await supabase.rpc('is_premium')
+    try {
+      const { data, error } = await supabase.rpc('is_premium')
 
-    if (error) {
-      console.error('PERIAK Premium status check failed:', error.message)
-      setPremiumAccess(false)
+      if (
+        request !== premiumRequestRef.current ||
+        premiumOwnerRef.current !== owner
+      ) return false
+
+      const active = !error && data === true
+
+      setPremiumEntitlement({ owner, active })
       setPremiumLoading(false)
+
+      if (error) {
+        console.warn('PERIAK Premium verification unavailable.')
+      }
+
+      return active
+    } catch {
+      if (
+        request === premiumRequestRef.current &&
+        premiumOwnerRef.current === owner
+      ) {
+        setPremiumEntitlement({ owner, active: false })
+        setPremiumLoading(false)
+      }
+
       return false
     }
-
-    const active = data === true
-    setPremiumAccess(active)
-    setPremiumLoading(false)
-    return active
   }, [session?.user?.id])
 
   useEffect(() => {
+    premiumOwnerRef.current = session?.user?.id || null
     setPremiumLoading(true)
-    refreshPremiumAccess()
-  }, [refreshPremiumAccess])
+    void refreshPremiumAccess()
+
+    return () => {
+      premiumRequestRef.current += 1
+      premiumOwnerRef.current = null
+    }
+  }, [refreshPremiumAccess, session?.user?.id])
+
+  // PERIAK ENTITLEMENT REFRESH
+  // Recheck Premium during long-running active sessions.
+  useEffect(() => {
+    if (!session?.user?.id) return undefined
+
+    const timer = window.setInterval(() => {
+      if (
+        document.visibilityState === 'visible' &&
+        navigator.onLine
+      ) {
+        void refreshPremiumAccess()
+      }
+    }, 60000)
+
+    const onReconnect = () => {
+      void refreshPremiumAccess()
+    }
+
+    window.addEventListener('online', onReconnect)
+
+    return () => {
+      window.clearInterval(timer)
+      window.removeEventListener('online', onReconnect)
+    }
+  }, [session?.user?.id, refreshPremiumAccess])
 
   // PERIAK SMART REFRESH V1
   // Refresh Premium access on return without reloading the page.
@@ -995,6 +1059,7 @@ export default function AuthGate({ children }) {
           <div className="authenticated-app-shell">
             {cloneElement(children, {
               layout: modernLayout ? 'modern' : 'classic',
+              key: session?.user?.id || 'guest',
               isPremium: premiumAccess,
               premiumLoading,
               isAdmin: verifiedAdmin,

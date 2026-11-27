@@ -2,6 +2,7 @@ import { StrictMode, lazy, Suspense } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import SmartRefresh from './components/SmartRefresh.jsx'
+import ConnectionNotice from './components/ConnectionNotice.jsx'
 import InstallApp from './components/InstallApp.jsx'
 import AuthGate from './components/AuthGate.jsx'
 import { ThemeProvider } from './context/ThemeProvider.jsx'
@@ -37,6 +38,7 @@ createRoot(document.getElementById('root')).render(
             <App />
           </AuthGate>
         </Suspense>
+        <ConnectionNotice />
         <SmartRefresh />
         <InstallApp />
         <Suspense fallback={null}>

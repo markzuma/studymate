@@ -63,7 +63,19 @@ export default function LearningSuite({
       {standalone ? <button type="button" onClick={handleLearningSuiteBack}>← {active ? 'All learning tools' : 'Back to Premium'}</button>
         : active && <button type="button" onClick={handleLearningSuiteBack}>← Back</button>}
     </header>
-    {!active ? <div className="suite-grid">
+    {active &&
+    !['dashboard', 'hub', 'exams'].includes(active) &&
+    !hasPremiumAccess &&
+    !isAdmin ? (
+      <div className="xp-empty" role="status">
+        <p>{premiumLoading ? 'Checking Premium access…' : 'Premium access required.'}</p>
+        {!premiumLoading && (
+          <button type="button" className="xp-primary" onClick={onOpenPremium}>
+            Explore Premium
+          </button>
+        )}
+      </div>
+    ) : !active ? <div className="suite-grid">
       {items.map(([id, icon, title, desc]) =>
         <button type="button" className="suite-card" key={id} onClick={() => open(id)} disabled={premiumLoading && !isAdmin}>
           <span>{icon}</span><strong>{title}</strong><p>{desc}</p>

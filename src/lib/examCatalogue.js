@@ -84,10 +84,30 @@ export function loadExamCatalogue({ force = false } = {}) {
   return request
 }
 
-supabase.auth.onAuthStateChange(event => {
-  if (event === 'SIGNED_OUT' || event === 'USER_UPDATED') {
-    generation += 1
-    cached = null
-    pending = null
+function invalidateCatalogue() {
+  generation += 1
+  cached = null
+  pending = null
+}
+
+let catalogueOwner = null
+
+supabase.auth.onAuthStateChange((event, session) => {
+  const owner = session?.user?.id || null
+
+  if (
+    owner !== catalogueOwner ||
+    event === 'SIGNED_OUT' ||
+    event === 'USER_UPDATED'
+  ) {
+    catalogueOwner = owner
+    invalidateCatalogue()
   }
 })
+
+if (typeof window !== 'undefined') {
+  window.addEventListener(
+    'periak:content-refresh',
+    invalidateCatalogue
+  )
+}
