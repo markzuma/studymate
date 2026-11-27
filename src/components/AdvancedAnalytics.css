@@ -1,0 +1,288 @@
+.paa-root {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+
+.paa-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.paa-header h2 {
+  margin: 6px 0;
+  font-size: 1.5rem;
+}
+
+.paa-header small {
+  font-size: .65rem;
+  font-weight: 700;
+  letter-spacing: .8px;
+  color: #287dcc;
+}
+
+.paa-header p,
+.paa-muted {
+  font-size: .8rem;
+  line-height: 1.6;
+  color: var(--text-muted, #64748b);
+}
+
+.paa-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.paa-actions button,
+.paa-error button {
+  min-height: 44px;
+  padding: 8px 13px;
+  border: 1px solid var(--border-color, #dbe3e8);
+  background: var(--card-bg, #fff);
+  color: var(--text-color, #173b32);
+  border-radius: 7px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.paa-report,
+.paa-metric {
+  background: var(--card-bg, #fff);
+  border: 1px solid var(--border-color, #dbe3e8);
+  border-radius: 10px;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.paa-report {
+  padding: 16px;
+}
+
+.paa-metrics {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit, minmax(min(100%, 160px), 1fr)
+  );
+  gap: 10px;
+}
+
+.paa-metric {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 13px;
+}
+
+.paa-metric span,
+.paa-metric small {
+  font-size: .76rem;
+  line-height: 1.4;
+  color: var(--text-muted, #64748b);
+}
+
+.paa-metric strong {
+  font-size: 1.25rem;
+  line-height: 1.35;
+  font-weight: 750;
+  overflow-wrap: anywhere;
+}
+
+.paa-insights {
+  display: grid;
+  gap: 10px;
+}
+
+.paa-insights article {
+  padding: 12px;
+  border-left: 3px solid #287dcc;
+  border-radius: 4px;
+}
+
+.paa-insights strong {
+  font-size: .88rem;
+}
+
+.paa-insights p {
+  font-size: .8rem;
+  line-height: 1.6;
+  margin: 6px 0;
+}
+
+.paa-table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.paa-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: .8rem;
+}
+
+.paa-table th,
+.paa-table td {
+  padding: 10px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color, #dbe3e8);
+}
+
+.paa-table th {
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.paa-bars {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.paa-bar-row {
+  display: grid;
+  grid-template-columns: minmax(90px, 145px) 1fr 45px;
+  align-items: center;
+  gap: 10px;
+  font-size: .8rem;
+}
+
+.paa-track {
+  background: #94a3b833;
+  height: 13px;
+  overflow: hidden;
+  border-radius: 5px;
+}
+
+.paa-track > div {
+  height: 100%;
+  background: #287dcc;
+  border-radius: 5px;
+}
+
+.pfr-focused.paa-report {
+  padding: clamp(15px, 3vw, 30px);
+}
+
+.pfr-focused .paa-metric strong {
+  font-size: 1.5rem;
+}
+
+.pfr-focused .paa-bar-row {
+  min-height: 36px;
+}
+
+.pfr-focused .paa-track {
+  height: 18px;
+}
+
+@media (max-width: 600px) {
+  .paa-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 7px;
+  }
+
+  .paa-metric {
+    padding: 10px;
+  }
+
+  .paa-metric strong {
+    font-size: 1.1rem;
+  }
+
+  .paa-report {
+    padding: 12px;
+  }
+
+  .paa-header h2 {
+    font-size: 1.25rem;
+  }
+}
+
+
+/* Strategic Management Insights */
+
+.paa-strategic-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 14px;
+}
+
+.paa-strategic-summary small {
+  color: var(--text-muted, #64748b);
+  font-size: .76rem;
+  line-height: 1.5;
+}
+
+.paa-strategic-grid {
+  display: grid;
+  grid-template-columns: repeat(
+    auto-fit, minmax(min(100%, 270px), 1fr)
+  );
+  gap: 10px;
+}
+
+.paa-strategic-card {
+  border: 1px solid var(--border-color, #dbe3e8);
+  border-radius: 9px;
+  padding: 13px;
+  min-width: 0;
+  background: var(--card-bg, #fff);
+}
+
+.paa-strategic-priority {
+  border-left: 3px solid #c08020;
+}
+
+.paa-insight-category {
+  color: #287dcc;
+  font-size: .68rem;
+  font-weight: 700;
+  letter-spacing: .4px;
+  text-transform: uppercase;
+}
+
+.paa-strategic-card h4 {
+  font-size: .9rem;
+  line-height: 1.4;
+  margin: 7px 0;
+}
+
+.paa-strategic-card p {
+  font-size: .8rem;
+  line-height: 1.6;
+  margin: 7px 0;
+}
+
+.paa-recommendation {
+  border-top: 1px solid var(--border-color, #dbe3e8);
+  margin-top: 10px;
+  padding-top: 10px;
+}
+
+.paa-recommendation strong {
+  font-size: .75rem;
+}
+
+.paa-recommendation p {
+  font-size: .77rem;
+}
+
+.pfr-focused .paa-strategic-grid {
+  grid-template-columns: repeat(
+    auto-fit, minmax(min(100%, 310px), 1fr)
+  );
+}
+
+@media (max-width: 600px) {
+  .paa-strategic-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .paa-strategic-card {
+    padding: 12px;
+  }
+}

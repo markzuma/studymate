@@ -1,3 +1,4 @@
+import AdvancedAnalytics from './AdvancedAnalytics'
 import FocusedReport from './FocusedReport'
 import {
   CurrencyControls,
@@ -44,6 +45,7 @@ const TABS = [
   ['engagement','Engagement'],
   ['academics','Academics'],
   ['reports','Statistics'],
+  ['advanced','Advanced Intelligence'],
   ['payments','Payment management']
 ]
 
@@ -974,6 +976,13 @@ export default function BusinessIntelligence({
                     />
                   </Panel>
                 </>
+              )}
+
+              {tab === 'advanced' && (
+                <AdvancedAnalytics
+                  days={days}
+                  refreshKey={version}
+                />
               )}
 
               {tab === 'reports' && (
