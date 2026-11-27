@@ -1,3 +1,4 @@
+import FocusedReport from './FocusedReport'
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 
@@ -175,7 +176,11 @@ export default function AppUsageAnalytics({ days, refreshKey }) {
         ))}
       </div>
 
-      <h4>Daily activity</h4>
+      <FocusedReport
+        title="Daily activity"
+        className="aus-panel aus-daily-report"
+        description={`Application activity within the selected ${days}-day period; latest 14 recorded days displayed.`}
+      >
 
       {daily.length ? (
         <div className="aus-activity-chart">
@@ -197,6 +202,7 @@ export default function AppUsageAnalytics({ days, refreshKey }) {
       ) : (
         <p className="aus-empty">No daily activity recorded yet.</p>
       )}
+      </FocusedReport>
 
       <p className="aus-privacy">
         Downloads are not unique installations. Platform detection

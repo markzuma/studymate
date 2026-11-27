@@ -1,3 +1,4 @@
+import FocusedReport from './FocusedReport'
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import './AdminReferralGrowth.css'
@@ -131,8 +132,7 @@ export default function AdminReferralGrowth() {
           </section>
 
           <div className="prg-columns">
-            <section className="prg-panel">
-              <h3>Referral activity — last 30 days</h3>
+            <FocusedReport title={'Referral activity — last 30 days'} className="prg-panel">
               {data.daily_growth?.length ? (
                 <div className="prg-chart">
                   {data.daily_growth.map(item => (
@@ -151,10 +151,9 @@ export default function AdminReferralGrowth() {
                   ))}
                 </div>
               ) : <p>No referral activity yet.</p>}
-            </section>
+            </FocusedReport>
 
-            <section className="prg-panel">
-              <h3>Acquisition channels</h3>
+            <FocusedReport title={'Acquisition channels'} className="prg-panel">
               {data.sources?.length ? (
                 data.sources.map(item => (
                   <div className="prg-row" key={item.source}>
@@ -166,11 +165,10 @@ export default function AdminReferralGrowth() {
               <small>
                 Channels are based on referral link tags.
               </small>
-            </section>
+            </FocusedReport>
           </div>
 
-          <section className="prg-panel">
-            <h3>Top PERIAK ambassadors</h3>
+          <FocusedReport title={'Top PERIAK ambassadors'} className="prg-panel">
             <div className="prg-table-wrap">
               <table>
                 <thead>
@@ -196,10 +194,9 @@ export default function AdminReferralGrowth() {
                 <p>Ambassadors will appear after their first referral.</p>
               )}
             </div>
-          </section>
+          </FocusedReport>
 
-          <section className="prg-panel">
-            <h3>Registration review</h3>
+          <FocusedReport title={'Registration review'} className="prg-panel">
             <p>
               Accounts with at least ten referrals in 24 hours
               are highlighted for review. High activity alone
@@ -216,10 +213,9 @@ export default function AdminReferralGrowth() {
                 </div>
               ))
             ) : <p>No high-volume accounts flagged.</p>}
-          </section>
+          </FocusedReport>
 
-          <section className="prg-panel">
-            <h3>Recent referred registrations</h3>
+          <FocusedReport title={'Recent referred registrations'} className="prg-panel">
             <div className="prg-table-wrap">
               <table>
                 <thead>
@@ -247,7 +243,7 @@ export default function AdminReferralGrowth() {
                 <p>No referred registrations yet.</p>
               )}
             </div>
-          </section>
+          </FocusedReport>
 
           <footer className="prg-updated">
             Referral rewards are promotional Premium access,

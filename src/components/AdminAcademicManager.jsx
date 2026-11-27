@@ -1,3 +1,4 @@
+import FocusedReport from './FocusedReport'
 import { useEffect, useState } from 'react'
 import { useBackHandler } from '../context/NavigationProvider'
 import { supabase } from '../lib/supabase'
@@ -559,8 +560,15 @@ export default function AdminAcademicManager({ mode, courses = [] }) {
         <>
           <h2>Results & Student Attempts</h2>
           <p>Review submitted database examinations and written responses.</p>
-          <section style={panelStyle}>
-            <button style={buttonStyle} onClick={loadResults}>Refresh results</button>
+          <FocusedReport
+              title="Student examination attempts"
+              className="cc-panel"
+              action={
+                <button style={buttonStyle} onClick={loadResults}>
+                  Refresh results
+                </button>
+              }
+            >
             <p>{results.length} attempts retrieved (maximum 250).</p>
             {results.length === 0 && <p>No database examination attempts yet.</p>}
             {results.map(result => {
@@ -595,7 +603,7 @@ export default function AdminAcademicManager({ mode, courses = [] }) {
                 </details>
               )
             })}
-          </section>
+          </FocusedReport>
         </>
       )}
     </div>

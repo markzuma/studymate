@@ -1,3 +1,4 @@
+import FocusedReport from './FocusedReport'
 import {
   CurrencyControls,
   useCurrencyDisplay
@@ -95,13 +96,13 @@ function DataTable({columns,rows}) {
 
 function Panel({title,description,children}) {
   return (
-    <section className="pbi-panel">
-      <h3>{title}</h3>
-      {description && (
-        <p className="pbi-muted">{description}</p>
-      )}
+    <FocusedReport
+      title={title}
+      description={description}
+      className="pbi-panel"
+    >
       {children}
-    </section>
+    </FocusedReport>
   )
 }
 

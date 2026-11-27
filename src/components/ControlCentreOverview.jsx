@@ -1,3 +1,4 @@
+import FocusedReport from './FocusedReport'
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 
@@ -38,16 +39,14 @@ function Metric({ label, value, icon, onClick, detail }) {
 
 function Panel({ title, description, children, action }) {
   return (
-    <section className="cc3-panel">
-      <header className="cc3-panel-header">
-        <div>
-          <h3>{title}</h3>
-          {description && <p>{description}</p>}
-        </div>
-        {action}
-      </header>
+    <FocusedReport
+      title={title}
+      description={description}
+      className="cc3-panel"
+      action={action}
+    >
       {children}
-    </section>
+    </FocusedReport>
   )
 }
 

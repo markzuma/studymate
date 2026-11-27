@@ -1,3 +1,4 @@
+import FocusedReport from './FocusedReport'
 import {
   CurrencyControls,
   useCurrencyDisplay
@@ -405,13 +406,10 @@ export default function Monetization() {
         </article>
       </div>
 
-      <section
-        className="cc-panel mon-panel mon-revenue-trends"
-        aria-label="Monthly verified revenue"
-      >
+      <FocusedReport title={'Verified Revenue Trends'} className="cc-panel mon-panel mon-revenue-trends">
         <div className="mon-revenue-heading">
           <div>
-            <h3>Verified Revenue Trends</h3>
+
             <p>Monthly payments verified over the last six months.</p>
           </div>
           <span>Amounts in KSh</span>
@@ -464,7 +462,7 @@ export default function Monetization() {
             })}
           </div>
         )}
-      </section>
+      </FocusedReport>
 
       <p className="mon-data-note">
         Financial summaries are calculated by Supabase from
@@ -472,8 +470,7 @@ export default function Monetization() {
         Pending payments are excluded from revenue.
       </p>
 
-      <section className="cc-panel mon-panel">
-        <h3>Premium Conversion Analytics</h3>
+      <FocusedReport title={'Premium Conversion Analytics'} className="cc-panel mon-panel">
         <p>
           Unique students at each purchasing stage
           during the last 30 days.
@@ -576,7 +573,7 @@ export default function Monetization() {
           Verified buyers are counted from confirmed
           payment records.
         </p>
-      </section>
+      </FocusedReport>
 
       {/* PERIAK DARK EXAMS PAYMENT FIX V1 */}
       <div className="cc-panel mon-panel">

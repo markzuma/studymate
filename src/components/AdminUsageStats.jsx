@@ -1,3 +1,4 @@
+import FocusedReport from './FocusedReport'
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import AppUsageAnalytics from './AppUsageAnalytics'
@@ -150,8 +151,7 @@ export default function AdminUsageStats() {
           </div>
 
           <div className="aus-grid">
-            <section className="aus-panel">
-              <h3>Feature usage</h3>
+            <FocusedReport title={'Feature usage'} className="aus-panel">
 
               {featureRows.length ? (
                 <ul className="aus-ranked-list">
@@ -168,10 +168,9 @@ export default function AdminUsageStats() {
               ) : (
                 <p className="aus-empty">No feature activity recorded in this period.</p>
               )}
-            </section>
+            </FocusedReport>
 
-            <section className="aus-panel">
-              <h3>Most opened past papers</h3>
+            <FocusedReport title={'Most opened past papers'} className="aus-panel">
 
               {paperRows.length ? (
                 <ul className="aus-ranked-list aus-paper-list">
@@ -188,11 +187,10 @@ export default function AdminUsageStats() {
               ) : (
                 <p className="aus-empty">No past papers opened in this period.</p>
               )}
-            </section>
+            </FocusedReport>
           </div>
 
-          <section className="aus-panel aus-recent">
-            <h3>Recent activity</h3>
+          <FocusedReport title={'Recent activity'} className="aus-panel aus-recent">
 
             {recentRows.length ? (
               <div className="aus-table-wrap">
@@ -229,7 +227,7 @@ export default function AdminUsageStats() {
             ) : (
               <p className="aus-empty">No recent activity to display.</p>
             )}
-          </section>
+          </FocusedReport>
         </>
       ) : !error ? (
         <div className="aus-state">No statistics were returned.</div>

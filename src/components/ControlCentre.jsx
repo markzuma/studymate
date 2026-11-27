@@ -46,7 +46,7 @@ const SECTIONS = [
 
 export default function ControlCentre({ onClose }) {
   const [section, setSection] = useState('overview')
-  const [expandedTool, setExpandedTool] = useState(true)
+  const [expandedTool, setExpandedTool] = useState(false)
   const [fullscreenActive, setFullscreenActive] = useState(
     () => Boolean(document.fullscreenElement)
   )
@@ -221,7 +221,7 @@ export default function ControlCentre({ onClose }) {
 
     if (nextSection === section) return
     setSectionHistory(previous => [...previous, section])
-    setExpandedTool(true)
+    setExpandedTool(false)
     setSection(nextSection)
     window.scrollTo(0, 0)
   }
@@ -231,7 +231,7 @@ export default function ControlCentre({ onClose }) {
     const previousSection = sectionHistory[sectionHistory.length - 1]
     setSectionHistory(previous => previous.slice(0, -1))
     setSection(previousSection)
-    setExpandedTool(true)
+    setExpandedTool(false)
 
     setMobileNavOpen(false)
     window.scrollTo(0, 0)

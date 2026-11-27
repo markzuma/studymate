@@ -1,3 +1,4 @@
+import FocusedReport from './FocusedReport'
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import './AcademicQualityManager.css'
@@ -189,9 +190,8 @@ export default function AcademicQualityManager({
             ))}
           </div>
 
-          <section className="aqm-panel">
-            <div className="aqm-heading">
-              <h3>Course coverage</h3>
+          <FocusedReport title={'Course coverage'} className="aqm-panel">
+<div className="aqm-heading">
 
               <select
                 aria-label="Filter academic audit by course"
@@ -279,11 +279,10 @@ export default function AcademicQualityManager({
                 Question Bank
               </button>
             </div>
-          </section>
+          </FocusedReport>
 
-          <section className="aqm-panel">
-            <div className="aqm-heading">
-              <h3>Unit coverage gaps ({units.length})</h3>
+          <FocusedReport title={`Unit coverage gaps (${units.length})`} className="aqm-panel">
+<div className="aqm-heading">
 
               <button onClick={() => navigate('courses')}>
                 Manage units
@@ -326,11 +325,10 @@ export default function AcademicQualityManager({
                 </button>
               </div>
             ))}
-          </section>
+          </FocusedReport>
 
-          <section className="aqm-panel">
-            <div className="aqm-heading">
-              <h3>Lessons for review ({lessons.length})</h3>
+          <FocusedReport title={`Lessons for review (${lessons.length})`} className="aqm-panel">
+<div className="aqm-heading">
 
               <button onClick={() => navigate('materials')}>
                 Learning Materials
@@ -398,11 +396,10 @@ export default function AcademicQualityManager({
                 </button>
               </details>
             ))}
-          </section>
+          </FocusedReport>
 
-          <section className="aqm-panel">
-            <div className="aqm-heading">
-              <h3>Past papers for review</h3>
+          <FocusedReport title={'Past papers for review'} className="aqm-panel">
+<div className="aqm-heading">
 
               <button onClick={() => navigate('pastpapers')}>
                 Manage library
@@ -427,7 +424,7 @@ export default function AcademicQualityManager({
                 </ul>
               </details>
             ))}
-          </section>
+          </FocusedReport>
 
           <footer className="aqm-disclaimer">
             Last audit: {
