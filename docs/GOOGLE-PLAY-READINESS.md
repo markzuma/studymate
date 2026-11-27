@@ -7,7 +7,7 @@
 - Category: Education
 - Current Android version: 1.0.1
 - Tagline: Learn. Practise. Excel.
-- Website: https://studymate-pi-eight.vercel.app/
+- Website: https://periakedu.vercel.app/
 
 ## Store listing
 
@@ -21,8 +21,8 @@ clinical decision support.
 
 ## Public resources
 
-- https://studymate-pi-eight.vercel.app/privacy.html
-- https://studymate-pi-eight.vercel.app/delete-account.html
+- https://periakedu.vercel.app/privacy.html
+- https://periakedu.vercel.app/delete-account.html
 
 ## Submission checklist
 

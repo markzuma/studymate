@@ -1,6 +1,6 @@
 {
   "packageId": "com.periak.app",
-  "host": "studymate-pi-eight.vercel.app",
+  "host": "periakedu.vercel.app",
   "name": "PERIAK",
   "launcherName": "PERIAK",
   "display": "standalone",
@@ -11,8 +11,8 @@
   "backgroundColor": "#ffffff",
   "enableNotifications": false,
   "startUrl": "/",
-  "iconUrl": "https://studymate-pi-eight.vercel.app/pwa-512x512.png?v=3",
-  "maskableIconUrl": "https://studymate-pi-eight.vercel.app/periak-maskable-512.png?v=3",
+  "iconUrl": "https://periakedu.vercel.app/pwa-512x512.png?v=3",
+  "maskableIconUrl": "https://periakedu.vercel.app/periak-maskable-512.png?v=3",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
     "path": "./periak-release.jks",
@@ -22,7 +22,7 @@
   "appVersion": "1.0.0",
   "shortcuts": [],
   "generatorApp": "bubblewrap-cli",
-  "webManifestUrl": "https://studymate-pi-eight.vercel.app/manifest.webmanifest",
+  "webManifestUrl": "https://periakedu.vercel.app/manifest.webmanifest",
   "fallbackType": "customtabs",
   "enableSiteSettingsShortcut": true,
   "isChromeOSOnly": false,
