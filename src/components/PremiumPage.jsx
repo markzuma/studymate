@@ -1,3 +1,7 @@
+import {
+  CurrencyControls,
+  useCurrencyDisplay
+} from './CurrencyDisplay'
 import ReferralShortcut from './ReferralShortcut'
 import { useEffect, useRef, useState } from 'react'
 import { supabase } from '../lib/supabase'
@@ -63,6 +67,7 @@ const PAYMENT_METHODS = [
 ]
 
 export default function PremiumPage({ referralsEnabled = false, user, onBack, onSubscriptionUpdated = () => {}, hasPremiumAccess = false, onOpenFeature = () => {}, onRegisterBackHandler = () => {}, initialFeatureId = null }) {
+  const currencyDisplay = useCurrencyDisplay()
   const launchHandled = useRef(false)
   const premiumViewRecorded = useRef(false)
 
@@ -120,6 +125,7 @@ export default function PremiumPage({ referralsEnabled = false, user, onBack, on
             .from('subscription_plans')
             .select('id, name, billing_interval, price_kes, duration_days')
             .eq('is_active', true)
+            .eq('available_for_purchase', true)
             .order('price_kes'),
           supabase
             .from('subscriptions')
@@ -643,9 +649,11 @@ export default function PremiumPage({ referralsEnabled = false, user, onBack, on
         <h2>Choose your plan</h2>
         <p>Affordable plans designed for nursing students.</p>
         <p className="premium-pricing-explainer">
-          Prices are shown in Kenyan shillings.
+          Prices can be displayed in your preferred currency.
           Membership activates after payment verification.
         </p>
+
+        <CurrencyControls display={currencyDisplay} />
 
         <div className="premium-grid">
           {plans.map(plan => (
@@ -655,8 +663,11 @@ export default function PremiumPage({ referralsEnabled = false, user, onBack, on
             >
               <h3>{plan.name}</h3>
               <div className="premium-price">
-                KSh {Number(plan.price_kes).toLocaleString()}
+                {currencyDisplay.studentPrice(plan.price_kes)}
               </div>
+              <small className="premium-settlement">
+                Payable in KES: {Number(plan.price_kes).toLocaleString('en-KE')}
+              </small>
               <p>{plan.duration_days} days of Premium access</p>
               {Number(plan.duration_days) > 0 &&
                 Number.isFinite(Number(plan.price_kes)) && (
@@ -696,6 +707,9 @@ export default function PremiumPage({ referralsEnabled = false, user, onBack, on
             <span>YOUR SELECTED PLAN</span>
             <strong>{selectedPlan.name}</strong>
             <b>KSh {Number(selectedPlan.price_kes).toLocaleString()}</b>
+            <small>
+              Reference price: {currencyDisplay.studentPrice(selectedPlan.price_kes)}
+            </small>
             <small>
               {selectedPlan.duration_days} days of access ·
               Activated after payment verification

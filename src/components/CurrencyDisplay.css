@@ -1,0 +1,70 @@
+.periak-currency-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 16px;
+  padding: 13px 15px;
+  margin: 12px 0;
+  background: var(--surface, #fff);
+  border: 1px solid var(--border, #dce3eb);
+  border-radius: 10px;
+  color: var(--text-primary, #172b40);
+}
+
+.periak-currency-controls label {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: .8rem;
+  font-weight: 650;
+}
+
+.periak-currency-controls select {
+  max-width: 100%;
+  min-height: 40px;
+  padding: 8px 10px;
+  background: var(--page-bg, #f5f7fb);
+  color: var(--text-primary, #172b40);
+  border: 1px solid var(--border, #dce3eb);
+  border-radius: 7px;
+  font: inherit;
+}
+
+.periak-currency-controls small {
+  font-size: .73rem;
+  line-height: 1.5;
+  color: var(--text-muted, #64748b);
+}
+
+.periak-currency-controls a {
+  color: var(--accent, #287dcc);
+  text-decoration: underline;
+}
+
+.premium-price {
+  overflow-wrap: anywhere;
+}
+
+.premium-settlement {
+  display: block;
+  margin: 6px 0;
+  font-size: .75rem;
+  color: var(--text-muted, #64748b);
+}
+
+@media(max-width:600px) {
+  .periak-currency-controls {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .periak-currency-controls label {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .periak-currency-controls select {
+    width: 100%;
+  }
+}

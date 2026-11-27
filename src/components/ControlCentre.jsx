@@ -46,6 +46,61 @@ const SECTIONS = [
 
 export default function ControlCentre({ onClose }) {
   const [section, setSection] = useState('overview')
+  const [expandedTool, setExpandedTool] = useState(true)
+  const [fullscreenActive, setFullscreenActive] = useState(
+    () => Boolean(document.fullscreenElement)
+  )
+  const [fullscreenError, setFullscreenError] = useState('')
+
+  const expanded = section !== 'overview' && expandedTool
+
+  useEffect(() => {
+    function updateFullscreen() {
+      setFullscreenActive(Boolean(document.fullscreenElement))
+    }
+
+    document.addEventListener(
+      'fullscreenchange',
+      updateFullscreen
+    )
+
+    return () => {
+      document.removeEventListener(
+        'fullscreenchange',
+        updateFullscreen
+      )
+    }
+  }, [])
+
+  async function toggleFullscreen() {
+    setFullscreenError('')
+
+    try {
+      if (document.fullscreenElement) {
+        await document.exitFullscreen()
+      } else if (document.documentElement.requestFullscreen) {
+        await document.documentElement.requestFullscreen()
+      } else {
+        setFullscreenError(
+          'Browser fullscreen is not supported. Expanded view remains available.'
+        )
+      }
+    } catch {
+      setFullscreenError(
+        'Unable to enter fullscreen. Expanded view remains available.'
+      )
+    }
+  }
+
+  async function closeAdminWorkspace() {
+    try {
+      if (document.fullscreenElement) {
+        await document.exitFullscreen()
+      }
+    } catch {}
+
+    onClose()
+  }
   const [mobileNavOpen, setMobileNavOpen] = useState(false)
   const [sectionHistory, setSectionHistory] = useState([])
   const [profiles, setProfiles] = useState([])
@@ -166,7 +221,9 @@ export default function ControlCentre({ onClose }) {
 
     if (nextSection === section) return
     setSectionHistory(previous => [...previous, section])
+    setExpandedTool(true)
     setSection(nextSection)
+    window.scrollTo(0, 0)
   }
 
   function handleSectionBack() {
@@ -174,8 +231,10 @@ export default function ControlCentre({ onClose }) {
     const previousSection = sectionHistory[sectionHistory.length - 1]
     setSectionHistory(previous => previous.slice(0, -1))
     setSection(previousSection)
+    setExpandedTool(true)
 
     setMobileNavOpen(false)
+    window.scrollTo(0, 0)
 
     return true
   }
@@ -769,7 +828,10 @@ export default function ControlCentre({ onClose }) {
   })
 
   return (
-    <main className="control-centre ccv2 paw-control">
+    <main className={
+      'control-centre ccv2 paw-control' +
+      (expanded ? ' paw-expanded' : '')
+    }>
       <header className="cc-header">
         <div>
           <span className="cc-eyebrow">✚ PERIAK</span>
@@ -779,7 +841,7 @@ export default function ControlCentre({ onClose }) {
         <button
           type="button"
           className="paw-student-switch"
-          onClick={onClose}
+          onClick={closeAdminWorkspace}
         >
           ← Student View
         </button>
@@ -808,6 +870,56 @@ export default function ControlCentre({ onClose }) {
         />
 
       <div className="ccv2-workspace">
+
+      <div className="paw-tool-toolbar">
+        <div className="paw-tool-title">
+          <small>ADMINISTRATION / WORKSPACE</small>
+          <strong>
+            {SECTIONS.find(item => item.id === section)?.label}
+          </strong>
+        </div>
+
+        <div className="paw-tool-actions">
+          {section !== 'overview' && (
+            <>
+              <button
+                type="button"
+                onClick={() => {
+                  if (!handleSectionBack()) {
+                    navigateSection('overview')
+                  }
+                }}
+              >
+                ← Back
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setExpandedTool(value => !value)
+                  setMobileNavOpen(false)
+                }}
+                aria-pressed={expanded}
+              >
+                {expanded ? 'Show navigation' : 'Expand workspace'}
+              </button>
+            </>
+          )}
+
+          <button
+            type="button"
+            onClick={toggleFullscreen}
+          >
+            {fullscreenActive
+              ? 'Exit fullscreen'
+              : 'Fullscreen'}
+          </button>
+        </div>
+
+        {fullscreenError && (
+          <small role="status">{fullscreenError}</small>
+        )}
+      </div>
 
       {error && <p className="cc-error">{error}</p>}
 

@@ -1,4 +1,8 @@
 import {
+  CurrencyControls,
+  useCurrencyDisplay
+} from './CurrencyDisplay'
+import {
   useEffect,
   useMemo,
   useState
@@ -132,7 +136,7 @@ function Trend({
 
   return (
     <Panel
-      title={title}
+      title={currency ? `${title} (KES)` : title}
       description="Daily values and seven-day trailing moving average."
     >
       {trackingStart && (
@@ -280,6 +284,8 @@ export default function BusinessIntelligence({
   onNavigate,
   executiveOnly = false
 }) {
+  const currencyDisplay = useCurrencyDisplay()
+  const money = currencyDisplay.money
   const [tab,setTab] = useState('overview')
   const [days,setDays] = useState(30)
   const [version,setVersion] = useState(0)
@@ -446,6 +452,10 @@ export default function BusinessIntelligence({
         </div>
         <span className="pbi-access">Administrator only</span>
       </header>
+
+      {authorized && tab !== 'payments' && (
+        <CurrencyControls display={currencyDisplay} admin />
+      )}
 
       {!executiveOnly && (
       <nav className="pbi-tabs" aria-label="Business reports">

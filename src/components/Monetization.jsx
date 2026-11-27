@@ -1,8 +1,13 @@
+import {
+  CurrencyControls,
+  useCurrencyDisplay
+} from './CurrencyDisplay'
 import { useEffect, useState } from 'react'
 import { supabase } from '../lib/supabase'
 import './Monetization.css'
 
 export default function Monetization() {
+  const currencyDisplay = useCurrencyDisplay()
   const [plans, setPlans] = useState([])
   const [subscriptions, setSubscriptions] = useState([])
   const [payments, setPayments] = useState([])
@@ -102,13 +107,13 @@ export default function Monetization() {
 
     const { error } = await supabase
       .from('subscription_plans')
-      .update({ is_active: !plan.is_active })
+      .update({ available_for_purchase: !plan.available_for_purchase })
       .eq('id', plan.id)
 
     if (error) {
       setMessage(`Plan could not be updated: ${error.message}`)
     } else {
-      setMessage(`${plan.name} ${plan.is_active ? 'deactivated' : 'activated'}.`)
+      setMessage(`${plan.name} ${plan.available_for_purchase ? 'withdrawn from sale' : 'made available for purchase'}.`)
       await loadData()
     }
 
@@ -347,6 +352,7 @@ export default function Monetization() {
         <div>
           <h2>Monetization</h2>
           <p>Manage PERIAK Premium subscriptions and payments.</p>
+          <CurrencyControls display={currencyDisplay} admin />
         </div>
         <button onClick={loadData}>Refresh</button>
       </div>
@@ -382,7 +388,7 @@ export default function Monetization() {
           <span>Verified Revenue</span>
           <strong>
             {revenueReport
-              ? `KSh ${reportValue('verified_revenue_kes')}`
+              ? currencyDisplay.money(revenueReport.verified_revenue_kes)
               : '—'}
           </strong>
           <small>Completed and verified payments</small>
@@ -392,7 +398,7 @@ export default function Monetization() {
           <span>Verified Revenue · 30 Days</span>
           <strong>
             {revenueReport
-              ? `KSh ${reportValue('revenue_30d_kes')}`
+              ? currencyDisplay.money(revenueReport.revenue_30d_kes)
               : '—'}
           </strong>
           <small>Last 30 rolling days</small>
@@ -810,7 +816,11 @@ export default function Monetization() {
 
       <div className="cc-panel mon-panel">
         <h3>Premium Subscription Plans</h3>
-        <p>Initial PERIAK Premium pricing.</p>
+        <p>
+          Manage plans available for new purchases.
+          Withdrawing a plan from sale does not cancel
+          existing student memberships.
+        </p>
 
         <div className="cc-table-wrap">
           <table className="cc-table">
@@ -830,19 +840,29 @@ export default function Monetization() {
                   <td>KSh {Number(plan.price_kes).toLocaleString()}</td>
                   <td>{plan.duration_days} days</td>
                   <td>
-                    <span className={plan.is_active ? 'mon-active' : 'mon-inactive'}>
-                      {plan.is_active ? 'Active' : 'Inactive'}
+                    <span className={
+                      plan.is_active && plan.available_for_purchase
+                        ? 'mon-active'
+                        : 'mon-inactive'
+                    }>
+                      {!plan.is_active
+                        ? 'Disabled'
+                        : plan.available_for_purchase
+                          ? 'On sale'
+                          : 'Withdrawn'}
                     </span>
                   </td>
                   <td>
                     <button
                       className="mon-action"
-                      disabled={savingPlan === plan.id}
+                      disabled={savingPlan === plan.id || !plan.is_active}
                       onClick={() => togglePlan(plan)}
                     >
                       {savingPlan === plan.id
                         ? 'Saving...'
-                        : plan.is_active ? 'Deactivate' : 'Activate'}
+                        : plan.available_for_purchase
+                          ? 'Withdraw from sale'
+                          : 'Enable sales'}
                     </button>
                   </td>
                 </tr>
