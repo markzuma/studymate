@@ -327,3 +327,35 @@ export function formatDualCurrency(
 
   return `${kes} · ≈ ${usd}`
 }
+
+
+export function currencyForCountry(country) {
+  const code = typeof country === 'string'
+    ? country.toUpperCase()
+    : ''
+
+  return Object.hasOwn(REGIONS, code)
+    ? REGIONS[code]
+    : 'USD'
+}
+
+export async function detectVisitorCountry() {
+  try {
+    const response = await fetch('/api/country', {
+      cache: 'no-store',
+      credentials: 'omit',
+      signal: AbortSignal.timeout(5000)
+    })
+
+    if (!response.ok) return null
+
+    const data = await response.json()
+
+    return typeof data.country === 'string' &&
+      /^[A-Z]{2}$/.test(data.country)
+        ? data.country
+        : null
+  } catch {
+    return null
+  }
+}

@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict'
 import {
   detectCurrency,
+  currencyForCountry,
   validateRates,
   convertKES,
   formatKES,
@@ -119,4 +120,19 @@ check('USD preserves two decimal places', () =>
     /1[.]00$/
   ))
 
-console.log(`SUCCESS: ${passed}/22 currency checks passed.`)
+check('Kenyan visitor uses KES', () =>
+  assert.equal(currencyForCountry('KE'), 'KES'))
+
+check('Ugandan visitor uses UGX', () =>
+  assert.equal(currencyForCountry('UG'), 'UGX'))
+
+check('British visitor uses GBP', () =>
+  assert.equal(currencyForCountry('GB'), 'GBP'))
+
+check('Unknown country falls back to USD', () =>
+  assert.equal(currencyForCountry(null), 'USD'))
+
+check('Unsupported country falls back to USD', () =>
+  assert.equal(currencyForCountry('XX'), 'USD'))
+
+console.log(`SUCCESS: ${passed}/27 currency checks passed.`)

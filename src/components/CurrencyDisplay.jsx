@@ -4,6 +4,8 @@ import {
   CURRENCIES,
   RATE_SOURCE,
   detectCurrency,
+  currencyForCountry,
+  detectVisitorCountry,
   getCurrencyPreference,
   saveCurrencyPreference,
   loadExchangeRates,
@@ -29,6 +31,30 @@ function readReportMode() {
 
 export function useCurrencyDisplay() {
   const [snapshot, setSnapshot] = useState(null)
+  const [visitorCountry, setVisitorCountry] = useState(null)
+  const [countryChecked, setCountryChecked] = useState(false)
+
+  useEffect(() => {
+    let active = true
+
+    async function detect() {
+      const country = await detectVisitorCountry()
+
+      if (active) {
+        setVisitorCountry(country)
+        setCountryChecked(true)
+      }
+    }
+
+    void detect()
+
+    window.addEventListener('online', detect)
+
+    return () => {
+      active = false
+      window.removeEventListener('online', detect)
+    }
+  }, [])
 
   const [preference, setPreference] = useState(
     getCurrencyPreference
@@ -78,12 +104,11 @@ export function useCurrencyDisplay() {
     }
   }, [])
 
-  const currency = preference === 'auto'
-    ? detectCurrency(
-        navigator.languages || [],
-        Intl.DateTimeFormat().resolvedOptions().timeZone
-      )
-    : preference
+  const currency = visitorCountry
+    ? currencyForCountry(visitorCountry)
+    : countryChecked
+      ? 'USD'
+      : 'KES'
 
   function changeCurrency(value) {
     if (
@@ -197,6 +222,7 @@ export function CurrencyControls({
 }) {
   return (
     <div className="periak-currency-controls">
+      {admin ? (
       <label>
         <span>
           {admin
@@ -243,6 +269,12 @@ export function CurrencyControls({
           )}
         </select>
       </label>
+      ) : (
+        <small>
+          Prices automatically displayed in your
+          local currency where available.
+        </small>
+      )}
 
       {display.snapshot &&
        formatKES(1, 'USD', display.snapshot) !== '—' ? (

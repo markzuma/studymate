@@ -165,3 +165,101 @@
     font-size: 1.4rem;
   }
 }
+
+/* PERIAK Compact Premium Cards V1 */
+
+.premium-plans .premium-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  max-width: 640px;
+  margin: 12px auto;
+  gap: 10px;
+}
+
+.premium-plans .premium-grid .premium-card {
+  padding: 14px 16px;
+  gap: 4px;
+  border-radius: 10px;
+  min-height: 0;
+}
+
+.premium-plans .premium-card h3 {
+  font-size: .9rem;
+  margin: 0 0 5px;
+}
+
+.premium-plans .premium-card .premium-price {
+  font-size: 1.65rem;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.premium-plans .premium-card .premium-currency-equivalent {
+  font-size: .75rem;
+  line-height: 1.4;
+  margin: 0 0 4px;
+}
+
+.premium-plans .premium-card > p {
+  font-size: .78rem;
+  line-height: 1.4;
+  margin: 5px 0 8px;
+  padding-bottom: 8px;
+}
+
+.premium-plans .premium-card > button {
+  min-height: 44px;
+  height: auto;
+  padding: 8px 10px;
+  margin-top: auto;
+  font-size: .8rem;
+  border-radius: 7px;
+}
+
+.premium-plans .periak-currency-controls {
+  max-width: 640px;
+  margin: 10px auto;
+  padding: 9px 12px;
+  gap: 4px 10px;
+  box-sizing: border-box;
+}
+
+.premium-plans .periak-currency-controls small {
+  font-size: .68rem;
+  line-height: 1.4;
+}
+
+@media (max-width: 600px) {
+  .premium-plans .premium-grid {
+    gap: 8px;
+    margin: 10px auto;
+  }
+
+  .premium-plans .premium-grid .premium-card {
+    padding: 11px;
+    gap: 3px;
+  }
+
+  .premium-plans .premium-card h3 {
+    font-size: .8rem;
+    margin-bottom: 4px;
+  }
+
+  .premium-plans .premium-card .premium-price {
+    font-size: 1.4rem;
+  }
+
+  .premium-plans .premium-card .premium-currency-equivalent {
+    font-size: .72rem;
+  }
+
+  .premium-plans .premium-card > p {
+    font-size: .73rem;
+    margin: 4px 0 7px;
+    padding-bottom: 7px;
+  }
+
+  .premium-plans .premium-card > button {
+    min-height: 44px;
+    font-size: .75rem;
+  }
+}
