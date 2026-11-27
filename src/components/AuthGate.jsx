@@ -16,6 +16,7 @@ import ReferralCentre from './ReferralCentre'
 import { readReferral, clearReferral } from '../lib/referrals'
 const loadPremiumPage = () => import('./PremiumPage')
 const PremiumPage = lazy(loadPremiumPage)
+const PublicLanding = lazy(() => import('./PublicLanding'))
 const AdminWorkspace = lazy(() => import('./AdminWorkspace'))
 import { useBackHandler } from '../context/NavigationProvider'
 
@@ -48,7 +49,50 @@ export default function AuthGate({ children }) {
 
   const [session, setSession] = useState(null)
   const [loading, setLoading] = useState(true)
-  const [mode, setMode] = useState('login')
+  const [mode, setMode] = useState(() =>
+    readReferral() || window.location.pathname === '/register'
+      ? 'register' : 'login'
+  )
+
+  const [showPublicLanding, setShowPublicLanding] = useState(() => {
+    const url = new URL(window.location.href)
+
+    return url.pathname === '/' &&
+      !readReferral() &&
+      !url.searchParams.has('code') &&
+      !url.searchParams.has('error') &&
+      !url.hash
+  })
+
+  function openPublicAuth(nextMode) {
+    setMode(nextMode)
+    setShowPublicLanding(false)
+    setError('')
+    setMessage('')
+
+    const url = new URL(window.location.href)
+    url.pathname = nextMode === 'register'
+      ? '/register' : '/login'
+
+    window.history.replaceState(
+      window.history.state, '', url
+    )
+    window.scrollTo(0, 0)
+  }
+
+  function openPublicHome() {
+    setShowPublicLanding(true)
+    setError('')
+    setMessage('')
+    setPassword('')
+
+    const url = new URL(window.location.href)
+    url.pathname = '/'
+    window.history.replaceState(
+      window.history.state, '', url
+    )
+    window.scrollTo(0, 0)
+  }
   const [fullName, setFullName] = useState('')
   const [username, setUsername] = useState('')
   const [email, setEmail] = useState('')
@@ -633,6 +677,7 @@ export default function AuthGate({ children }) {
   useEffect(() => {
     if (!session && readReferral()) {
       setMode('register')
+      setShowPublicLanding(false)
     }
   }, [session?.user?.id])
 
@@ -1104,9 +1149,27 @@ export default function AuthGate({ children }) {
     )
   }
 
+  if (showPublicLanding) {
+    return (
+      <Suspense fallback={<div role="status">Opening PERIAK…</div>}>
+        <PublicLanding
+          onLogin={() => openPublicAuth('login')}
+          onRegister={() => openPublicAuth('register')}
+        />
+      </Suspense>
+    )
+  }
+
   return (
     <div className="auth-page">
       <div className="auth-card">
+        <button
+          type="button"
+          className="auth-text-button"
+          onClick={openPublicHome}
+        >
+          PERIAK homepage
+        </button>
         <div className="auth-brand">
           <span className="auth-logo">✚</span>
           <span>PERIAK</span>
