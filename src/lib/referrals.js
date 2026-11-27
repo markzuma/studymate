@@ -5,7 +5,7 @@ const SOURCES = new Set([
   'native_share', 'other'
 ])
 
-const BASE_URL = 'https://studymate-pi-eight.vercel.app/'
+const BASE_URL = 'https://periakedu.vercel.app/'
 
 export function readReferral() {
   const params = new URLSearchParams(window.location.search)

@@ -3,7 +3,7 @@ set -euo pipefail
 
 cd "$(dirname "$0")/../.."
 
-BASE="https://studymate-pi-eight.vercel.app"
+BASE="https://periakedu.vercel.app"
 ARCHIVE="$HOME/PERIAK-Secure-Backup.tar.gz.gpg"
 
 echo "========== PERIAK INFRASTRUCTURE CHECK =========="
