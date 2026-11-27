@@ -663,20 +663,16 @@ export default function PremiumPage({ referralsEnabled = false, user, onBack, on
             >
               <h3>{plan.name}</h3>
               <div className="premium-price">
-                {currencyDisplay.studentPrice(plan.price_kes)}
+                {currencyDisplay.priceParts(plan.price_kes).primary}
               </div>
-              <small className="premium-settlement">
-                Payable in KES: {Number(plan.price_kes).toLocaleString('en-KE')}
-              </small>
+
+              {currencyDisplay.priceParts(plan.price_kes).secondary && (
+                <small className="premium-currency-equivalent">
+                  {currencyDisplay.priceParts(plan.price_kes).secondary}
+                </small>
+              )}
               <p>{plan.duration_days} days of Premium access</p>
-              {Number(plan.duration_days) > 0 &&
-                Number.isFinite(Number(plan.price_kes)) && (
-                  <small className="premium-daily-equivalent">
-                    About KSh {(Number(plan.price_kes) /
-                      Number(plan.duration_days)).toFixed(2)}
-                    /day equivalent · full price paid upfront
-                  </small>
-                )}
+
 
               <button
                 onClick={() => {

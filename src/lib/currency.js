@@ -57,9 +57,35 @@ const REGIONS = {
   GR: 'EUR'
 }
 
+const TIMEZONE_CURRENCIES = {
+  'Africa/Nairobi': 'KES',
+  'Africa/Kampala': 'UGX',
+  'Africa/Dar_es_Salaam': 'TZS',
+  'Africa/Kigali': 'RWF',
+  'Africa/Lagos': 'NGN',
+  'Africa/Accra': 'GHS',
+  'Africa/Johannesburg': 'ZAR',
+  'Africa/Addis_Ababa': 'ETB',
+  'Africa/Lusaka': 'ZMW',
+  'Europe/London': 'GBP',
+  'Europe/Paris': 'EUR',
+  'Europe/Berlin': 'EUR',
+  'Europe/Rome': 'EUR',
+  'Europe/Madrid': 'EUR',
+  'Europe/Amsterdam': 'EUR',
+  'Asia/Kolkata': 'INR',
+  'Asia/Calcutta': 'INR',
+  'Asia/Dubai': 'AED'
+}
+
 export function detectCurrency(
-  locales = globalThis.navigator?.languages || []
+  locales = globalThis.navigator?.languages || [],
+  timeZone = ''
 ) {
+  if (Object.hasOwn(TIMEZONE_CURRENCIES, timeZone)) {
+    return TIMEZONE_CURRENCIES[timeZone]
+  }
+
   for (const locale of locales) {
     try {
       const region = new Intl.Locale(locale).region
@@ -272,9 +298,12 @@ export function formatKES(
       style: 'currency',
       currency,
       currencyDisplay: 'code',
-      minimumFractionDigits: 0,
+      minimumFractionDigits: currency === 'USD' ? 2 : 0,
       maximumFractionDigits: 2
-    }).format(value)
+    }).format(value).replace(
+      /^KES\s+/,
+      'KSh '
+    )
   } catch {
     return '—'
   }

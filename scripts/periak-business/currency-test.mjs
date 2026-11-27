@@ -80,7 +80,7 @@ check('No rates falls back to KES in analytics', () =>
 
 check('Dual currency marked approximate', () => {
   const text = formatDualCurrency(100, snapshot)
-  assert.ok(text.includes('KES'))
+  assert.ok(text.includes('KSh'))
   assert.ok(text.includes('USD'))
   assert.ok(text.includes('≈'))
 })
@@ -92,4 +92,31 @@ check('Invalid rate source rejected', () =>
     rates: { USD: 1 }
   }), null))
 
-console.log(`SUCCESS: ${passed}/17 currency checks passed.`)
+check('Kenyan timezone overrides US browser locale', () =>
+  assert.equal(
+    detectCurrency(['en-US'], 'Africa/Nairobi'),
+    'KES'
+  ))
+
+check('Ugandan timezone overrides UK browser locale', () =>
+  assert.equal(
+    detectCurrency(['en-GB'], 'Africa/Kampala'),
+    'UGX'
+  ))
+
+check('Unknown timezone preserves regional detection', () =>
+  assert.equal(
+    detectCurrency(['en-US'], 'UTC'),
+    'USD'
+  ))
+
+check('Kenyan price uses KSh label', () =>
+  assert.equal(formatKES(20), 'KSh 20'))
+
+check('USD preserves two decimal places', () =>
+  assert.match(
+    formatKES(100, 'USD', snapshot),
+    /1[.]00$/
+  ))
+
+console.log(`SUCCESS: ${passed}/22 currency checks passed.`)

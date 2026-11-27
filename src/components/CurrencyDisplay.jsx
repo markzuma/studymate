@@ -79,7 +79,10 @@ export function useCurrencyDisplay() {
   }, [])
 
   const currency = preference === 'auto'
-    ? detectCurrency()
+    ? detectCurrency(
+        navigator.languages || [],
+        Intl.DateTimeFormat().resolvedOptions().timeZone
+      )
     : preference
 
   function changeCurrency(value) {
@@ -132,7 +135,45 @@ export function useCurrencyDisplay() {
       : `≈ ${local} · ${usd}`
   }
 
+  function priceParts(amount) {
+    const kes = formatKES(amount)
+    const usd = formatKES(amount, 'USD', snapshot)
+
+    if (kes === '—') {
+      return { primary: kes, secondary: '' }
+    }
+
+    if (currency === 'KES') {
+      return {
+        primary: kes,
+        secondary: usd === '—' ? '' : `≈ ${usd}`
+      }
+    }
+
+    if (currency === 'USD' && usd !== '—') {
+      return {
+        primary: `≈ ${usd}`,
+        secondary: `Equivalent: ${kes}`
+      }
+    }
+
+    const local = formatKES(amount, currency, snapshot)
+
+    if (local !== '—') {
+      return {
+        primary: `≈ ${local}`,
+        secondary: usd === '—' ? kes : `≈ ${usd}`
+      }
+    }
+
+    return {
+      primary: kes,
+      secondary: usd === '—' ? '' : `≈ ${usd}`
+    }
+  }
+
   return {
+    priceParts,
     snapshot,
     preference,
     currency,
