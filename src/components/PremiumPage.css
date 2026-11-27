@@ -1004,3 +1004,105 @@
     gap:4px;
   }
 }
+
+/* PERIAK Subscription Lifecycle 2.0 */
+
+.premium-history,
+.premium-renewal-preview {
+  padding: 16px;
+  border: 1px solid var(--border-color, #dce5e9);
+  border-radius: 12px;
+  margin: 14px 0;
+}
+
+.premium-history-heading,
+.premium-history-top,
+.premium-history-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.premium-history h2 {
+  font-size: 1.05rem;
+  margin: 0 0 6px;
+}
+
+.premium-history p,
+.premium-renewal-preview p {
+  font-size: .85rem;
+  line-height: 1.5;
+  margin: 7px 0;
+}
+
+.premium-history button {
+  border: 1px solid var(--border-color, #dce5e9);
+  background: transparent;
+  color: inherit;
+  border-radius: 8px;
+  min-height: 42px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.premium-history button:disabled {
+  opacity: .45;
+  cursor: not-allowed;
+}
+
+.premium-history-item {
+  display: grid;
+  gap: 7px;
+  padding: 12px;
+  margin-top: 10px;
+  border: 1px solid var(--border-color, #dce5e9);
+  border-radius: 8px;
+  overflow-wrap: anywhere;
+}
+
+.premium-history-item small,
+.premium-renewal-preview small {
+  font-size: .77rem;
+  line-height: 1.5;
+}
+
+.premium-payment-status {
+  font-size: .7rem;
+  font-weight: 700;
+  border: 1px solid currentColor;
+  border-radius: 20px;
+  padding: 4px 9px;
+}
+
+.premium-payment-status.status-completed {
+  color: #16865b;
+}
+
+.premium-payment-status.status-pending {
+  color: #b47c20;
+}
+
+.premium-payment-status.status-failed {
+  color: #cc5252;
+}
+
+.premium-history-pagination {
+  margin-top: 12px;
+}
+
+.premium-renewal-preview {
+  border-left: 3px solid #16865b;
+}
+
+@media (max-width: 600px) {
+  .premium-history,
+  .premium-renewal-preview {
+    padding: 12px;
+  }
+
+  .premium-history-heading {
+    align-items: flex-start;
+  }
+}

@@ -1,3 +1,5 @@
+import PremiumPaymentHistory from './PremiumPaymentHistory'
+import { deriveMembership } from '../lib/subscriptionLifecycle'
 import {
   CurrencyControls,
   useCurrencyDisplay
@@ -8,6 +10,9 @@ import { supabase } from '../lib/supabase'
 import './PremiumPage.css'
 
 const MPESA_STK_ENABLED = false
+
+// Enable only when the renewal migration is installed.
+const EARLY_RENEWALS_ENABLED = true
 
 // PERIAK PREMIUM CONVERSION TRACKING V1
 // Analytics is optional and never controls payment processing.
@@ -80,7 +85,9 @@ export default function PremiumPage({ referralsEnabled = false, user, onBack, on
   const [selectedPremiumFeature, setSelectedPremiumFeature] = useState(() => PREMIUM_FEATURES.find(feature => feature.id === initialFeatureId) || null)
   const [purchaseStep, setPurchaseStep] = useState(initialFeatureId ? 'feature' : 'catalogue')
   const [plans, setPlans] = useState([])
-  const [subscription, setSubscription] = useState(null)
+  const [subscriptions, setSubscriptions] = useState([])
+  const [membershipRefresh, setMembershipRefresh] = useState(0)
+  const [pendingPaymentId, setPendingPaymentId] = useState(null)
   const [membershipNow, setMembershipNow] = useState(() => Date.now())
 
   useEffect(() => {
@@ -132,7 +139,7 @@ export default function PremiumPage({ referralsEnabled = false, user, onBack, on
             .select('id, plan_id, status, starts_at, ends_at')
             .eq('student_id', user.id)
             .order('created_at', { ascending: false })
-            .limit(1)
+            .limit(1000)
         ])
 
         if (!active) return
@@ -141,10 +148,11 @@ export default function PremiumPage({ referralsEnabled = false, user, onBack, on
           setError('Unable to load Premium information. Please try again.')
         } else {
           setPlans(planResult.data || [])
-          const latestSubscription = subscriptionResult.data?.[0] || null
-          setSubscription(latestSubscription)
+          setSubscriptions(subscriptionResult.data || [])
 
-          if (latestSubscription?.status === 'active') {
+          if (deriveMembership(
+            subscriptionResult.data || []
+          ).active) {
             onSubscriptionUpdated()
           }
         }
@@ -164,59 +172,90 @@ export default function PremiumPage({ referralsEnabled = false, user, onBack, on
     }
   }, [user.id, onSubscriptionUpdated])
 
-  // Check pending payments/subscriptions until the admin or Daraja updates them.
+  // Poll the submitted or pending renewal without replacing
+  // the student's currently valid membership.
   useEffect(() => {
-    if (subscription?.status !== 'pending' && !paymentInitiated) {
-      return
-    }
+    const pending = subscriptions.find(
+      row => row.status === 'pending'
+    )
+
+    if (!pending && !paymentInitiated && !pendingPaymentId) return
 
     let active = true
     let checking = false
+
+    const trackedId = pending?.id || pendingPaymentId
 
     async function refreshPaymentStatus() {
       if (checking) return
       checking = true
 
       try {
-        const { data, error: queryError } = await supabase
+        const result = await supabase
           .from('subscriptions')
           .select('id, plan_id, status, starts_at, ends_at')
           .eq('student_id', user.id)
           .order('created_at', { ascending: false })
-          .limit(1)
+          .limit(1000)
 
-        if (!active || queryError || !data?.length) return
+        if (!active || result.error) return
 
-        const latest = data[0]
-        setSubscription(latest)
+        const rows = result.data || []
+        setSubscriptions(rows)
 
-        if (latest.status === 'active') {
+        const tracked = trackedId
+          ? rows.find(row => row.id === trackedId)
+          : rows[0]
+
+        if (!tracked) return
+
+        if (tracked.status === 'active') {
           onSubscriptionUpdated()
           setPaymentInitiated(false)
+          setPendingPaymentId(null)
+          setMembershipRefresh(v => v + 1)
+          setSelectedPlan(null)
+          setManualReceipt('')
+
           setPaymentMessage(
-            'Payment verified successfully. Your PERIAK Premium membership is now active.'
+            tracked.starts_at &&
+              Date.parse(tracked.starts_at) > Date.now()
+              ? 'Renewal verified. Your additional Premium days are scheduled after existing paid access.'
+              : 'Payment verified. Your Premium access is active.'
           )
-        } else if (latest.status !== 'pending') {
+        } else if (
+          ['cancelled', 'expired'].includes(tracked.status)
+        ) {
           setPaymentInitiated(false)
+          setPendingPaymentId(null)
+          setMembershipRefresh(v => v + 1)
+
           setPaymentMessage(
-            'Your payment submission was not approved or is no longer pending. Check the receipt or contact PERIAK support before paying again.'
+            'Payment was not approved. Any existing verified membership remains valid. Contact support before paying again.'
           )
         }
-      } catch (err) {
-        console.error('Could not refresh payment status:', err)
+      } catch {
+        // Keep the existing membership and retry.
       } finally {
         checking = false
       }
     }
 
-    refreshPaymentStatus()
+    void refreshPaymentStatus()
+
     const timer = setInterval(refreshPaymentStatus, 5000)
 
     return () => {
       active = false
       clearInterval(timer)
     }
-  }, [user.id, subscription?.id, subscription?.status, paymentInitiated, onSubscriptionUpdated])
+  }, [
+    user.id,
+    subscriptions.find(row => row.status === 'pending')?.id,
+    paymentInitiated,
+    pendingPaymentId,
+    onSubscriptionUpdated
+  ])
 
   // Normal Premium entry scrolls to plans; feature-specific entry starts at the feature.
   useEffect(() => {
@@ -228,7 +267,7 @@ export default function PremiumPage({ referralsEnabled = false, user, onBack, on
   }, [loading, initialFeatureId])
 
   useEffect(() => {
-    if (initialFeatureId || !selectedPlan || activeSubscription || pendingSubscription) return
+    if (initialFeatureId || !selectedPlan || pendingSubscription) return
 
     document.getElementById('premium-checkout')?.scrollIntoView({
       behavior: 'smooth',
@@ -236,35 +275,38 @@ export default function PremiumPage({ referralsEnabled = false, user, onBack, on
     })
   }, [selectedPlan, initialFeatureId])
 
-  const expiryTimestamp = subscription?.ends_at
-    ? Date.parse(subscription.ends_at)
-    : null
+  const membership = deriveMembership(
+    subscriptions,
+    membershipNow
+  )
+
+  // Compatibility for existing membership display references.
+  const subscription =
+    membership.current ||
+    membership.pending ||
+    membership.expired ||
+    null
+
+  const activeSubscription = membership.active
+
+  const pendingSubscription =
+    Boolean(membership.pending) || paymentInitiated
+
+  const expiredSubscription =
+    !activeSubscription && Boolean(membership.expired)
+
+  const expiryTimestamp =
+    membership.paidUntil ??
+    (membership.expired?.ends_at
+      ? Date.parse(membership.expired.ends_at)
+      : null)
 
   const validExpiry = Number.isFinite(expiryTimestamp)
 
-  const activeSubscription =
-    subscription?.status === 'active' &&
-    (
-      !subscription.ends_at ||
-      (validExpiry && expiryTimestamp > membershipNow)
-    )
-
-  const pendingSubscription = subscription?.status === 'pending'
-
-  const expiredSubscription =
-    subscription?.status === 'active' &&
-    validExpiry &&
-    expiryTimestamp <= membershipNow
-
-  const membershipDaysLeft =
-    activeSubscription && validExpiry
-      ? Math.max(
-          1,
-          Math.ceil((expiryTimestamp - membershipNow) / 86400000)
-        )
-      : null
+  const membershipDaysLeft = membership.daysLeft
 
   const membershipExpiringSoon =
+    activeSubscription &&
     membershipDaysLeft !== null &&
     membershipDaysLeft <= 7
 
@@ -275,6 +317,13 @@ export default function PremiumPage({ referralsEnabled = false, user, onBack, on
         year: 'numeric'
       })
     : 'Not specified'
+
+  const purchaseBlocked =
+    loading ||
+    paying ||
+    pendingSubscription ||
+    (activeSubscription &&
+      (!EARLY_RENEWALS_ENABLED || membership.unlimited))
 
   function handlePremiumBack() {
     if (!initialFeatureId && selectedPlan) {
@@ -329,7 +378,7 @@ export default function PremiumPage({ referralsEnabled = false, user, onBack, on
   }, [purchaseStep, initialFeatureId])
 
   async function handlePayment() {
-    if (paying || paymentInitiated || pendingSubscription) return
+    if (purchaseBlocked) return
 
     if (paymentMethod === 'mpesa' && !MPESA_STK_ENABLED) {
       setError('M-Pesa STK Push is temporarily unavailable. Please use another available payment method.')
@@ -406,9 +455,14 @@ export default function PremiumPage({ referralsEnabled = false, user, onBack, on
           throw new Error('Your payment receipt could not be submitted.')
         }
 
+        setPendingPaymentId(data.subscription_id || null)
         setPaymentInitiated(true)
+        setMembershipRefresh(v => v + 1)
+
         setPaymentMessage(
-          'Receipt submitted successfully. Your payment is pending admin verification. Premium will activate after your payment is confirmed.'
+          activeSubscription
+            ? 'Renewal receipt submitted. Your existing Premium access remains valid during verification.'
+            : 'Receipt submitted. Premium activates after payment verification.'
         )
       } else {
         throw new Error('This payment method is not available yet.')
@@ -549,8 +603,9 @@ export default function PremiumPage({ referralsEnabled = false, user, onBack, on
           {membershipExpiringSoon && (
             <p className="premium-membership-reminder" role="status">
               Your membership is approaching its expiry date.
-              You can purchase a new plan after this subscription
-              expires. Existing access continues until then.
+              {EARLY_RENEWALS_ENABLED
+                ? ' Renew before expiry and keep your remaining paid days.'
+                : ' Existing access continues until the expiry date.'}
             </p>
           )}
         </section>
@@ -584,12 +639,14 @@ export default function PremiumPage({ referralsEnabled = false, user, onBack, on
         </section>
       )}
 
-      {pendingSubscription && !activeSubscription && (
+      {pendingSubscription && (
         <section className="premium-pending" role="status">
           <h2>Payment verification pending</h2>
           <p>
-            Your latest subscription is awaiting payment verification.
-            Do not start another payment for the same subscription.
+            Your payment is awaiting verification.
+            {activeSubscription &&
+              ' Your existing paid access remains valid.'}
+            {' '}Do not send another payment for this purchase.
           </p>
         </section>
       )}
@@ -687,18 +744,30 @@ export default function PremiumPage({ referralsEnabled = false, user, onBack, on
                     setPurchaseStep('payment')
                   }
                 }}
-                disabled={activeSubscription || pendingSubscription || paymentInitiated}
+                disabled={purchaseBlocked}
               >
-                {selectedPlan?.id === plan.id ? 'Selected' : 'Choose Plan'}
+                {selectedPlan?.id === plan.id
+                  ? 'Selected'
+                  : activeSubscription && EARLY_RENEWALS_ENABLED
+                    ? 'Renew with this plan'
+                    : 'Choose Plan'}
               </button>
             </article>
           ))}
         </div>
       </section>
 
-      {selectedPlan && !activeSubscription && !pendingSubscription && (!initialFeatureId || purchaseStep === 'payment') && (
+      {selectedPlan &&
+        !pendingSubscription &&
+        (!activeSubscription ||
+          (EARLY_RENEWALS_ENABLED && !membership.unlimited)) &&
+        (!initialFeatureId || purchaseStep === 'payment') && (
         <section className="premium-checkout" id="premium-checkout">
-          <h2>Complete your Premium purchase</h2>
+          <h2>
+            {activeSubscription
+              ? 'Renew your Premium membership'
+              : 'Complete your Premium purchase'}
+          </h2>
           <div className="premium-order-summary">
             <span>YOUR SELECTED PLAN</span>
             <strong>{selectedPlan.name}</strong>
@@ -708,9 +777,34 @@ export default function PremiumPage({ referralsEnabled = false, user, onBack, on
             </small>
             <small>
               {selectedPlan.duration_days} days of access ·
-              Activated after payment verification
+              {activeSubscription
+                ? 'Added after existing paid access once verified'
+                : 'Activated after payment verification'}
             </small>
           </div>
+          {activeSubscription &&
+            membership.paidUntil !== null && (
+              <div className="premium-renewal-preview">
+                <strong>Keep your remaining paid days</strong>
+                <p>
+                  This plan adds {selectedPlan.duration_days}
+                  {' '}days after your existing paid membership.
+                </p>
+                <small>
+                  Estimated paid access until {
+                    new Date(
+                      membership.paidUntil +
+                      selectedPlan.duration_days * 86400000
+                    ).toLocaleDateString('en-KE', {
+                      day: 'numeric',
+                      month: 'long',
+                      year: 'numeric'
+                    })
+                  } if verified before expiry.
+                </small>
+              </div>
+            )}
+
           <h3 className="premium-method-heading">
             Choose a payment method
           </h3>
@@ -787,8 +881,12 @@ export default function PremiumPage({ referralsEnabled = false, user, onBack, on
             <div className="premium-manual-payment">
               <h3>Pay manually using M-Pesa</h3>
               <ol>
-                <li>Open M-Pesa and choose Send Money.</li>
-                <li>Send the exact amount shown above to the number below.</li>
+                <li>Open M-Pesa.</li>
+                <li>
+                  Use the official Pochi la Biashara payment
+                  option and the number shown below.
+                </li>
+                <li>Confirm the recipient and exact KSh amount before paying.</li>
                 <li>Enter your M-Pesa transaction receipt code.</li>
                 <li>Submit it for admin verification.</li>
               </ol>
@@ -806,6 +904,7 @@ export default function PremiumPage({ referralsEnabled = false, user, onBack, on
                   id="premium-receipt"
                   type="text"
                   autoComplete="off"
+                  maxLength={20}
                   placeholder="e.g. QHX7ABCD12"
                   value={manualReceipt}
                   disabled={paying || paymentInitiated}
@@ -824,6 +923,8 @@ export default function PremiumPage({ referralsEnabled = false, user, onBack, on
             disabled={
               paying ||
               paymentInitiated ||
+              (paymentMethod === 'pochi_manual' &&
+                !/^[A-Z0-9]{6,20}$/.test(manualReceipt.trim())) ||
               !['mpesa', 'pochi_manual'].includes(paymentMethod) ||
               (paymentMethod === 'mpesa' && !MPESA_STK_ENABLED) ||
               (paymentMethod === 'pochi_manual' && !pochiPhone)
@@ -844,6 +945,38 @@ export default function PremiumPage({ referralsEnabled = false, user, onBack, on
           </p>
         </section>
       )}
+
+      {membership.scheduled.length > 0 && (
+        <section className="premium-history">
+          <h2>Verified upcoming memberships</h2>
+          <p>
+            Your purchased renewal periods are already scheduled.
+          </p>
+
+          {membership.scheduled.map(row => (
+            <article
+              key={row.id}
+              className="premium-history-item"
+            >
+              <strong>Verified renewal</strong>
+              <small>
+                Starts: {new Date(row.starts_at)
+                  .toLocaleString('en-KE')}
+              </small>
+              <small>
+                Ends: {new Date(row.ends_at)
+                  .toLocaleString('en-KE')}
+              </small>
+            </article>
+          ))}
+        </section>
+      )}
+
+      <PremiumPaymentHistory
+        key={user.id}
+        userId={user.id}
+        refreshKey={membershipRefresh}
+      />
 
       <footer className="premium-footer">
         PERIAK — Learn. Practise. Excel.
