@@ -54,6 +54,14 @@
     {
       "source": "/terms",
       "destination": "/terms.html"
+    },
+    {
+      "source": "/reset",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/recover",
+      "destination": "/index.html"
     }
   ]
 }

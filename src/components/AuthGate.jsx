@@ -3,6 +3,11 @@ import { cloneElement, lazy, Suspense, useCallback, useEffect, useState,
   useRef} from 'react'
 import { supabase } from '../lib/supabase'
 import './AuthGate.css'
+import PasswordRecovery from './PasswordRecovery'
+import {
+  passwordStrength,
+  validateNewPassword
+} from '../lib/passwordValidation'
 import './StudentWorkspace.css'
 import './WorkspaceFinishing.css'
 import StudentWorkspaceNav from './StudentWorkspaceNav'
@@ -48,10 +53,38 @@ export default function AuthGate({ children }) {
   const modernLayout = effectiveLayout === 'modern'
 
   const [session, setSession] = useState(null)
+
+  const [recoveryRequested, setRecoveryRequested] = useState(() => {
+    const url = new URL(window.location.href)
+    const hash = new URLSearchParams(url.hash.slice(1))
+
+    return url.pathname === '/recover' ||
+      hash.get('type') === 'recovery' ||
+      url.searchParams.get('type') === 'recovery'
+  })
+
+  const [recoveryAuthorized, setRecoveryAuthorized] = useState(false)
+
+  const [recoveryInvalid, setRecoveryInvalid] = useState(() => {
+    const url = new URL(window.location.href)
+    const hash = new URLSearchParams(url.hash.slice(1))
+
+    return Boolean(
+      hash.get('error') ||
+      hash.get('error_code') ||
+      url.searchParams.get('error') ||
+      url.searchParams.get('error_code')
+    )
+  })
+
+  const recoveryMode = recoveryRequested || recoveryAuthorized
+  const [confirmation, setConfirmation] = useState('')
   const [loading, setLoading] = useState(true)
   const [mode, setMode] = useState(() =>
     readReferral() || window.location.pathname === '/register'
-      ? 'register' : 'login'
+      ? 'register'
+      : window.location.pathname === '/reset'
+        ? 'reset' : 'login'
   )
 
   const [showPublicLanding, setShowPublicLanding] = useState(() => {
@@ -66,13 +99,18 @@ export default function AuthGate({ children }) {
 
   function openPublicAuth(nextMode) {
     setMode(nextMode)
+    setPassword('')
+    setConfirmation('')
+    setShowPassword(false)
     setShowPublicLanding(false)
     setError('')
     setMessage('')
 
     const url = new URL(window.location.href)
     url.pathname = nextMode === 'register'
-      ? '/register' : '/login'
+      ? '/register'
+      : nextMode === 'reset'
+        ? '/reset' : '/login'
 
     window.history.replaceState(
       window.history.state, '', url
@@ -383,11 +421,20 @@ export default function AuthGate({ children }) {
     })
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, newSession) => {
-        if (mounted) {
-          setSession(newSession)
-          setLoading(false)
+      (event, newSession) => {
+        if (!mounted) return
+
+        if (event === 'PASSWORD_RECOVERY') {
+          setRecoveryRequested(true)
+          setRecoveryAuthorized(Boolean(newSession))
+          setRecoveryInvalid(!newSession)
+          setShowPublicLanding(false)
+          setPassword('')
+          setConfirmation('')
         }
+
+        setSession(newSession)
+        setLoading(false)
       }
     )
 
@@ -675,7 +722,7 @@ export default function AuthGate({ children }) {
 
   // Automatically open registration for referral visitors.
   useEffect(() => {
-    if (!session && readReferral()) {
+    if (!session && !recoveryMode && readReferral()) {
       setMode('register')
       setShowPublicLanding(false)
     }
@@ -689,8 +736,13 @@ export default function AuthGate({ children }) {
 
     try {
       if (mode === 'register') {
-        if (password.length < 8) {
-          throw new Error('Your password must contain at least 8 characters.')
+        const validation = validateNewPassword(
+          password,
+          confirmation
+        )
+
+        if (validation) {
+          throw new Error(validation)
         }
 
         const cleanUsername = username.trim().toLowerCase()
@@ -766,7 +818,7 @@ export default function AuthGate({ children }) {
       } else {
         const { error } = await supabase.auth.resetPasswordForEmail(
           email.trim(),
-          { redirectTo: window.location.origin }
+          { redirectTo: window.location.origin + '/recover' }
         )
         if (error) throw error
         setMessage('If an account exists for this email, a password reset link will be sent.')
@@ -820,6 +872,39 @@ export default function AuthGate({ children }) {
         <strong>PERIAK</strong>
         <span className="periak-startup-line" />
       </div>
+    )
+  }
+
+  if (recoveryMode) {
+    return (
+      <PasswordRecovery
+        session={session}
+        authorized={recoveryAuthorized}
+        invalid={recoveryInvalid}
+        onComplete={(changed) => {
+          setSession(null)
+          setProfile(null)
+          setVerifiedAdminToken(null)
+          setRecoveryRequested(false)
+          setRecoveryAuthorized(false)
+          setRecoveryInvalid(false)
+          setShowPublicLanding(false)
+          setMode(changed ? 'login' : 'reset')
+          setPassword('')
+          setConfirmation('')
+          setError('')
+          setMessage(changed
+            ? 'Password updated. Sign in with your new password.'
+            : '')
+
+          const url = new URL(window.location.origin)
+          url.pathname = changed ? '/login' : '/reset'
+
+          window.history.replaceState(
+            window.history.state, '', url
+          )
+        }}
+      />
     )
   }
 
@@ -1290,6 +1375,47 @@ export default function AuthGate({ children }) {
             </label>
           )}
 
+          {mode === 'register' && (
+            <>
+              <div className="auth-strength">
+                <progress
+                  value={passwordStrength(password).score}
+                  max={4}
+                  aria-label="Password length indicator"
+                />
+                <small>{passwordStrength(password).label}</small>
+              </div>
+
+              <label>
+                Confirm password
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  value={confirmation}
+                  onChange={e => setConfirmation(e.target.value)}
+                  autoComplete="new-password"
+                  minLength={8}
+                  required
+                />
+              </label>
+
+              {confirmation && password !== confirmation && (
+                <small className="auth-password-mismatch">
+                  Passwords do not match.
+                </small>
+              )}
+
+              <p className="auth-password-guidance">
+                Use a unique password.
+                Longer passwords or passphrases are recommended.
+              </p>
+
+              <p className="auth-registration-terms">
+                Please review our <a href="/terms">Terms of Service</a>
+                {' '}and <a href="/privacy">Privacy Policy</a>.
+              </p>
+            </>
+          )}
+
           <button className="auth-submit" type="submit" disabled={busy}>
             {busy
               ? 'Please wait...'
@@ -1302,11 +1428,7 @@ export default function AuthGate({ children }) {
         </form>
 
         {mode === 'login' && (
-          <button className="auth-text-button" onClick={() => {
-            setMode('reset')
-            setError('')
-            setMessage('')
-          }}>
+          <button className="auth-text-button" onClick={() => openPublicAuth('reset')}>
             Forgot password?
           </button>
         )}
@@ -1315,20 +1437,12 @@ export default function AuthGate({ children }) {
           {mode === 'login' ? (
             <>
               Don't have an account?{' '}
-              <button onClick={() => {
-                setMode('register')
-                setError('')
-                setMessage('')
-              }}>Register</button>
+              <button onClick={() => openPublicAuth('register')}>Register</button>
             </>
           ) : (
             <>
               Already have an account?{' '}
-              <button onClick={() => {
-                setMode('login')
-                setError('')
-                setMessage('')
-              }}>Sign in</button>
+              <button onClick={() => openPublicAuth('login')}>Sign in</button>
             </>
           )}
         </div>
