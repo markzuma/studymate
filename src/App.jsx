@@ -1598,9 +1598,7 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
             <span className="brand-icon">✚</span>
             <span>PERIAK</span>
           </a>
-          <button type="button" className="nav-button" onClick={returnFromPremiumModule}>
-            ← Back to Premium
-          </button>
+
         </header>
         <StudyPlanner />
       </div>
@@ -1680,9 +1678,7 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
         </Suspense>
       )}
 
-          <button className="back-link" onClick={() => setSelectedUnit(null)}>
-            ← Back to course content
-          </button>
+
 
           <div className="lesson-heading">
             <div className="eyebrow">{selectedCourse.title}</div>
@@ -1966,9 +1962,7 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
             </>
           )}
 
-          <button className="primary-button lesson-back-button" onClick={() => setSelectedUnit(null)}>
-            Return to course units →
-          </button>
+
         </main>
 
         <footer>
@@ -1988,21 +1982,11 @@ function AppInner({ layout = 'classic', isPremium = false, premiumLoading = fals
             <span className="brand-icon">✚</span>
             <span>PERIAK</span>
           </a>
-          <button className="nav-button" onClick={goHome}>All courses ←</button>
+
         </header>
 
         <main className="course-detail">
-          <button
-            className="back-link"
-            onClick={() => {
-              setSelectedUnit(null)
-              setSelectedCourse(null)
-              setCatalogueOpen(true)
-              window.scrollTo({ top: 0 })
-            }}
-          >
-            ← Back to all courses
-          </button>
+
 
           <div className="course-detail-hero">
             <div className="course-detail-icon">

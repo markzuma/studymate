@@ -156,12 +156,7 @@ export default function SmartWrittenRevision({
             You reviewed {reviewed} written questions.
           </p>
 
-          <button
-            className="sev2-primary"
-            onClick={onBack}
-          >
-            Back to Exam Centre
-          </button>
+
         </>
       ) : !question ? (
         <>

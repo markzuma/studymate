@@ -622,13 +622,7 @@ export default function SmartExamCentre({
   return (
     <main className="smart-exam-v2">
       <header className="sev2-header">
-        <button
-          className="sev2-back"
-          onClick={back}
-          disabled={busy}
-        >
-          ← {screen === 'home' ? 'Home' : 'Exam Centre'}
-        </button>
+
 
         <h1>Smart Exam Centre</h1>
         <p>Practise. Assess. Improve.</p>
@@ -1142,9 +1136,7 @@ export default function SmartExamCentre({
             )
           })}
 
-          <button className="sev2-primary" onClick={goHome}>
-            Back to Exam Centre
-          </button>
+
         </section>
       )}
 

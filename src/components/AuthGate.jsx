@@ -305,7 +305,7 @@ export default function AuthGate({ children }) {
     }
 
     if (showPremium) {
-      if (premiumFeatureIntent && premiumBackHandlerRef.current) {
+      if (premiumBackHandlerRef.current) {
         return premiumBackHandlerRef.current() !== false
       }
 

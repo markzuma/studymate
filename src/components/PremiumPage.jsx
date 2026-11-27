@@ -83,7 +83,7 @@ export default function PremiumPage({ referralsEnabled = false, user, onBack, on
     recordPremiumConversion('premium_view')
   }, [user?.id])
   const [selectedPremiumFeature, setSelectedPremiumFeature] = useState(() => PREMIUM_FEATURES.find(feature => feature.id === initialFeatureId) || null)
-  const [purchaseStep, setPurchaseStep] = useState(initialFeatureId ? 'feature' : 'catalogue')
+  const [purchaseStep, setPurchaseStep] = useState(initialFeatureId ? 'plans' : 'catalogue')
   const [plans, setPlans] = useState([])
   const [subscriptions, setSubscriptions] = useState([])
   const [membershipRefresh, setMembershipRefresh] = useState(0)
@@ -322,8 +322,6 @@ export default function PremiumPage({ referralsEnabled = false, user, onBack, on
       setPurchaseStep('plans')
     }
 
-    setSelectedPremiumFeature(null)
-
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         document.getElementById('premium-plans')
@@ -336,31 +334,18 @@ export default function PremiumPage({ referralsEnabled = false, user, onBack, on
   }
 
   function handlePremiumBack() {
-    if (!initialFeatureId && selectedPlan) {
+    if (paying) return
+
+    if (selectedPlan || purchaseStep === 'payment') {
       setSelectedPlan(null)
       setPaymentMethod('')
-      return
-    }
 
-    if (!initialFeatureId && selectedPremiumFeature) {
-      setSelectedPremiumFeature(null)
-      setPaymentMethod('')
-      return
-    }
-
-    if (initialFeatureId && selectedPremiumFeature && !hasPremiumAccess) {
-      if (purchaseStep === 'payment') {
-        setPaymentMethod('')
+      if (initialFeatureId) {
         setPurchaseStep('plans')
-        return
       }
 
-      if (purchaseStep === 'plans') {
-        setSelectedPlan(null)
-        setPaymentMethod('')
-        setPurchaseStep('feature')
-        return
-      }
+      scrollToPremiumPlans()
+      return
     }
 
     onBack?.()
@@ -376,16 +361,21 @@ export default function PremiumPage({ referralsEnabled = false, user, onBack, on
   }, [onRegisterBackHandler])
 
   useEffect(() => {
-    if (!initialFeatureId) return
+    if (loading || !initialFeatureId) return
 
-    const target = purchaseStep === 'feature'
-      ? document.querySelector('.premium-feature-focus')
-      : purchaseStep === 'plans'
-        ? document.getElementById('premium-plans')
-        : document.getElementById('premium-checkout')
+    const frame = requestAnimationFrame(() => {
+      const target = purchaseStep === 'payment'
+        ? 'premium-checkout'
+        : 'premium-plans'
 
-    target?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  }, [purchaseStep, initialFeatureId])
+      document.getElementById(target)?.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      })
+    })
+
+    return () => cancelAnimationFrame(frame)
+  }, [loading, purchaseStep, initialFeatureId])
 
   async function handlePayment() {
     if (purchaseBlocked) return
@@ -498,13 +488,12 @@ export default function PremiumPage({ referralsEnabled = false, user, onBack, on
     if (
       !launchHandled.current &&
       hasPremiumAccess &&
-      subscription?.status === 'active' &&
       selectedPremiumFeature
     ) {
       launchHandled.current = true
       onOpenFeature(selectedPremiumFeature.id)
     }
-  }, [hasPremiumAccess, subscription?.status, selectedPremiumFeature, onOpenFeature])
+  }, [hasPremiumAccess, selectedPremiumFeature, onOpenFeature])
 
   if (loading) {
     return <div className="premium-page">Loading Premium plans...</div>
@@ -516,25 +505,6 @@ export default function PremiumPage({ referralsEnabled = false, user, onBack, on
 
         <span>PERIAK PREMIUM</span>
       </header>
-
-      {initialFeatureId && selectedPremiumFeature && !hasPremiumAccess && (
-        <section className="premium-feature-focus">
-          <span className="premium-feature-icon">{selectedPremiumFeature.icon}</span>
-          <div>
-            <p className="premium-eyebrow">UNLOCK YOUR SELECTED FEATURE</p>
-            <h1>{selectedPremiumFeature.title}</h1>
-            <p>{selectedPremiumFeature.desc}</p>
-            <small>Choose a Premium plan to continue to payment.</small>
-            <button
-              type="button"
-              className="premium-feature-continue"
-              onClick={() => setPurchaseStep('plans')}
-            >
-              Continue to plans →
-            </button>
-          </div>
-        </section>
-      )}
 
       <section className="premium-hero">
         <p className="premium-eyebrow">TAKE YOUR LEARNING FURTHER</p>
@@ -661,7 +631,7 @@ export default function PremiumPage({ referralsEnabled = false, user, onBack, on
         <div className="premium-feature-heading">
           <span className="premium-eyebrow">YOUR PREMIUM TOOLKIT</span>
           <h2>Explore {PREMIUM_FEATURES.length} learning tools</h2>
-          <p>Browse each tool, see what it offers, and open it when you have access.</p>
+          <p>Select a learning tool to open it or choose a Premium plan.</p>
         </div>
 
         <div className="premium-feature-grid">
@@ -675,37 +645,27 @@ export default function PremiumPage({ referralsEnabled = false, user, onBack, on
                   onOpenFeature?.(feature.id)
                 } else {
                   setSelectedPremiumFeature(feature)
+                  scrollToPremiumPlans()
                 }
               }}
             >
               <span className="premium-feature-icon">{feature.icon}</span>
               <h3>{feature.title}</h3>
               <p>{feature.desc}</p>
-              <strong>{hasPremiumAccess ? 'Open feature →' : 'Explore feature →'}</strong>
+              <strong>{hasPremiumAccess ? 'Open feature →' : 'View plans ↓'}</strong>
             </button>
           ))}
         </div>
 
-        {selectedPremiumFeature && !hasPremiumAccess && (
-          <div className="premium-feature-preview">
-            <span className="premium-feature-icon">{selectedPremiumFeature.icon}</span>
-            <h3>{selectedPremiumFeature.title}</h3>
-            <p>{selectedPremiumFeature.desc}</p>
-            <p>Premium access is required to launch this learning tool.</p>
-            <button
-              type="button"
-              onClick={scrollToPremiumPlans}
-            >
-              View subscription plans ↓
-            </button>
-            <button type="button" className="premium-feature-dismiss"
-              onClick={() => setSelectedPremiumFeature(null)}>Close preview</button>
-          </div>
-        )}
       </section>
 
       <section className="premium-plans" id="premium-plans">
         <h2>Choose your plan</h2>
+        {selectedPremiumFeature && !hasPremiumAccess && (
+          <p className="premium-selected-feature" role="status">
+            Unlock {selectedPremiumFeature.title} with Premium.
+          </p>
+        )}
         <p>Affordable plans designed for nursing students.</p>
         <p className="premium-pricing-explainer">
           Prices are automatically displayed in your local currency where available.

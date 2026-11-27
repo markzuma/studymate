@@ -60,8 +60,7 @@ export default function LearningSuite({
       <div><small>PERIAK LEARNING SUITE</small><h2>Learn. Practise. Excel.</h2><p>Focused learning tools for nursing education.</p></div>
       {premiumLoading && !isAdmin ? <span>Checking Premium access…</span>
         : !hasPremiumAccess && !isAdmin && <button type="button" onClick={onOpenPremium}>Explore advanced learning tools →</button>}
-      {standalone ? <button type="button" onClick={handleLearningSuiteBack}>← {active ? 'All learning tools' : 'Back to Premium'}</button>
-        : active && <button type="button" onClick={handleLearningSuiteBack}>← Back</button>}
+
     </header>
     {active &&
     !['dashboard', 'hub', 'exams'].includes(active) &&

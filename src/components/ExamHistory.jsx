@@ -52,22 +52,7 @@ export default function ExamHistory({ onBack }) {
 
   return (
     <main className="exam-centre periak-exam-history">
-      <button
-        type="button"
-        onClick={onBack}
-        style={{
-          margin: '20px',
-          padding: '10px 18px',
-          borderRadius: '8px',
-          border: '1px solid #dbe3ed',
-          background: 'var(--surface)',
-          color: 'var(--text-primary)',
-          cursor: 'pointer',
-          fontWeight: '600'
-        }}
-      >
-        ← Back to Exam Centre
-      </button>
+
 
       <header className="exam-header">
         <p className="exam-label">PERIAK LEARNING</p>

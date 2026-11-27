@@ -211,7 +211,7 @@ export default function PastPapersLibrary({
   return (
     <main className="past-papers-page">
       <header className="papers-page-header">
-        <button type="button" className="papers-back" onClick={onBack}>← Back</button>
+
         <div>
           <span className="papers-eyebrow">{hasPremiumAccess || isAdmin ? 'PERIAK PREMIUM' : 'PERIAK PAST PAPERS'}</span>
           <h1>Real Past Papers Library</h1>
