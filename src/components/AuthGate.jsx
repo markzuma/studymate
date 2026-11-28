@@ -3,6 +3,7 @@ import { cloneElement, lazy, Suspense, useCallback, useEffect, useState,
   useRef} from 'react'
 import { supabase } from '../lib/supabase'
 import './AuthGate.css'
+import GoogleSignIn from './GoogleSignIn'
 import PasswordRecovery from './PasswordRecovery'
 import {
   passwordStrength,
@@ -1300,6 +1301,12 @@ export default function AuthGate({ children }) {
             You have been invited to join PERIAK.
             Create your free account to get started.
           </p>
+        )}
+
+        {(
+          import.meta.env.VITE_GOOGLE_SIGN_IN_ENABLED === 'true'
+        ) && mode !== 'reset' && !readReferral() && (
+          <GoogleSignIn disabled={busy} />
         )}
 
         <form onSubmit={handleSubmit}>
