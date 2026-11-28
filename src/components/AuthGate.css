@@ -689,3 +689,13 @@
   border-color: #8e918f;
   color: #e3e3e3;
 }
+
+/* Compact website return navigation */
+
+.auth-website-back {
+  display: block;
+  text-align: left;
+  font-size: .8rem;
+  margin: 0 0 8px;
+  padding: 6px 0;
+}

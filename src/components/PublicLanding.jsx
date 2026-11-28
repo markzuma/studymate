@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import './PublicLanding.css'
+import GoogleSignIn from './GoogleSignIn'
 
 const features = [
   ['📖', 'Study notes',
@@ -49,7 +50,7 @@ const samples = [
   }
 ]
 
-export default function PublicLanding({ onLogin, onRegister }) {
+export default function PublicLanding({ onLogin, onRegister, googleEnabled = false }) {
   const [questionIndex, setQuestionIndex] = useState(0)
   const [answer, setAnswer] = useState(null)
   const [score, setScore] = useState(0)
@@ -100,11 +101,14 @@ export default function PublicLanding({ onLogin, onRegister }) {
         </a>
         <nav aria-label="Public navigation">
           <button className="pl-text-button" onClick={onLogin}>
-            Sign in
+            Log in
           </button>
           <button className="pl-primary" onClick={onRegister}>
-            Join free
+            Sign up
           </button>
+          {googleEnabled && (
+            <GoogleSignIn showDivider={false} />
+          )}
         </nav>
       </header>
 
@@ -118,17 +122,16 @@ export default function PublicLanding({ onLogin, onRegister }) {
             <span>Excel in nursing.</span>
           </h1>
           <p className="pl-intro">
-            Prepare confidently for examinations and strengthen
-            your nursing knowledge with study notes, past papers,
-            smart assessments and clinical learning tools.
+            Master nursing with study notes, past papers,
+            smart examinations and clinical learning tools.
           </p>
           <div className="pl-actions">
             <button className="pl-primary" onClick={onRegister}>
-              Start learning for free →
+              Get started →
             </button>
             <button className="pl-secondary"
               onClick={() => scrollTo('pl-preview')}>
-              Try sample questions
+              Try a question
             </button>
           </div>
           <p className="pl-small">
@@ -156,7 +159,7 @@ export default function PublicLanding({ onLogin, onRegister }) {
       </section>
 
       <section className="pl-trust-strip">
-        <span>Free account registration</span>
+        <span>Easy registration</span>
         <span>Exam-focused learning</span>
         <span>Designed for nursing students</span>
       </section>
@@ -164,7 +167,7 @@ export default function PublicLanding({ onLogin, onRegister }) {
       <section className="pl-section">
         <span className="pl-eyebrow">YOUR LEARNING TOOLKIT</span>
         <h2>Everything you need to prepare</h2>
-        <p>Explore free resources and advanced Premium tools.</p>
+        <p>Everything you need for focused nursing revision.</p>
 
         <div className="pl-feature-grid">
           {features.map(([icon, title, desc]) => (
@@ -178,18 +181,18 @@ export default function PublicLanding({ onLogin, onRegister }) {
       </section>
 
       <section className="pl-section" id="pl-preview">
-        <span className="pl-eyebrow">TRY BEFORE JOINING</span>
-        <h2>Test your nursing knowledge</h2>
-        <p>Five free sample questions. No account required.</p>
+        <span className="pl-eyebrow">TEST YOUR KNOWLEDGE</span>
+        <h2>Try a question</h2>
+        <p>Practise with five nursing examination questions.</p>
 
         <div className="pl-quiz">
           {finished ? (
             <div className="pl-quiz-result">
               <h3>Sample revision complete</h3>
               <strong>{score} / {samples.length}</strong>
-              <p>Continue your revision with a free PERIAK account.</p>
+              <p>Continue your revision with PERIAK.</p>
               <button className="pl-primary" onClick={onRegister}>
-                Create free account
+                Create account
               </button>
               <button className="pl-secondary" onClick={restart}>
                 Try again

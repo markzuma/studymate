@@ -88,10 +88,20 @@ export default function AuthGate({ children }) {
         ? 'reset' : 'login'
   )
 
+  const installedApp =
+    window.matchMedia('(display-mode: standalone)').matches ||
+    window.matchMedia('(display-mode: fullscreen)').matches ||
+    window.matchMedia('(display-mode: minimal-ui)').matches ||
+    navigator.standalone === true ||
+    document.referrer.startsWith('android-app://com.periak.app')
+
+  const googleEnabled =
+    import.meta.env.VITE_GOOGLE_SIGN_IN_ENABLED !== 'false'
+
   const [showPublicLanding, setShowPublicLanding] = useState(() => {
     const url = new URL(window.location.href)
 
-    return url.pathname === '/' &&
+    return !installedApp && url.pathname === '/' &&
       !readReferral() &&
       !url.searchParams.has('code') &&
       !url.searchParams.has('error') &&
@@ -120,7 +130,14 @@ export default function AuthGate({ children }) {
   }
 
   function openPublicHome() {
+    if (installedApp || readReferral()) {
+      openPublicAuth('login')
+      return
+    }
+
     setShowPublicLanding(true)
+    setConfirmation('')
+    setShowPassword(false)
     setError('')
     setMessage('')
     setPassword('')
@@ -1235,10 +1252,11 @@ export default function AuthGate({ children }) {
     )
   }
 
-  if (showPublicLanding) {
+  if (showPublicLanding && !installedApp && !session && !readReferral()) {
     return (
       <Suspense fallback={<div role="status">Opening PERIAK…</div>}>
         <PublicLanding
+          googleEnabled={googleEnabled}
           onLogin={() => openPublicAuth('login')}
           onRegister={() => openPublicAuth('register')}
         />
@@ -1249,13 +1267,25 @@ export default function AuthGate({ children }) {
   return (
     <div className="auth-page">
       <div className="auth-card">
-        <button
-          type="button"
-          className="auth-text-button"
-          onClick={openPublicHome}
-        >
-          PERIAK homepage
-        </button>
+        {(!installedApp && !readReferral()) ? (
+          <button
+            type="button"
+            className="auth-text-button auth-website-back"
+            onClick={mode === 'reset'
+              ? () => openPublicAuth('login')
+              : openPublicHome}
+          >
+            ← {mode === 'reset' ? 'Back to login' : 'Back to website'}
+          </button>
+        ) : mode !== 'login' && (
+          <button
+            type="button"
+            className="auth-text-button auth-website-back"
+            onClick={() => openPublicAuth('login')}
+          >
+            ← Back to login
+          </button>
+        )}
         <div className="auth-brand">
           <span className="auth-logo">✚</span>
           <span>PERIAK</span>
@@ -1303,9 +1333,7 @@ export default function AuthGate({ children }) {
           </p>
         )}
 
-        {(
-          import.meta.env.VITE_GOOGLE_SIGN_IN_ENABLED === 'true'
-        ) && mode !== 'reset' && !readReferral() && (
+        {googleEnabled && mode !== 'reset' && !readReferral() && (
           <GoogleSignIn disabled={busy} />
         )}
 

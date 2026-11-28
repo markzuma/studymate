@@ -314,3 +314,300 @@
   .pl-price strong { font-size: 1.4rem; }
   .pl-trust-strip { font-size: .72rem; gap: 8px; }
 }
+
+/* PERIAK compact public website */
+
+.pl-page {
+  max-width: 1100px;
+  padding: 0 18px;
+}
+
+.pl-header {
+  min-height: 60px;
+  gap: 10px;
+  flex-wrap: wrap;
+  padding: 8px 0;
+}
+
+.pl-header nav {
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.pl-brand {
+  font-size: 17px;
+}
+
+.pl-brand img {
+  width: 28px;
+  height: 28px;
+}
+
+.pl-page button {
+  padding: 7px 12px;
+  font-size: .82rem;
+  min-height: 44px;
+}
+
+.pl-header .auth-google-section {
+  margin: 0;
+  width: auto;
+}
+
+.pl-header .auth-google-button {
+  margin: 0;
+  width: auto;
+  min-height: 44px;
+  font-size: .78rem;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.pl-header .auth-google-button svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.pl-hero {
+  display: block;
+  position: relative;
+  isolation: isolate;
+  min-height: 280px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  margin: 16px 0 10px;
+  padding: 28px;
+  background: var(--surface-secondary);
+}
+
+.pl-hero-content {
+  position: relative;
+  z-index: 2;
+  max-width: 61%;
+}
+
+.pl-hero-visual {
+  position: absolute;
+  inset: 0 0 0 30%;
+  z-index: -1;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+}
+
+.pl-hero-visual > img {
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  object-fit: contain;
+  object-position: right center;
+  opacity: .73;
+}
+
+.pl-hero-visual::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    var(--surface-secondary) 0%,
+    transparent 75%
+  );
+  pointer-events: none;
+}
+
+.pl-visual-caption {
+  display: none;
+}
+
+.pl-hero h1 {
+  font-size: clamp(29px, 4vw, 47px);
+  line-height: 1.1;
+  margin: 10px 0;
+  letter-spacing: -1.2px;
+}
+
+.pl-intro {
+  max-width: 440px;
+  font-size: .88rem;
+  line-height: 1.5;
+  margin: 8px 0;
+}
+
+.pl-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 14px 0 8px;
+}
+
+.pl-small {
+  margin: 8px 0 0;
+  font-size: .72rem;
+}
+
+.pl-trust-strip {
+  padding: 9px;
+  gap: 8px 18px;
+  font-size: .72rem;
+}
+
+.pl-section {
+  padding: 18px 0;
+}
+
+.pl-section h2 {
+  font-size: clamp(19px, 2.6vw, 25px);
+  margin: 6px 0;
+}
+
+.pl-section p {
+  font-size: .81rem;
+  line-height: 1.5;
+  margin: 5px 0;
+}
+
+.pl-feature-grid {
+  gap: 8px;
+  margin: 12px 0 0;
+}
+
+.pl-feature {
+  padding: 11px;
+}
+
+.pl-feature > span {
+  font-size: 20px;
+}
+
+.pl-feature h3 {
+  font-size: .84rem;
+  margin: 4px 0;
+}
+
+.pl-feature p {
+  font-size: .74rem;
+  line-height: 1.4;
+  margin: 0;
+}
+
+.pl-quiz {
+  max-width: 660px;
+  padding: 13px;
+  margin: 9px 0 0;
+  border-radius: 10px;
+}
+
+.pl-quiz h3 {
+  font-size: .9rem;
+  line-height: 1.45;
+  margin: 9px 0;
+}
+
+.pl-quiz progress {
+  height: 4px;
+  margin-top: 5px;
+}
+
+.pl-options {
+  gap: 5px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.pl-options button {
+  padding: 7px 9px;
+  font-size: .8rem;
+  min-height: 44px;
+  line-height: 1.35;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
+.pl-feedback {
+  padding: 9px;
+  margin-top: 8px;
+  font-size: .8rem;
+}
+
+.pl-feedback button {
+  margin-top: 6px;
+}
+
+.pl-quiz-result {
+  gap: 6px;
+}
+
+.pl-footer {
+  padding: 18px 0 40px;
+  font-size: .72rem;
+}
+
+.pl-footer nav {
+  gap: 8px 12px;
+  margin: 8px 0;
+}
+
+@media (max-width: 650px) {
+  .pl-page {
+    padding: 0 11px;
+  }
+
+  .pl-header {
+    min-height: 54px;
+  }
+
+  .pl-header nav {
+    flex: 1;
+    justify-content: flex-end;
+  }
+
+  .pl-header .auth-google-section {
+    flex-basis: 100%;
+  }
+
+  .pl-header .auth-google-button {
+    width: 100%;
+  }
+
+  .pl-hero {
+    min-height: 240px;
+    margin-top: 10px;
+    padding: 18px 14px;
+  }
+
+  .pl-hero-content {
+    max-width: 100%;
+  }
+
+  .pl-hero-visual {
+    inset: 0 0 0 15%;
+  }
+
+  .pl-hero-visual > img {
+    opacity: .25;
+  }
+
+  .pl-hero h1 {
+    font-size: 32px;
+  }
+
+  .pl-intro {
+    max-width: 290px;
+    font-size: .83rem;
+  }
+
+  .pl-feature-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  .pl-feature {
+    padding: 9px;
+  }
+
+  .pl-options {
+    grid-template-columns: 1fr;
+  }
+}

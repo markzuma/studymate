@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { supabase } from '../lib/supabase'
 
-export default function GoogleSignIn({ disabled = false }) {
+export default function GoogleSignIn({ disabled = false, showDivider = true }) {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
 
@@ -71,11 +71,13 @@ export default function GoogleSignIn({ disabled = false }) {
         </div>
       )}
 
-      <div className="auth-google-divider">
-        <span />
-        <small>or continue with your account</small>
-        <span />
-      </div>
+      {showDivider && (
+        <div className="auth-google-divider">
+          <span />
+          <small>or continue with email or username</small>
+          <span />
+        </div>
+      )}
     </div>
   )
 }

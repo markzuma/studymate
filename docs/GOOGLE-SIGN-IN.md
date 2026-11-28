@@ -1,28 +1,25 @@
 # PERIAK Google Sign-In
 
-Google OAuth is configured through Supabase.
-Production and localhost authorization redirects passed.
+Google OAuth uses Supabase Authentication.
 
-The Google interface is disabled by default.
-
-Frontend activation flag:
-VITE_GOOGLE_SIGN_IN_ENABLED=true
+Google Sign-In is enabled by default.
+Set VITE_GOOGLE_SIGN_IN_ENABLED=false to hide the interface.
 
 The frontend flag is not a security boundary.
-The backend Google provider remains disabled.
+The Supabase provider must be disabled separately if required.
 
-Existing email and username authentication,
-session persistence and profile management are retained.
+Production:
+https://periakedu.vercel.app/
 
-Pending approved activation:
-- Resolve legacy account-linking security.
-- Test complete Google registration and login.
-- Verify profile creation and administrator MFA.
-- Enable the backend provider and frontend flag.
-- Perform production regression testing.
+The Google button is available on the public website and
+authentication screens, except referral registration and password recovery.
 
-SMTP configuration and Google referral integration
-are deferred.
+Existing email and username authentication remain available.
 
-Google credentials must remain in Supabase,
-never in frontend source code.
+Authorization redirects were previously verified.
+Complete Google registration and login still require live testing.
+
+Legacy email ownership and account-linking hardening are
+deferred at the owner's direction.
+
+Google credentials remain in Supabase.
